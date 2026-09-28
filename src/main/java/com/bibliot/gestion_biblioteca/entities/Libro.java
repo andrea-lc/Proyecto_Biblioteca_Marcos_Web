@@ -45,15 +45,6 @@ public class Libro {
     @Column(name = "isbn", unique = true, length = 20)
     private String isbn;
 
-    @Column(name = "archivo_url", length = 255)
-    private String archivoUrl;
-
-    @Column(name = "cantidad_ejemplares")
-    private Integer cantidadEjemplares;
-
-    @Column(name = "ejemplares_disponibles")
-    private Integer ejemplaresDisponibles;
-
     @Column(name = "estado", length = 30)
     private String estado;
 

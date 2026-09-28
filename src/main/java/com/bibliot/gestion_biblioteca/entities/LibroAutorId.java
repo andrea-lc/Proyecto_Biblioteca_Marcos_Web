@@ -1,6 +1,7 @@
 package com.bibliot.gestion_biblioteca.entities;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Column;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,9 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class LibroAutorId implements Serializable {
 
+    @Column(name = "id_libro")
     private Integer idLibro;
+    @Column(name = "id_autor")
     private Integer idAutor;
 
     public LibroAutorId(Integer idLibro, Integer idAutor) {

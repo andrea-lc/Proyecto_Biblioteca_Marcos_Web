@@ -13,27 +13,33 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "devolucion")
+@Table(name = "sancion")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Devolucion {
+public class Sancion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_devolucion")
-    private Integer idDevolucion;
+    @Column(name = "id_sancion")
+    private Integer idSancion;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_prestamo", nullable = false, unique = true)
-    private Prestamo prestamo;
+    @JoinColumn(name = "id_devolucion", nullable = false, unique = true)
+    private Devolucion devolucion;
 
-    @Column(name = "fecha_devolucion", nullable = false)
-    private LocalDateTime fechaDevolucion;
+    @Column(name = "motivo", length = 255)
+    private String motivo;
 
-    @Column(name = "observacion", columnDefinition = "TEXT")
-    private String observacion;
+    @Column(name = "fecha_inicio")
+    private LocalDate fechaInicio;
+
+    @Column(name = "fecha_fin")
+    private LocalDate fechaFin;
+
+    @Column(name = "estado", length = 30)
+    private String estado;
 }

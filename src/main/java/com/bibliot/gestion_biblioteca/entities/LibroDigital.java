@@ -16,24 +16,33 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "devolucion")
+@Table(name = "libro_digital")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Devolucion {
+public class LibroDigital {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_devolucion")
-    private Integer idDevolucion;
+    @Column(name = "id_libro_digital")
+    private Integer idLibroDigital;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_prestamo", nullable = false, unique = true)
-    private Prestamo prestamo;
+    @JoinColumn(name = "id_libro", nullable = false, unique = true)
+    private Libro libro;
 
-    @Column(name = "fecha_devolucion", nullable = false)
-    private LocalDateTime fechaDevolucion;
+    @Column(name = "archivo_url", length = 255)
+    private String archivoUrl;
 
-    @Column(name = "observacion", columnDefinition = "TEXT")
-    private String observacion;
+    @Column(name = "formato", length = 30)
+    private String formato;
+
+    @Column(name = "tamano_archivo")
+    private Long tamanoArchivo;
+
+    @Column(name = "disponible")
+    private Boolean disponible;
+
+    @Column(name = "fecha_registro")
+    private LocalDateTime fechaRegistro;
 }
