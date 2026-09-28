@@ -7,18 +7,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/bibliot.css?v=6">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle" />
 </head>
 <body class="catalog-body">
 <aside class="catalog-sidebar"><a class="catalog-brand" th:href="@{/index}">Bibliot.</a><nav class="catalog-nav" aria-label="Navegación principal"><a th:href="@{/index}"><span>⌂</span>Inicio</a><a class="active" th:href="@{/explorar}" aria-current="page"><span>⊘</span>Explorar</a></nav><nav class="catalog-nav catalog-bottom-nav" aria-label="Ayuda y configuración"><a href="#configuracion"><span>⚙</span>Configuración</a><a href="#ayuda"><span>ⓘ</span>Ayuda</a></nav></aside>
 <main class="catalog-main">
-    <header class="catalog-topbar"><button class="catalog-menu" type="button" aria-label="Abrir menú">☰</button><div class="catalog-account-actions"><a th:href="@{/login}" class="catalog-icon-button" aria-label="Notificaciones">♧</a><a th:href="@{/login}" class="catalog-icon-button" aria-label="Mi perfil">◎</a></div></header>
+    <header class="catalog-topbar"><button class="catalog-menu" type="button" aria-label="Abrir menú">☰</button><div class="catalog-account-actions"><a th:href="@{/login}" class="catalog-icon-button" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></a><a th:href="@{/login}" class="catalog-icon-button" aria-label="Mi perfil"><span class="material-symbols-outlined">account_circle</span></a></div></header>
     <section class="book-detail-content">
         <div class="book-summary">
             <img class="detail-cover" src="https://covers.openlibrary.org/b/isbn/9780140440854-L.jpg" alt="Portada de Argonauta">
             <div class="book-primary-info"><h1>Argonauta</h1><p class="detail-author-label">Autor:</p><p class="detail-author">Apolonio de Rodas</p>
                 <div class="detail-metadata"><div><span>Fecha de publicación</span><b>1996</b></div><div><span>Páginas</span><b>225</b></div><div><span>Estado</span><b>Disponible</b></div></div>
             </div>
-            <div class="detail-actions"><div class="action-buttons"><a class="reserve-button read-button" href="#leer"><span aria-hidden="true">♧</span>Leer</a><button class="more-button" type="button" aria-label="Más opciones">…</button></div><a class="book-category" href="#categoria"><span aria-hidden="true">♙</span>Fantasía <b>›</b></a></div>
+            <div class="detail-actions"><div class="action-buttons"><a class="reserve-button read-button" href="#leer"><span aria-hidden="true"><span class="material-symbols-outlined">notifications</span></span>Leer</a><button class="more-button" type="button" aria-label="Más opciones">…</button></div><a class="book-category" href="#categoria"><span aria-hidden="true">♙</span>Fantasía <b>›</b></a></div>
         </div>
         <section class="book-description"><h2>Descripción</h2><div class="description-copy">
             <p>Los argonautas son los últimos sobrevivientes de sus mundos. No héroes, no dioses, sino fragmentos de historias olvidadas, vagando entre los restos del omniverso. En la Ciudad NUO, una entidad en constante movimiento entre dimensiones, los recién llegados deben tomar una decisión: aceptar su destino y recibir el poder de un argonauta, ser expulsados al mar de la entropía o buscar redención en un nuevo mundo.</p>

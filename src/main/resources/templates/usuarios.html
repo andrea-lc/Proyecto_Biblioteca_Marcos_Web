@@ -1,52 +1,185 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Usuarios | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/css/bibliot.css?v=2">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle,groups" />
 </head>
+
 <body class="admin-body">
-<div class="admin-layout">
-    <aside class="admin-sidebar">
-        <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
-        <nav class="admin-nav" aria-label="Navegación principal">
-            <a href="#roles"><span class="nav-icon">▱</span>Roles</a>
-            <a class="active" th:href="@{/usuarios}" aria-current="page"><span class="nav-icon">♧</span>Usuarios</a>
-            <a th:href="@{/libros}"><span class="nav-icon">▤</span>Libros</a>
-            <a th:href="@{/dashboard}"><span class="nav-icon">◷</span>Reportes</a>
-            <a href="#ajustes"><span class="nav-icon">⬡</span>Ajustes</a>
-        </nav>
-        <a class="signout-link" th:href="@{/login}">↪ <span>Cerrar sesión</span></a>
-    </aside>
-    <main class="admin-main">
-        <header class="admin-topbar">
-            <form class="admin-search" role="search" th:action="@{/usuarios}" method="get"><span aria-hidden="true">⌕</span><input type="search" name="q" placeholder="Buscar" aria-label="Buscar"></form>
-            <div class="topbar-actions"><button class="round-action" type="button" aria-label="Notificaciones">♧</button><button class="round-action user-action" type="button" aria-label="Perfil">◎</button></div>
-        </header>
-        <section class="users-content">
-            <div class="users-heading-row"><div><h1 class="page-heading mb-1">Usuarios <span class="users-total">ⓘ <b>20</b></span></h1></div><div class="users-actions"><button class="btn btn-outline-secondary btn-sm" type="button">⇩ Exportar</button><button class="btn btn-brand btn-sm" type="button">＋ Nuevo usuario</button></div></div>
-            <div class="user-tabs"><a class="selected" href="#todos">Todos</a><a href="#roles">Roles</a></div>
-            <div class="user-toolbar"><form class="user-search" th:action="@{/usuarios}" method="get"><span aria-hidden="true">⌕</span><input type="search" name="usuario" placeholder="Buscar usuario" aria-label="Buscar usuario"></form><div class="table-tools"><button class="btn btn-outline-secondary btn-sm" type="button">☷ <span>Filtrar</span></button><button class="view-toggle active" type="button" aria-label="Vista de lista">☷</button><button class="view-toggle" type="button" aria-label="Vista de tarjetas">▦</button></div></div>
-            <div class="table-responsive users-table-wrap"><table class="table users-table align-middle mb-0">
-                <thead><tr><th class="check-col"><input type="checkbox" aria-label="Seleccionar todos"></th><th>Nombre</th><th>Empleado ID</th><th>Rol <span class="text-muted">ⓘ</span></th><th>Estado</th><th></th></tr></thead>
-                <tbody>
-                    <tr><td><input type="checkbox" aria-label="Seleccionar Tanner Finsha"></td><td><a class="user-cell user-detail-link" th:href="@{/usuarios/detalle}"><span class="user-avatar avatar-purple">TF</span><span><b>Tanner Finsha</b><small>@Tannerfinisher@gmail.com</small></span></a></td><td><span class="employee-id">#23454HG6JY7T6</span></td><td>Director</td><td><span class="user-state state-on">● Activo</span></td><td><button class="row-menu" aria-label="Opciones de Tanner">⋮</button></td></tr>
-                    <tr><td><input type="checkbox" aria-label="Seleccionar Emeto Winner"></td><td><div class="user-cell"><span class="user-avatar avatar-coral">EW</span><span><b>Emeto Winner</b><small>@Emetowinner@gmail.com</small></span></div></td><td><span class="employee-id">#23454HG6JY7T6</span></td><td>Conservador</td><td><span class="user-state state-on">● Activo</span></td><td><button class="row-menu" aria-label="Opciones de Emeto">⋮</button></td></tr>
-                    <tr><td><input type="checkbox" aria-label="Seleccionar Tassy Omah"></td><td><div class="user-cell"><span class="user-avatar avatar-photo">TO</span><span><b>Tassy Omah</b><small>@Tassyomah@gmail.com</small></span></div></td><td><span class="employee-id">#23454HG6JY7T6</span></td><td>Jefe de Área</td><td><span class="user-state state-off">● Desactivado</span></td><td><button class="row-menu" aria-label="Opciones de Tassy">⋮</button></td></tr>
-                    <tr><td><input type="checkbox" aria-label="Seleccionar James Muriel"></td><td><div class="user-cell"><span class="user-avatar avatar-peach">JM</span><span><b>James Muriel</b><small>@JamesMuriel@Aerten.finance</small></span></div></td><td><span class="employee-id">#23454HG6JY7T6</span></td><td>Responsable de Servicios</td><td><span class="user-state state-off">● Desactivado</span></td><td><button class="row-menu" aria-label="Opciones de James">⋮</button></td></tr>
-                    <tr><td><input type="checkbox" aria-label="Seleccionar Emeto Winner"></td><td><div class="user-cell"><span class="user-avatar avatar-coral">EW</span><span><b>Emeto Winner</b><small>@Emetowinner@gmail.com</small></span></div></td><td><span class="employee-id">#23454HG6JY7T6</span></td><td>Auxiliar de Biblioteca</td><td><span class="user-state state-off">● Desactivado</span></td><td><button class="row-menu" aria-label="Opciones de Emeto">⋮</button></td></tr>
-                    <tr><td><input type="checkbox" aria-label="Seleccionar Tassy Omah"></td><td><div class="user-cell"><span class="user-avatar avatar-yellow">TO</span><span><b>Tassy Omah</b><small>@Tassyomah@gmail.com</small></span></div></td><td><span class="employee-id">#23454HG6JY7T6</span></td><td>Cliente</td><td><span class="user-state state-on">● Activo</span></td><td><button class="row-menu" aria-label="Opciones de Tassy">⋮</button></td></tr>
-                    <tr><td><input type="checkbox" aria-label="Seleccionar James Muriel"></td><td><div class="user-cell"><span class="user-avatar avatar-peach">JM</span><span><b>James Muriel</b><small>@JamesMuriel@Aerten.finance</small></span></div></td><td><span class="employee-id">#23454HG6JY7T6</span></td><td>Cliente</td><td><span class="user-state state-on">● Activo</span></td><td><button class="row-menu" aria-label="Opciones de James">⋮</button></td></tr>
-                    <tr><td><input type="checkbox" aria-label="Seleccionar Emeto Mamani"></td><td><div class="user-cell"><span class="user-avatar avatar-green">EM</span><span><b>Emeto Mamani</b><small>@Emetomamani@gmail.com</small></span></div></td><td><span class="employee-id">#23454HG6JY7T6</span></td><td>Cliente</td><td><span class="user-state state-off">● Desactivado</span></td><td><button class="row-menu" aria-label="Opciones de Emeto">⋮</button></td></tr>
-                </tbody>
-            </table>
-            <nav class="users-pagination" aria-label="Paginación"><button class="page-btn" type="button">← <span>Anteriores</span></button><div class="page-numbers"><button class="current" type="button">1</button><button type="button">2</button><button type="button">3</button><span>…</span><button type="button">8</button><button type="button">9</button><button type="button">10</button></div><button class="page-btn" type="button"><span>Siguiente</span> →</button></nav>
-            </div>
-        </section>
-    </main>
-</div>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
+            <nav class="admin-nav" aria-label="Navegación principal">
+                <a href="#roles"><span class="nav-icon">▱</span>Roles</a>
+                <a class="active" th:href="@{/usuarios}" aria-current="page"><span class="nav-icon"><span
+                            class="material-symbols-outlined">groups</span></span>Usuarios</a>
+                <a th:href="@{/libros}"><span class="nav-icon">▤</span>Libros</a>
+                <a th:href="@{/dashboard}"><span class="nav-icon">◷</span>Reportes</a>
+                <a href="#ajustes"><span class="nav-icon">⚙</span>Ajustes</a>
+            </nav>
+            <a class="signout-link" th:href="@{/login}">↪ <span>Cerrar sesión</span></a>
+        </aside>
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <form class="admin-search" role="search" th:action="@{/usuarios}" method="get"><span
+                        aria-hidden="true">⌕</span><input type="search" name="q" placeholder="Buscar"
+                        aria-label="Buscar"></form>
+                <div class="topbar-actions"><button class="round-action" type="button" aria-label="Notificaciones"><span
+                            class="material-symbols-outlined">notifications</span></button><button
+                        class="round-action user-action" type="button" aria-label="Perfil"><span
+                            class="material-symbols-outlined">account_circle</span></button></div>
+            </header>
+            <section class="users-content">
+                <div class="users-heading-row">
+                    <div>
+                        <h1 class="page-heading mb-1">Usuarios <span class="users-total">ⓘ <b>20</b></span></h1>
+                    </div>
+                    <div class="users-actions"><button class="btn btn-outline-secondary btn-sm" type="button">⇩
+                            Exportar</button><button class="btn btn-brand btn-sm" type="button">＋ Nuevo usuario</button>
+                    </div>
+                </div>
+                <div class="user-tabs"><a class="selected" href="#todos">Todos</a><a href="#roles">Roles</a></div>
+                <div class="user-toolbar">
+                    <form class="user-search" th:action="@{/usuarios}" method="get"><span
+                            aria-hidden="true">⌕</span><input type="search" name="usuario" placeholder="Buscar usuario"
+                            aria-label="Buscar usuario"></form>
+                    <div class="table-tools"><button class="btn btn-outline-secondary btn-sm" type="button">☷
+                            <span>Filtrar</span></button><button class="view-toggle active" type="button"
+                            aria-label="Vista de lista">☷</button><button class="view-toggle" type="button"
+                            aria-label="Vista de tarjetas">▦</button></div>
+                </div>
+                <div class="table-responsive users-table-wrap">
+                    <table class="table users-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="check-col"><input type="checkbox" aria-label="Seleccionar todos"></th>
+                                <th>Nombre</th>
+                                <th>Empleado ID</th>
+                                <th>Rol <span class="text-muted">ⓘ</span></th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" aria-label="Seleccionar Tanner Finsha"></td>
+                                <td><a class="user-cell user-detail-link" th:href="@{/usuarios/detalle}"><span
+                                            class="user-avatar avatar-purple">TF</span><span><b>Tanner
+                                                Finsha</b><small>@Tannerfinisher@gmail.com</small></span></a></td>
+                                <td><span class="employee-id">#23454HG6JY7T6</span></td>
+                                <td>Director</td>
+                                <td><span class="user-state state-on">● Activo</span></td>
+                                <td><button class="row-menu" aria-label="Opciones de Tanner">⋮</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" aria-label="Seleccionar Emeto Winner"></td>
+                                <td>
+                                    <div class="user-cell"><span
+                                            class="user-avatar avatar-coral">EW</span><span><b>Emeto
+                                                Winner</b><small>@Emetowinner@gmail.com</small></span></div>
+                                </td>
+                                <td><span class="employee-id">#23454HG6JY7T6</span></td>
+                                <td>Conservador</td>
+                                <td><span class="user-state state-on">● Activo</span></td>
+                                <td><button class="row-menu" aria-label="Opciones de Emeto">⋮</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" aria-label="Seleccionar Tassy Omah"></td>
+                                <td>
+                                    <div class="user-cell"><span
+                                            class="user-avatar avatar-photo">TO</span><span><b>Tassy
+                                                Omah</b><small>@Tassyomah@gmail.com</small></span></div>
+                                </td>
+                                <td><span class="employee-id">#23454HG6JY7T6</span></td>
+                                <td>Jefe de Área</td>
+                                <td><span class="user-state state-off">● Desactivado</span></td>
+                                <td><button class="row-menu" aria-label="Opciones de Tassy">⋮</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" aria-label="Seleccionar James Muriel"></td>
+                                <td>
+                                    <div class="user-cell"><span
+                                            class="user-avatar avatar-peach">JM</span><span><b>James
+                                                Muriel</b><small>@JamesMuriel@Aerten.finance</small></span></div>
+                                </td>
+                                <td><span class="employee-id">#23454HG6JY7T6</span></td>
+                                <td>Responsable de Servicios</td>
+                                <td><span class="user-state state-off">● Desactivado</span></td>
+                                <td><button class="row-menu" aria-label="Opciones de James">⋮</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" aria-label="Seleccionar Emeto Winner"></td>
+                                <td>
+                                    <div class="user-cell"><span
+                                            class="user-avatar avatar-coral">EW</span><span><b>Emeto
+                                                Winner</b><small>@Emetowinner@gmail.com</small></span></div>
+                                </td>
+                                <td><span class="employee-id">#23454HG6JY7T6</span></td>
+                                <td>Auxiliar de Biblioteca</td>
+                                <td><span class="user-state state-off">● Desactivado</span></td>
+                                <td><button class="row-menu" aria-label="Opciones de Emeto">⋮</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" aria-label="Seleccionar Tassy Omah"></td>
+                                <td>
+                                    <div class="user-cell"><span
+                                            class="user-avatar avatar-yellow">TO</span><span><b>Tassy
+                                                Omah</b><small>@Tassyomah@gmail.com</small></span></div>
+                                </td>
+                                <td><span class="employee-id">#23454HG6JY7T6</span></td>
+                                <td>Cliente</td>
+                                <td><span class="user-state state-on">● Activo</span></td>
+                                <td><button class="row-menu" aria-label="Opciones de Tassy">⋮</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" aria-label="Seleccionar James Muriel"></td>
+                                <td>
+                                    <div class="user-cell"><span
+                                            class="user-avatar avatar-peach">JM</span><span><b>James
+                                                Muriel</b><small>@JamesMuriel@Aerten.finance</small></span></div>
+                                </td>
+                                <td><span class="employee-id">#23454HG6JY7T6</span></td>
+                                <td>Cliente</td>
+                                <td><span class="user-state state-on">● Activo</span></td>
+                                <td><button class="row-menu" aria-label="Opciones de James">⋮</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" aria-label="Seleccionar Emeto Mamani"></td>
+                                <td>
+                                    <div class="user-cell"><span
+                                            class="user-avatar avatar-green">EM</span><span><b>Emeto
+                                                Mamani</b><small>@Emetomamani@gmail.com</small></span></div>
+                                </td>
+                                <td><span class="employee-id">#23454HG6JY7T6</span></td>
+                                <td>Cliente</td>
+                                <td><span class="user-state state-off">● Desactivado</span></td>
+                                <td><button class="row-menu" aria-label="Opciones de Emeto">⋮</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <nav class="users-pagination" aria-label="Paginación"><button class="page-btn" type="button">←
+                            <span>Anteriores</span></button>
+                        <div class="page-numbers"><button class="current" type="button">1</button><button
+                                type="button">2</button><button type="button">3</button><span>…</span><button
+                                type="button">8</button><button type="button">9</button><button
+                                type="button">10</button></div><button class="page-btn"
+                            type="button"><span>Siguiente</span> →</button>
+                    </nav>
+                </div>
+            </section>
+        </main>
+    </div>
 </body>
+
 </html>

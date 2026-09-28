@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/bibliot.css?v=4">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle" />
 </head>
 <body class="catalog-body">
 <aside class="catalog-sidebar">
@@ -27,8 +28,8 @@
     <header class="catalog-topbar">
         <button class="catalog-menu" type="button" aria-label="Abrir menú">☰</button>
         <div class="catalog-account-actions">
-            <a th:href="@{/login}" class="catalog-icon-button" aria-label="Notificaciones">♧</a>
-            <a th:href="@{/login}" class="catalog-icon-button" aria-label="Mi perfil">◎</a>
+            <a th:href="@{/login}" class="catalog-icon-button" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></a>
+            <a th:href="@{/login}" class="catalog-icon-button" aria-label="Mi perfil"><span class="material-symbols-outlined">account_circle</span></a>
         </div>
     </header>
 
