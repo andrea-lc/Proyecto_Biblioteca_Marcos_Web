@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Bibliot - Detalle Libro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #fdfaf5; }
+        .bg-sidebar { background-color: #ede5d8; min-height: 100vh; }
+        .btn-brand { background-color: #9d927d; color: white; border: none; }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-3 col-lg-2 d-md-block bg-sidebar sidebar p-4">
+            <h2 class="mb-4 fw-bold">Bibliot.</h2>
+            <ul class="nav flex-column gap-2">
+                <li class="nav-item"><a class="nav-link text-dark" href="#">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link text-white bg-secondary bg-opacity-50 rounded fw-bold" href="#">Explorar</a></li>
+            </ul>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-5 py-5">
+            <div class="row mt-4">
+                <!-- Portada -->
+                <div class="col-md-4 text-center">
+                    <img src="https://via.placeholder.com/400x600" class="img-fluid rounded shadow" alt="Portada">
+                </div>
+
+                <!-- Información -->
+                <div class="col-md-8">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h1 class="fw-bold display-5">Argonauta</h1>
+                            <p class="fs-5 text-muted">Autor: <br><span class="text-dark fw-medium">Apolonio de Rodas</span></p>
+                        </div>
+                        <button class="btn btn-brand btn-lg shadow-sm px-4 fw-bold">Solicitar Reserva</button>
+                    </div>
+
+                    <div class="d-flex gap-5 border-bottom pb-4 mb-4 text-center">
+                        <div><small class="text-muted text-uppercase fw-bold">Fecha de publicación</small><h4 class="mt-2 fw-bold">1996</h4></div>
+                        <div><small class="text-muted text-uppercase fw-bold">Páginas</small><h4 class="mt-2 fw-bold">225</h4></div>
+                        <div><small class="text-muted text-uppercase fw-bold">Ejemplares disponibles</small><h4 class="mt-2 fw-bold">50</h4></div>
+                    </div>
+
+                    <div>
+                        <h5 class="fw-bold border-bottom d-inline-block pb-2 mb-3 border-dark">Descripción</h5>
+                        <p class="text-muted" style="line-height: 1.8;">
+                            Los argonautas son los últimos sobrevivientes de sus mundos. No héroes, no dioses, sino fragmentos de historias olvidadas, vagando entre los restos del omniverso.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>
