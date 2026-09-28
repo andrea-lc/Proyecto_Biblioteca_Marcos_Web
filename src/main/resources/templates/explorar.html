@@ -1,52 +1,63 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Bibliot - Explorar</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #fdfaf5; }
-        .bg-sidebar { background-color: #ede5d8; min-height: 100vh; }
-        .text-brand { color: #5a5040; }
-        .btn-brand { background-color: #9d927d; color: white; border: none; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Explorar | Bibliot.</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/bibliot.css?v=5">
 </head>
-<body>
-<div class="container-fluid">
-    <div class="row">
-        <nav class="col-md-3 col-lg-2 d-md-block bg-sidebar sidebar p-4">
-            <div class="position-sticky">
-                <h2 class="mb-4 text-brand fw-bold">Bibliot.</h2>
-                <ul class="nav flex-column gap-2">
-                    <li class="nav-item"><a class="nav-link text-dark" href="#">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link text-white bg-secondary bg-opacity-50 rounded fw-bold" href="#">Explorar</a></li>
-                </ul>
-            </div>
+<body class="catalog-body">
+<aside class="catalog-sidebar">
+    <a class="catalog-brand" th:href="@{/index}">Bibliot.</a>
+    <nav class="catalog-nav" aria-label="Navegación principal">
+        <a th:href="@{/index}"><span aria-hidden="true">⌂</span>Inicio</a>
+        <a class="active" th:href="@{/explorar}" aria-current="page"><span aria-hidden="true">⊘</span>Explorar</a>
+    </nav>
+    <nav class="catalog-nav catalog-bottom-nav" aria-label="Ayuda y configuración">
+        <a href="#configuracion"><span aria-hidden="true">⚙</span>Configuración</a>
+        <a href="#ayuda"><span aria-hidden="true">ⓘ</span>Ayuda</a>
+    </nav>
+</aside>
+<main class="catalog-main">
+    <header class="catalog-topbar">
+        <button class="catalog-menu" type="button" aria-label="Abrir menú">☰</button>
+        <div class="catalog-account-actions"><a th:href="@{/login}" class="catalog-icon-button" aria-label="Notificaciones">♧</a><a th:href="@{/login}" class="catalog-icon-button" aria-label="Mi perfil">◎</a></div>
+    </header>
+    <section class="explore-content">
+        <nav class="genre-cards" aria-label="Géneros destacados">
+            <a class="genre-card genre-kids" th:href="@{/explorar(categoria='infantil')}"><span>Infantil</span></a>
+            <a class="genre-card genre-romance" th:href="@{/explorar(categoria='romance')}"><span>Romance</span></a>
+            <a class="genre-card genre-politics" th:href="@{/explorar(categoria='politica')}"><span>Política</span></a>
         </nav>
-
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-5 py-5">
-            <!-- Buscador principal -->
-            <div class="input-group input-group-lg mb-4 shadow-sm rounded">
-                <input type="text" class="form-control border-0" placeholder="Buscar libro...">
-                <button class="btn btn-brand px-4 fw-bold" type="button">Búsqueda avanzada</button>
-            </div>
-
-            <!-- Filtros -->
-            <div class="row g-3 mb-5">
-                <div class="col-md-3"><select class="form-select border-0 shadow-sm"><option>Autor</option></select></div>
-                <div class="col-md-3"><select class="form-select border-0 shadow-sm"><option>Categoría</option></select></div>
-                <div class="col-md-3"><select class="form-select border-0 shadow-sm"><option>Cantidad de páginas</option></select></div>
-                <div class="col-md-3"><select class="form-select border-0 shadow-sm"><option>Editorial</option></select></div>
-                <div class="col-12"><select class="form-select border-0 shadow-sm"><option>Año de publicación</option></select></div>
-            </div>
-
-            <!-- Resultados -->
-            <div class="row row-cols-2 row-cols-md-5 g-4">
-                <div class="col"><div class="card h-100 border-0 shadow-sm"><img src="https://via.placeholder.com/300x450" class="card-img-top"></div></div>
-                <div class="col"><div class="card h-100 border-0 shadow-sm"><img src="https://via.placeholder.com/300x450" class="card-img-top"></div></div>
-            </div>
-        </main>
-    </div>
-</div>
+        <form class="explore-search-row" th:action="@{/explorar}" method="get" role="search">
+            <label class="explore-search"><input type="search" name="q" placeholder="Buscar libro" aria-label="Buscar libro"><button type="submit" aria-label="Buscar">⌕</button></label>
+            <button class="advanced-search" type="button">Búsqueda avanzada</button>
+        </form>
+        <form class="explore-filters" th:action="@{/explorar}" method="get" aria-label="Filtros de libros">
+            <select class="form-select" name="autor" aria-label="Filtrar por autor"><option value="">Autor</option><option>Gabriel García Márquez</option><option>George Orwell</option><option>Antoine de Saint-Exupéry</option></select>
+            <select class="form-select" name="categoria" aria-label="Filtrar por categoría"><option value="">Categoría</option><option>Literatura clásica</option><option>Romance</option><option>Infantil</option><option>Política</option></select>
+            <select class="form-select" name="paginas" aria-label="Filtrar por cantidad de páginas"><option value="">Cantidad de páginas</option><option>Menos de 200</option><option>200 a 400</option><option>Más de 400</option></select>
+            <select class="form-select" name="editorial" aria-label="Filtrar por editorial"><option value="">Editorial</option><option>Penguin Random House</option><option>Planeta</option><option>Alianza Editorial</option></select>
+            <select class="form-select year-filter" name="anio" aria-label="Filtrar por año de publicación"><option value="">Año de publicación</option><option>2020–2026</option><option>2000–2019</option><option>Antes de 2000</option></select>
+        </form>
+        <div class="explore-view-tools" aria-label="Opciones de vista"><button type="button" class="selected" aria-label="Vista de lista">▤</button><span></span><button type="button" aria-label="Vista de cuadrícula">▦</button></div>
+        <section class="explore-results" aria-label="Libros">
+            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449136-L.jpg" alt="Portada de La Odisea" loading="lazy"><span>La Odisea</span></a>
+            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449266-L.jpg" alt="Portada de La Ilíada" loading="lazy"><span>La Ilíada</span></a>
+            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780062315007-L.jpg" alt="Portada de El alquimista" loading="lazy"><span>El alquimista</span></a>
+            <a class="explore-book" th:href="@{/detalle_virtual}"><img src="https://covers.openlibrary.org/b/isbn/9780140449273-L.jpg" alt="Portada de La Eneida" loading="lazy"><span>La Eneida</span></a>
+            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780553380163-L.jpg" alt="Portada de Breve historia del tiempo" loading="lazy"><span>Breve historia del tiempo</span></a>
+            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449266-L.jpg" alt="Portada de La Ilíada" loading="lazy"><span>El viento entre los sauces</span></a>
+            <a class="explore-book" th:href="@{/detalle_virtual}"><img src="https://covers.openlibrary.org/b/isbn/9780140449136-L.jpg" alt="Portada de La Odisea" loading="lazy"><span>Antología de cuentos</span></a>
+            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449273-L.jpg" alt="Portada de La Eneida" loading="lazy"><span>La invención de Morel</span></a>
+            <a class="explore-book" th:href="@{/detalle_virtual}"><img src="https://covers.openlibrary.org/b/isbn/9780062315007-L.jpg" alt="Portada de El alquimista" loading="lazy"><span>El viaje del héroe</span></a>
+            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780553380163-L.jpg" alt="Portada de Breve historia del tiempo" loading="lazy"><span>Ciencia para todos</span></a>
+        </section>
+    </section>
+</main>
 </body>
 </html>

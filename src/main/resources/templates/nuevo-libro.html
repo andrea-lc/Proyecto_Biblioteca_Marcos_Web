@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agregar libro | Bibliot.</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/bibliot.css?v=3">
+</head>
+<body class="admin-body">
+<main class="new-book-page">
+    <header class="new-book-header"><a th:href="@{/libros}" class="back-link" aria-label="Volver a libros">‹</a><h1>Agregar un nuevo libro</h1><div class="new-book-actions"><a class="btn btn-brand" th:href="@{/libros}">Cancelar</a><button class="btn btn-sand" type="submit" form="book-form">Subir</button></div></header>
+    <div class="alert alert-info py-2 small mt-3" role="status" th:if="${formMessage}" th:text="${formMessage}"></div>
+    <form id="book-form" class="new-book-form" th:action="@{/libros/nuevo}" method="post" enctype="multipart/form-data">
+        <section class="cover-column"><label class="form-section-title" for="cover">Portada</label><label class="cover-upload" for="cover"><span>Subir nueva<br>Portada</span><small>Recomendado 600 x 900px</small><img id="cover-preview" alt="Vista previa de portada" hidden></label><input class="visually-hidden" id="cover" name="portada" type="file" accept="image/jpeg,image/png"><small class="cover-help">Solo se admiten los formatos JPG, JPEG y PNG.</small></section>
+        <section class="book-fields"><h2 class="form-section-title">Información del libro</h2>
+            <div class="book-form-grid">
+                <div class="book-field field-wide"><label for="title">Título <span>*</span></label><input id="title" name="titulo" class="form-control" type="text" placeholder="Título del libro" required></div>
+                <div class="book-field"><label for="category">Categoría <span>*</span></label><select id="category" name="categoria" class="form-select" required><option value="" selected disabled>Seleccionar categoría</option><option>Novela</option><option>Ciencia ficción</option><option>Historia</option><option>Infantil y juvenil</option></select></div>
+                <div class="book-field"><label for="pages">Nº Páginas <span>*</span></label><div class="input-with-action"><input id="pages" name="paginas" type="number" min="1" class="form-control" placeholder="Cantidad de páginas" required><span class="field-plus">＋</span></div></div>
+                <div class="book-field"><label for="copies">Cantidad de ejemplares <span>*</span></label><select id="copies" name="ejemplares" class="form-select" required><option value="" selected disabled>Seleccionar cantidad</option><option>1</option><option>2</option><option>5</option><option>10</option></select></div>
+                <div class="book-field"><label for="publication">Fecha de publicación <span>*</span></label><input id="publication" name="fechaPublicacion" class="form-control" type="date" required></div>
+                <div class="book-field"><label for="status">Estado <span>*</span></label><select id="status" name="estado" class="form-select" required><option value="" selected disabled>Seleccionar estado</option><option>Disponible</option><option>No disponible</option></select></div>
+                <div class="book-field"><label for="publisher">Editorial</label><input id="publisher" name="editorial" class="form-control" type="text" placeholder="Editorial"></div>
+                <div class="book-field"><label for="book-file">Archivo URL</label><label class="file-pick" for="book-file">Agregar archivo <span>＋</span></label><input class="visually-hidden" id="book-file" name="archivo" type="file" accept="application/pdf"></div>
+                <div class="book-field field-wide"><label for="description">Descripción <span>*</span></label><textarea id="description" name="descripcion" class="form-control description-field" placeholder="Sinopsis de la historia" required></textarea></div>
+            </div>
+        </section>
+    </form>
+</main>
+</body>
+</html>
