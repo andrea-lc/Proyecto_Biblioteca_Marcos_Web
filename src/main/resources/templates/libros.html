@@ -19,13 +19,14 @@
 <body class="admin-body">
     <div class="admin-layout">
         <aside class="admin-sidebar"><a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
-            <nav class="admin-nav" aria-label="Navegación principal"><a href="#roles"><span
-                        class="nav-icon">▱</span>Roles</a><a th:href="@{/usuarios}"><span class="nav-icon"><span
-                            class="nav-icon"><span class="material-symbols-outlined">groups</span></span>Usuarios</a><a
-                    class="active" th:href="@{/libros}"><span class="nav-icon">▤</span>Libros</a><a
-                    th:href="@{/dashboard}"><span class="nav-icon">◷</span>Reportes</a><a href="#ajustes"><span
-                        class="nav-icon">⚙</span>Ajustes</a></nav><a class="signout-link" th:href="@{/login}">↪
-                <span>Cerrar sesión</span></a>
+            <nav class="admin-nav" aria-label="Navegación principal">
+                <a href="#roles"><span class="nav-icon">▱</span>Roles</a>
+                <a th:href="@{/usuarios}"><span class="nav-icon"><span class="material-symbols-outlined">groups</span></span>Usuarios</a>
+                <a class="active" th:href="@{/libros}" aria-current="page"><span class="nav-icon">▤</span>Libros</a>
+                <a th:href="@{/dashboard}"><span class="nav-icon">◷</span>Reportes</a>
+                <a href="#ajustes"><span class="nav-icon">⚙</span>Ajustes</a>
+            </nav>
+                <a class="signout-link" th:href="@{/login}">↪ <span>Cerrar sesión</span></a>
         </aside>
         <main class="admin-main">
             <header class="admin-topbar">
