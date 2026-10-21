@@ -51,6 +51,22 @@ public class pagina {
         return "explorar";
     }
 
+    @GetMapping("/ayuda")
+    public String ayuda() {
+        return "ayuda";
+    }
+
+    @GetMapping("/perfil")
+    public String perfil() {
+        return "perfil-lector";
+    }
+
+    @GetMapping("/mis-prestamos")
+    public String misPrestamos() {
+        return "mis-prestamos";
+    }
+    
+    
     @GetMapping({"/detalle_fisico", "/detalle-fisico"})
     public String detalleFisico() {
         return "detalle-fisico";
@@ -65,6 +81,7 @@ public class pagina {
     public String dashboard() {
         return "dashboard";
     }
+    
 
     @GetMapping("/usuarios")
     public String usuarios() {
@@ -76,6 +93,12 @@ public class pagina {
         return "detalle-usuario";
     }
 
+    @GetMapping("/usuarios/nuevo")
+    public String nuevoUsuario() {
+        return "nuevo-usuario";
+    }
+    
+
     @GetMapping("/libros")
     public String libros() {
         return "libros";
@@ -86,11 +109,28 @@ public class pagina {
         return "nuevo-libro";
     }
 
+    @GetMapping("/libros/editar")
+    public String editarLibro() {
+        return "editar-libro";
+    }
+
     @PostMapping("/libros/nuevo")
     public String crearLibro(Model model) {
         model.addAttribute("formMessage", "El formulario se recibió, pero el guardado de libros todavía no está conectado.");
         return "nuevo-libro";
     }
+
+    @GetMapping ("/configuracion")
+    public String configuracion() {
+        return "configuracion";
+    }
+
+    @GetMapping("roles")
+    public String roles() {
+        return "roles";
+    }
+    
+
     
     
 }
