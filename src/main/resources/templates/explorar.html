@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base th:href="@{/}">
     <title>Explorar | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/bibliot.css?v=5">
+    <link rel="stylesheet" href="./css/bibliot.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle" />
 </head>
 <body class="catalog-body">
@@ -19,14 +20,14 @@
         <a class="active" th:href="@{/explorar}" aria-current="page"><span aria-hidden="true">⊘</span>Explorar</a>
     </nav>
     <nav class="catalog-nav catalog-bottom-nav" aria-label="Ayuda y configuración">
-        <a href="#configuracion"><span aria-hidden="true">⚙</span>Configuración</a>
-        <a href="#ayuda"><span aria-hidden="true">ⓘ</span>Ayuda</a>
+        <a th:href="@{/perfil}"><span aria-hidden="true">♙</span>Mi cuenta</a>
+        <a th:href="@{/ayuda}"><span aria-hidden="true">ⓘ</span>Ayuda</a>
     </nav>
 </aside>
 <main class="catalog-main">
     <header class="catalog-topbar">
         <button class="catalog-menu" type="button" aria-label="Abrir menú">☰</button>
-        <div class="catalog-account-actions"><a th:href="@{/login}" class="catalog-icon-button" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></a><a th:href="@{/login}" class="catalog-icon-button" aria-label="Mi perfil"><span class="material-symbols-outlined">account_circle</span></a></div>
+        <div class="catalog-account-actions"><a th:href="@{/notificaciones}" class="catalog-icon-button" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></a><a th:href="@{/perfil}" class="catalog-icon-button" aria-label="Mi perfil"><span class="material-symbols-outlined">account_circle</span></a></div>
     </header>
     <section class="explore-content">
         <nav class="genre-cards" aria-label="Géneros destacados">
@@ -36,7 +37,7 @@
         </nav>
         <form class="explore-search-row" th:action="@{/explorar}" method="get" role="search">
             <label class="explore-search"><input type="search" name="q" placeholder="Buscar libro" aria-label="Buscar libro"><button type="submit" aria-label="Buscar">⌕</button></label>
-            <button class="advanced-search" type="button">Búsqueda avanzada</button>
+            <button class="advanced-search" type="button" disabled aria-label="Búsqueda avanzada no disponible">Búsqueda avanzada</button>
         </form>
         <form class="explore-filters" th:action="@{/explorar}" method="get" aria-label="Filtros de libros">
             <select class="form-select" name="autor" aria-label="Filtrar por autor"><option value="">Autor</option><option>Gabriel García Márquez</option><option>George Orwell</option><option>Antoine de Saint-Exupéry</option></select>
@@ -45,7 +46,7 @@
             <select class="form-select" name="editorial" aria-label="Filtrar por editorial"><option value="">Editorial</option><option>Penguin Random House</option><option>Planeta</option><option>Alianza Editorial</option></select>
             <select class="form-select year-filter" name="anio" aria-label="Filtrar por año de publicación"><option value="">Año de publicación</option><option>2020–2026</option><option>2000–2019</option><option>Antes de 2000</option></select>
         </form>
-        <div class="explore-view-tools" aria-label="Opciones de vista"><button type="button" class="selected" aria-label="Vista de lista">▤</button><span></span><button type="button" aria-label="Vista de cuadrícula">▦</button></div>
+        <div class="explore-view-tools" aria-label="Opciones de vista"><button type="button" class="selected" aria-label="Vista de lista" disabled>▤</button><span></span><button type="button" aria-label="Vista de cuadrícula" disabled>▦</button></div>
         <section class="explore-results" aria-label="Libros">
             <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449136-L.jpg" alt="Portada de La Odisea" loading="lazy"><span>La Odisea</span></a>
             <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449266-L.jpg" alt="Portada de La Ilíada" loading="lazy"><span>La Ilíada</span></a>

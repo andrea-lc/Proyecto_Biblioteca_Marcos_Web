@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base th:href="@{/}">
     <title>Perfil de usuario | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +12,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="/css/bibliot.css?v=3">
+    <link rel="stylesheet" href="./css/bibliot.css">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle,groups" />
 </head>
@@ -21,10 +22,10 @@
         <aside class="admin-sidebar">
             <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
             <nav class="admin-nav" aria-label="Navegación principal">
-                <a href="#roles"><span class="nav-icon">▱</span>Roles</a><a class="active" th:href="@{/usuarios}"><span
+                <a th:href="@{/roles}"><span class="nav-icon">▱</span>Roles</a><a class="active" th:href="@{/usuarios}"><span
                         class="nav-icon"><span class="material-symbols-outlined">groups</span></span>Usuarios</a>
                 <a th:href="@{/libros}"><span class="nav-icon">▤</span>Libros</a><a th:href="@{/dashboard}"><span
-                        class="nav-icon">◷</span>Reportes</a><a href="#ajustes"><span
+                        class="nav-icon">◷</span>Reportes</a><a th:href="@{/configuracion}"><span
                         class="nav-icon">⚙</span>Ajustes</a>
             </nav>
             <a class="signout-link" th:href="@{/login}">↪ <span>Cerrar sesión</span></a>
@@ -39,40 +40,57 @@
                         class="round-action user-action" type="button" aria-label="Perfil"><span
                             class="material-symbols-outlined">account_circle</span></button></div>
             </header>
-            <section class="profile-content">
+            <section class="profile-content profile-page" aria-labelledby="profile-page-title">
+                <div class="alert alert-info" role="status">Perfil de muestra; estos datos no corresponden a una cuenta conectada.</div>
                 <div class="profile-title-row">
-                    <h1 class="page-heading">Usuario <span class="info-mark">ⓘ</span></h1><button
-                        class="btn btn-outline-secondary btn-sm" type="button">⇩ Exportar</button>
+                    <div>
+                        <h1 class="page-heading" id="profile-page-title">Perfil de usuario</h1>
+                        <nav class="breadcrumb-text" aria-label="Migas de pan">
+                            <a th:href="@{/usuarios}">Usuarios</a>
+                            <span aria-hidden="true">/</span>
+                            <span aria-current="page">Perfil</span>
+                        </nav>
+                    </div>
+                    <button class="btn btn-outline-secondary btn-sm profile-disabled-action" type="button"
+                        disabled>Exportar</button>
                 </div>
-                <p class="breadcrumb-text">Usuarios / Perfil</p>
+                <p class="profile-actions-note" id="profile-actions-note">Las acciones de gestión no están disponibles en esta maqueta.</p>
                 <div class="profile-grid">
-                    <article class="profile-card">
-                        <div class="profile-avatar">EM</div>
-                        <h2 class="profile-name">Emeto Mamani</h2>
+                    <article class="profile-card" aria-labelledby="profile-name">
+                        <div class="profile-identity">
+                            <div class="profile-avatar" aria-hidden="true">EM</div>
+                            <h2 class="profile-name" id="profile-name">Emeto Mamani</h2>
+                        </div>
                         <div class="profile-info">
                             <h3>Información</h3>
                             <dl>
                                 <div>
-                                    <dt>Nombre completo:</dt>
+                                    <dt>Nombre para mostrar</dt>
+                                    <dd>Emeto Mamani</dd>
+                                </div>
+                                <div>
+                                    <dt>Nombre completo</dt>
                                     <dd>Emeto Winner Montes</dd>
                                 </div>
                                 <div>
-                                    <dt>Email:</dt>
-                                    <dd>Emetomamani@gmail.com</dd>
+                                    <dt>Correo electrónico</dt>
+                                    <dd><a href="mailto:Emetomamani@gmail.com">Emetomamani@gmail.com</a></dd>
                                 </div>
                                 <div>
-                                    <dt>Rol:</dt>
+                                    <dt>Rol</dt>
                                     <dd>Cliente</dd>
                                 </div>
                                 <div>
-                                    <dt>Estado:</dt>
-                                    <dd>Desactivado</dd>
+                                    <dt>Estado</dt>
+                                    <dd><span class="profile-status profile-status-inactive">Desactivado</span></dd>
                                 </div>
                             </dl>
                         </div>
-                        <div class="profile-buttons"><button class="btn btn-primary"
-                                type="button">Editar</button><button class="btn btn-danger" type="button">Cambiar
-                                estado</button></div>
+                        <div class="profile-buttons">
+                            <a class="btn btn-outline-secondary" th:href="@{/usuarios/editar}">Editar</a>
+                            <button class="btn btn-profile-primary" type="button" disabled
+                                aria-describedby="profile-actions-note">Cambiar estado</button>
+                        </div>
                     </article>
                     <div class="profile-details">
                         <article class="profile-panel loans-panel">
@@ -81,56 +99,51 @@
                                 <table class="table profile-loans-table mb-0">
                                     <thead>
                                         <tr>
-                                            <th>Libro</th>
-                                            <th>Fecha de préstamo</th>
-                                            <th>Fecha de vencimiento</th>
-                                            <th>Estado</th>
-                                            <th></th>
+                                            <th scope="col">Libro</th>
+                                            <th scope="col">Fecha del préstamo</th>
+                                            <th scope="col">Fecha de vencimiento</th>
+                                            <th scope="col">Estado</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>Cien años de soledad</td>
-                                            <td>12/05/2026</td>
-                                            <td>12/06/2026</td>
-                                            <td><span class="loan-progress">En proceso</span></td>
-                                            <td>⋮</td>
+                                            <td data-label="Libro">Cien años de soledad</td>
+                                            <td data-label="Fecha del préstamo"><time datetime="2026-05-12">12 de mayo de 2026</time></td>
+                                            <td data-label="Fecha de vencimiento"><time datetime="2026-06-12">12 de junio de 2026</time></td>
+                                            <td data-label="Estado"><span class="loan-progress">En proceso</span></td>
                                         </tr>
                                         <tr>
-                                            <td>Don Quijote de la Mancha</td>
-                                            <td>11/04/2026</td>
-                                            <td>11/05/2026</td>
-                                            <td><span class="loan-overdue">Plazo vencido</span></td>
-                                            <td>⋮</td>
+                                            <td data-label="Libro">Don Quijote de la Mancha</td>
+                                            <td data-label="Fecha del préstamo"><time datetime="2026-04-11">11 de abril de 2026</time></td>
+                                            <td data-label="Fecha de vencimiento"><time datetime="2026-05-11">11 de mayo de 2026</time></td>
+                                            <td data-label="Estado"><span class="loan-overdue">Plazo vencido</span></td>
                                         </tr>
                                         <tr>
-                                            <td>Crimen y castigo</td>
-                                            <td>05/04/2026</td>
-                                            <td>05/05/2026</td>
-                                            <td><span class="loan-returned">Devuelto</span></td>
-                                            <td>⋮</td>
+                                            <td data-label="Libro">Crimen y castigo</td>
+                                            <td data-label="Fecha del préstamo"><time datetime="2026-04-05">5 de abril de 2026</time></td>
+                                            <td data-label="Fecha de vencimiento"><time datetime="2026-05-05">5 de mayo de 2026</time></td>
+                                            <td data-label="Estado"><span class="loan-returned">Devuelto</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </article>
                         <article class="profile-panel timeline-panel">
-                            <h2>User Activity Timeline</h2>
+                            <h2>Actividad reciente</h2>
                             <ol class="activity-list">
-                                <li class="activity-red"><span class="activity-dot"></span>
-                                    <div><b>El usuario no realizó la devolución</b>
-                                        <p>El libro “Don Quijote de la Mancha” lleva 1 día fuera de plazo de devolución
-                                        </p>
+                                <li class="activity-red"><span class="activity-dot" aria-hidden="true"></span>
+                                    <div><b>Devolución fuera de plazo</b>
+                                        <p>Don Quijote de la Mancha lleva 1 día fuera de plazo de devolución.</p>
                                     </div><time>Hace 12 min</time>
                                 </li>
-                                <li class="activity-purple"><span class="activity-dot"></span>
-                                    <div><b>El usuario realizó el préstamo de un libro</b>
-                                        <p>El usuario realizó el préstamo del libro “Cien años de soledad”</p>
+                                <li class="activity-purple"><span class="activity-dot" aria-hidden="true"></span>
+                                    <div><b>Préstamo registrado</b>
+                                        <p>Se registró el préstamo de Cien años de soledad.</p>
                                     </div><time>Hace 45 min</time>
                                 </li>
-                                <li class="activity-yellow"><span class="activity-dot"></span>
-                                    <div><b>El usuario realizó la devolución de un libro</b>
-                                        <p>El libro “Crimen y castigo” fue devuelto</p>
+                                <li class="activity-yellow"><span class="activity-dot" aria-hidden="true"></span>
+                                    <div><b>Devolución registrada</b>
+                                        <p>Se registró la devolución de Crimen y castigo.</p>
                                     </div><time>Hace 8 días</time>
                                 </li>
                             </ol>
