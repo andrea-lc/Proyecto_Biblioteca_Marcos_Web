@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "categoria")
@@ -22,9 +24,12 @@ public class Categoria {
     @Column(name = "id_categoria")
     private Integer idCategoria;
 
-    @Column(name = "nombre", nullable = false, unique = true, length = 100)
+    @Column(name = "nombre",unique = true, nullable = false, length = 100)
+    @NotBlank(message = "El nombre de la categoría es obligatorio")
+    @Size(max = 100)
     private String nombre;
 
-    @Column(name = "descripcion", length = 255)
+    @Size(max= 300)
+    @Column(name = "descripcion", length = 300)
     private String descripcion;
 }

@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "autor")
@@ -22,13 +24,18 @@ public class Autor {
     @Column(name = "id_autor")
     private Integer idAutor;
 
-    @Column(name = "nombres", nullable = false, length = 100)
+    @Column(name = "nombres",nullable = false, length = 100)
+    @NotBlank(message = "Los nombres del autor son obligatorios")
+    @Size(max = 100)
     private String nombres;
 
     @Column(name = "apellidos", nullable = false, length = 100)
+    @NotBlank(message = "Los apellidos del autor son obligatorios")
+    @Size(max = 100)
     private String apellidos;
 
     @Column(name = "nacionalidad", length = 100)
+    @Size(max = 100)
     private String nacionalidad;
 
     @Column(name = "biografia", columnDefinition = "TEXT")

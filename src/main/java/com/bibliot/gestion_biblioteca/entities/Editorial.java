@@ -9,6 +9,9 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.URL;
 
 @Entity
 @Table(name = "editorial")
@@ -23,11 +26,15 @@ public class Editorial {
     private Integer idEditorial;
 
     @Column(name = "nombre", nullable = false, length = 150)
+    @NotBlank(message = "El nombre de la editorial es obligatorio")
+    @Size(max = 150)
     private String nombre;
 
     @Column(name = "pais", length = 100)
+    @Size(max = 100)
     private String pais;
 
-    @Column(name = "sitio_web", length = 255)
+    @Column(name = "sitio_web")
+    @URL
     private String sitioWeb;
 }

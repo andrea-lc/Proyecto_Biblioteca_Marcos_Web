@@ -12,6 +12,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.PastOrPresent;
+import org.hibernate.validator.constraints.ISBN;
 
 import java.time.LocalDate;
 
@@ -28,9 +34,12 @@ public class Libro {
     private Integer idLibro;
 
     @Column(name = "titulo", nullable = false, length = 255)
+    @NotBlank(message = "El título es obligatorio")
+    @Size(max = 255)
     private String titulo;
 
     @Column(name = "paginas")
+    @Positive(message = "El número de páginas debe ser mayor que cero")
     private Integer paginas;
 
     @Column(name = "descripcion", columnDefinition = "TEXT")
@@ -40,9 +49,11 @@ public class Libro {
     private String contenidoTexto;
 
     @Column(name = "fecha_publicacion")
+    @PastOrPresent(message = "La fecha de publicación no puede ser futura")
     private LocalDate fechaPublicacion;
 
-    @Column(name = "isbn", unique = true, length = 20)
+    @Column(name = "isbn", unique = true)
+    @ISBN
     private String isbn;
 
     @Column(name = "estado", length = 30)
