@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "rol")
@@ -22,6 +24,8 @@ public class Rol {
     @Column(name = "id_rol")
     private Integer idRol;
 
-    @Column(name = "nombre", nullable = false, unique = true, length = 50)
+    @Column(name = "nombre", unique = true, nullable = false, length = 50)
+    @NotBlank(message = "El nombre del rol es obligatorio")
+    @Size(max = 50, message = "El nombre no debe superar 50 caracteres")
     private String nombre;
 }

@@ -12,6 +12,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
@@ -27,11 +29,13 @@ public class Devolucion {
     @Column(name = "id_devolucion")
     private Integer idDevolucion;
 
+    @NotNull(message = "Debe asociarse la devolución a un préstamo")
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_prestamo", nullable = false, unique = true)
     private Prestamo prestamo;
 
     @Column(name = "fecha_devolucion", nullable = false)
+    @NotNull(message = "La fecha de devolución es obligatoria")
     private LocalDateTime fechaDevolucion;
 
     @Column(name = "observacion", columnDefinition = "TEXT")

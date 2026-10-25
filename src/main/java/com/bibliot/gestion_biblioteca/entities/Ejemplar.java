@@ -12,6 +12,10 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 
@@ -27,19 +31,26 @@ public class Ejemplar {
     @Column(name = "id_ejemplar")
     private Integer idEjemplar;
 
+    @NotNull(message = "Debe asociarse el ejemplar a un libro")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_libro", nullable = false)
     private Libro libro;
 
-    @Column(name = "codigo_inventario", nullable = false, unique = true, length = 100)
+    @Column(name = "codigo_inventario",unique = true, nullable = false, length = 100)
+    @NotBlank(message = "El código de inventario es obligatorio")
+    @Size(max = 100)
     private String codigoInventario;
 
     @Column(name = "ubicacion", length = 100)
+    @Size(max = 100)
     private String ubicacion;
 
     @Column(name = "estado", length = 30)
+    @NotBlank(message = "El estado del ejemplar es obligatorio")
+    @Size(max = 30)
     private String estado;
 
     @Column(name = "fecha_adquisicion")
+    @PastOrPresent(message = "La fecha de adquisición no puede ser futura")
     private LocalDate fechaAdquisicion;
 }

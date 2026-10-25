@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
 
 // Tabla intermedia que resuelve la relación N:M entre Libro y Autor.
 @Entity
@@ -24,11 +25,13 @@ public class LibroAutor {
 
     // @MapsId conecta este campo con la parte "idLibro" del id compuesto.
     // Es necesario: sin esto, JPA no sabe de dónde sacar esa parte de la clave.
+    @NotNull(message = "Debe asociarse un libro")
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idLibro")
     @JoinColumn(name = "id_libro")
     private Libro libro;
 
+    @NotNull(message = "Debe asociarse un autor")
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idAutor")
     @JoinColumn(name = "id_autor")

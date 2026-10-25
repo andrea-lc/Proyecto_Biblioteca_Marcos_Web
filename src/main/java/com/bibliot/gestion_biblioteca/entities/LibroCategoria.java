@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
 
 // Tabla intermedia que resuelve la relación N:M entre Libro y Categoria.
 @Entity
@@ -22,11 +23,13 @@ public class LibroCategoria {
     @EmbeddedId
     private LibroCategoriaId id;
 
+    @NotNull(message = "Debe asociarse un libro")
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idLibro")
     @JoinColumn(name = "id_libro")
     private Libro libro;
 
+    @NotNull(message = "Debe asociarse una categoria")
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idCategoria")
     @JoinColumn(name = "id_categoria")
