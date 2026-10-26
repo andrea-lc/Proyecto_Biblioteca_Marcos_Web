@@ -9,5 +9,9 @@ import java.util.List;
 @Repository
 public interface LibroCategoriaRepository extends JpaRepository<LibroCategoria, LibroCategoriaId> {
     List<LibroCategoria> findByLibroIdLibro(Integer idLibro);
+
     List<LibroCategoria> findByCategoriaIdCategoria(Integer idCategoria);
+
+    void deleteByLibroIdLibro(Integer idLibro);
+
 }

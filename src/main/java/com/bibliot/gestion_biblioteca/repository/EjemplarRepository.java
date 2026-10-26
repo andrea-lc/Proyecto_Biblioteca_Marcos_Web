@@ -8,7 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface EjemplarRepository extends JpaRepository<Ejemplar, Integer> {
-
     // Búsqueda exacta por código de inventario (código de barras/etiqueta)
     Optional<Ejemplar> findByCodigoInventario(String codigoInventario);
 

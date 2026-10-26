@@ -9,5 +9,9 @@ import java.util.List;
 @Repository
 public interface LibroAutorRepository extends JpaRepository<LibroAutor, LibroAutorId> {
     List<LibroAutor> findByLibroIdLibro(Integer idLibro);
+
     List<LibroAutor> findByAutorIdAutor(Integer idAutor);
+
+    void deleteByLibroIdLibro(Integer idLibro);
+
 }

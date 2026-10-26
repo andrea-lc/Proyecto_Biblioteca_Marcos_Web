@@ -17,7 +17,18 @@ public interface LibroRepository extends JpaRepository<Libro, Integer> {
     @Query("SELECT l FROM Libro l WHERE YEAR(l.fechaPublicacion) = :anio")
     List<Libro> findByAnioPublicacion(@Param("anio") int anio);
 
-    // Búsqueda full-text delegada a MySQL (Requiere índice FULLTEXT en la BD)
-    @Query(value = "SELECT * FROM libro WHERE MATCH(titulo, descripcion, contenido_texto) AGAINST(:keyword IN BOOLEAN MODE)", nativeQuery = true)
-    List<Libro> searchFullText(@Param("keyword") String keyword);
+    boolean existsByIsbn(String isbn);
+
+    List<Libro> findByEditorialIdEditorial(Integer idEditorial);
+
+    List<Libro> findByIsbn(String isbn);
+
+    /*
+     * Búsqueda full-text delegada a MySQL (Requiere índice FULLTEXT en la BD)
+     * 
+     * @Query(value =
+     * "SELECT * FROM libro WHERE MATCH(titulo, descripcion, contenido_texto) AGAINST(:keyword IN BOOLEAN MODE)"
+     * , nativeQuery = true)
+     * List<Libro> searchFullText(@Param("keyword") String keyword);
+     */
 }
