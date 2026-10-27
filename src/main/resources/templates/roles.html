@@ -10,6 +10,57 @@
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
 <body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/dashboard}">Bibliot.</a><nav class="nav"><a class="nav-link text-dark" th:href="@{/usuarios}">Usuarios</a><a class="nav-link text-dark" th:href="@{/configuracion}">Configuración</a></nav></div></header>
-<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-xl-9"><p class="text-secondary mb-1">Administración</p><h1 class="h2 mb-4">Roles y permisos</h1><div class="alert alert-warning" role="status">Los permisos disponibles deben definirse con la institución antes de administrar accesos.</div><div class="card border-0 shadow-sm"><div class="card-body p-4"><h2 class="h5">Definición pendiente</h2><p class="text-secondary mb-0">La biblioteca todavía no ha documentado qué acciones puede realizar cada tipo de usuario. Esta vista no asigna permisos.</p></div></div></div></div></main>
+<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-xl-9"><p class="text-secondary mb-1">Administración</p><h1 class="h2 mb-4">Roles y permisos</h1>
+    <div class="alert alert-info" id="roles-message" role="status">Cargando roles…</div>
+    <div class="card border-0 shadow-sm mb-4"><div class="card-body p-4"><h2 class="h5" id="role-form-title">Crear rol</h2>
+        <form id="role-form"><input id="role-id" type="hidden"><div class="row g-3 align-items-end"><div class="col"><label class="form-label" for="role-name">Nombre del rol</label><input class="form-control" id="role-name" maxlength="50" required></div><div class="col-auto d-flex gap-2"><button class="btn btn-secondary" id="role-save" type="submit">Crear</button><button class="btn btn-outline-secondary" id="role-cancel" type="button" hidden>Cancelar edición</button></div></div></form>
+    </div></div>
+    <div class="card border-0 shadow-sm mb-4"><div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>ID</th><th>Nombre</th><th class="text-end">Acciones</th></tr></thead><tbody id="roles-body"></tbody></table></div></div>
+    <div class="alert alert-warning" role="note">La entidad actual solo registra nombres de roles. La asignación de permisos queda pendiente de la definición institucional.</div>
+</div></div></main>
+<script th:inline="javascript">
+    const apiRolesUrl = /*[[@{/api/admin/roles}]]*/ '/api/admin/roles';
+    const formRole = document.getElementById('role-form');
+    const roleId = document.getElementById('role-id');
+    const roleName = document.getElementById('role-name');
+    const rolesBody = document.getElementById('roles-body');
+    const rolesMessage = document.getElementById('roles-message');
+    const saveButton = document.getElementById('role-save');
+    const cancelButton = document.getElementById('role-cancel');
+    function mensaje(texto, tipo = 'info') { rolesMessage.hidden = false; rolesMessage.className = `alert alert-${tipo}`; rolesMessage.textContent = texto; }
+    function limpiarFormulario() { formRole.reset(); roleId.value = ''; document.getElementById('role-form-title').textContent = 'Crear rol'; saveButton.textContent = 'Crear'; cancelButton.hidden = true; }
+    async function cargarRoles() {
+        mensaje('Cargando roles…');
+        try {
+            const response = await fetch(apiRolesUrl, { headers: { Accept: 'application/json' } });
+            if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+            const roles = await response.json();
+            rolesBody.replaceChildren();
+            roles.forEach(rol => {
+                const row = document.createElement('tr');
+                const idCell = document.createElement('td'); idCell.textContent = rol.idRol;
+                const nameCell = document.createElement('td'); nameCell.textContent = rol.nombre;
+                const actions = document.createElement('td'); actions.className = 'text-end';
+                const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'btn btn-sm btn-outline-secondary me-2'; edit.textContent = 'Editar';
+                edit.addEventListener('click', () => { roleId.value = rol.idRol; roleName.value = rol.nombre; document.getElementById('role-form-title').textContent = 'Editar rol'; saveButton.textContent = 'Guardar cambios'; cancelButton.hidden = false; roleName.focus(); });
+                const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'btn btn-sm btn-outline-danger'; remove.textContent = 'Eliminar';
+                remove.addEventListener('click', async () => { if (!window.confirm(`¿Eliminar el rol “${rol.nombre}”?`)) return; try { const result = await fetch(`${apiRolesUrl}/${rol.idRol}`, { method: 'DELETE' }); if (!result.ok) throw new Error(`Error HTTP ${result.status}`); await cargarRoles(); } catch (error) { mensaje(`No se pudo eliminar el rol. ${error.message}`, 'danger'); } });
+                actions.append(edit, remove); row.append(idCell, nameCell, actions); rolesBody.append(row);
+            });
+            rolesMessage.hidden = true;
+        } catch (error) { mensaje(`No se pudieron cargar los roles. ${error.message}`, 'danger'); }
+    }
+    formRole.addEventListener('submit', async event => {
+        event.preventDefault();
+        const id = roleId.value;
+        try {
+            const response = await fetch(id ? `${apiRolesUrl}/${id}` : apiRolesUrl, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ idRol: id ? Number(id) : null, nombre: roleName.value.trim() }) });
+            if (!response.ok) throw new Error((await response.text()) || `Error HTTP ${response.status}`);
+            limpiarFormulario(); await cargarRoles();
+        } catch (error) { mensaje(`No se pudo guardar el rol. ${error.message}`, 'danger'); }
+    });
+    cancelButton.addEventListener('click', limpiarFormulario);
+    cargarRoles();
+</script>
 </body>
 </html>

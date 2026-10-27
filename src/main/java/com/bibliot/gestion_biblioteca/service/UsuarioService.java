@@ -68,6 +68,12 @@ public class UsuarioService{
         existente.setDni(usuario.getDni());
         existente.setTelefono(usuario.getTelefono());
         existente.setDireccion(usuario.getDireccion());
+        if (usuario.getRol() != null) {
+            existente.setRol(usuario.getRol());
+        }
+        if (usuario.getActivo() != null) {
+            existente.setActivo(usuario.getActivo());
+        }
 
         // Actualizar contraseña solo si se proporcionó una nueva
         if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {

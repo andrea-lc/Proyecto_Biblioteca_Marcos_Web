@@ -43,6 +43,7 @@ public class Prestamo {
 
     @Column(name = "fecha_prestamo", nullable = false)
     @NotNull(message = "La fecha del préstamo es obligatoria")
+    @jakarta.validation.constraints.PastOrPresent(message = "La fecha del préstamo no puede ser futura")
     private LocalDateTime fechaPrestamo;
 
     @Column(name = "fecha_vencimiento", nullable = false)

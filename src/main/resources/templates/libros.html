@@ -31,7 +31,7 @@
         </aside>
         <main class="admin-main">
             <header class="admin-topbar">
-                <form class="admin-search" role="search" th:action="@{/libros}" method="get"><span
+                <form class="admin-search api-book-search" role="search" th:action="@{/libros}" method="get"><span
                         aria-hidden="true">⌕</span><input type="search" name="q" placeholder="Buscar"
                         aria-label="Buscar"></form>
                 <div class="topbar-actions"><button class="round-action" type="button" aria-label="Notificaciones"><span
@@ -41,16 +41,16 @@
             </header>
             <section class="users-content">
                 <div class="users-heading-row">
-                    <h1 class="page-heading mb-1">Libros <span class="users-total">ⓘ <b>50</b></span></h1>
+                    <h1 class="page-heading mb-1">Libros <span class="users-total">ⓘ <b id="book-count">0</b></span></h1>
                     <div class="users-actions"><button class="btn btn-outline-secondary btn-sm" type="button" disabled>⇩
                             Exportar</button><a class="btn btn-brand btn-sm" th:href="@{/libros/nuevo}">＋ Agregar
                             libro</a></div>
                 </div>
-                <div class="alert alert-info" role="status">Catálogo de muestra. Exportación, filtros y cambio de vista todavía no están conectados.</div>
+                <div class="alert alert-info" id="books-message" role="status">Cargando libros…</div>
                 <div class="user-tabs"><a class="selected" th:href="@{/libros}">Todos</a><span class="text-secondary px-3 py-2" aria-disabled="true">Categorías</span>
                 </div>
                 <div class="user-toolbar">
-                    <form class="user-search" th:action="@{/libros}" method="get"><span
+                    <form class="user-search api-book-search" th:action="@{/libros}" method="get"><span
                             aria-hidden="true">⌕</span><input type="search" name="libro" placeholder="Buscar libro"
                             aria-label="Buscar libro"></form>
                     <div class="table-tools"><button class="btn btn-outline-secondary btn-sm" type="button" disabled>☷
@@ -71,103 +71,7 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><input type="checkbox" aria-label="Seleccionar Cien años de soledad"></td>
-                                <td>
-                                    <div class="book-title-cell"><a class="link-dark text-decoration-none d-flex flex-column" th:href="@{/libros/editar}"><b>Cien años de soledad</b><small>Gabriel García
-                                            Márquez</small></a></div>
-                                </td>
-                                <td><span class="employee-id">#23454HG6JY7T6</span></td>
-                                <td>Físico</td>
-                                <td>Realismo mágico</td>
-                                <td><span class="user-state state-on">● Activo</span></td>
-                                <td><button class="row-menu" type="button" aria-label="Opciones del libro" disabled>⋮</button></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" aria-label="Seleccionar 1984"></td>
-                                <td>
-                                    <div class="book-title-cell"><a class="link-dark text-decoration-none d-flex flex-column" th:href="@{/libros/editar}"><b>1984</b><small>George Orwell</small></a></div>
-                                </td>
-                                <td><span class="employee-id">#89123KL4M5OP7</span></td>
-                                <td>Físico / Virtual</td>
-                                <td>Ciencia ficción distópica</td>
-                                <td><span class="user-state state-on">● Activo</span></td>
-                                <td><button class="row-menu" aria-label="Opciones del libro">⋮</button></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" aria-label="Seleccionar Don Quijote de la Mancha"></td>
-                                <td>
-                                    <div class="book-title-cell"><a class="link-dark text-decoration-none d-flex flex-column" th:href="@{/libros/editar}"><b>Don Quijote de la Mancha</b><small>Miguel de
-                                            Cervantes</small></a></div>
-                                </td>
-                                <td><span class="employee-id">#45678QR9S0TU1</span></td>
-                                <td>Virtual</td>
-                                <td>Novela clásica</td>
-                                <td><span class="user-state state-off">● Inactivo</span></td>
-                                <td><button class="row-menu" aria-label="Opciones del libro">⋮</button></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" aria-label="Seleccionar El nombre de la rosa"></td>
-                                <td>
-                                    <div class="book-title-cell"><a class="link-dark text-decoration-none d-flex flex-column" th:href="@{/libros/editar}"><b>El nombre de la rosa</b><small>Umberto Eco</small>
-                                    </a></div>
-                                </td>
-                                <td><span class="employee-id">#12389AB2C3DE4</span></td>
-                                <td>Físico</td>
-                                <td>Novela histórica / Misterio</td>
-                                <td><span class="user-state state-off">● Inactivo</span></td>
-                                <td><button class="row-menu" aria-label="Opciones del libro">⋮</button></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" aria-label="Seleccionar Breve historia del tiempo"></td>
-                                <td>
-                                    <div class="book-title-cell"><a class="link-dark text-decoration-none d-flex flex-column" th:href="@{/libros/editar}"><b>Breve historia del tiempo</b><small>Stephen
-                                            Hawking</small></a></div>
-                                </td>
-                                <td><span class="employee-id">#67890FG1H2IJ3</span></td>
-                                <td>Físico / Virtual</td>
-                                <td>Divulgación científica</td>
-                                <td><span class="user-state state-off">● Inactivo</span></td>
-                                <td><button class="row-menu" aria-label="Opciones del libro">⋮</button></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" aria-label="Seleccionar Crimen y castigo"></td>
-                                <td>
-                                    <div class="book-title-cell"><a class="link-dark text-decoration-none d-flex flex-column" th:href="@{/libros/editar}"><b>Crimen y castigo</b><small>Fiódor
-                                            Dostoyevski</small></a></div>
-                                </td>
-                                <td><span class="employee-id">#34512KL3N4OP5</span></td>
-                                <td>Físico</td>
-                                <td>Novela psicológica</td>
-                                <td><span class="user-state state-on">● Activo</span></td>
-                                <td><button class="row-menu" aria-label="Opciones del libro">⋮</button></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" aria-label="Seleccionar El principito"></td>
-                                <td>
-                                    <div class="book-title-cell"><a class="link-dark text-decoration-none d-flex flex-column" th:href="@{/libros/editar}"><b>El principito</b><small>Antoine de
-                                            Saint-Exupéry</small></a></div>
-                                </td>
-                                <td><span class="employee-id">#90123RS4T5UV6</span></td>
-                                <td>Virtual</td>
-                                <td>Ficción filosófica / Literatura infantil</td>
-                                <td><span class="user-state state-on">● Activo</span></td>
-                                <td><button class="row-menu" aria-label="Opciones del libro">⋮</button></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" aria-label="Seleccionar Sapiens"></td>
-                                <td>
-                                    <div class="book-title-cell"><a class="link-dark text-decoration-none d-flex flex-column" th:href="@{/libros/editar}"><b>Sapiens: De animales a dioses</b><small>Yuval Noah
-                                            Harari</small></a></div>
-                                </td>
-                                <td><span class="employee-id">#56789WX0YZ1A2</span></td>
-                                <td>Físico</td>
-                                <td>Ensayo / No ficción histórica</td>
-                                <td><span class="user-state state-off">● Inactivo</span></td>
-                                <td><button class="row-menu" aria-label="Opciones del libro">⋮</button></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="books-table-body"></tbody>
                     </table>
                     <nav class="users-pagination" aria-label="Paginación"><button class="page-btn" type="button" disabled>←
                             <span>Anteriores</span></button>
@@ -181,6 +85,117 @@
             </section>
         </main>
     </div>
+    <script th:inline="javascript">
+        const apiLibrosUrl = /*[[@{/api/admin/libros}]]*/ '/api/admin/libros';
+        const cuerpoLibros = document.getElementById('books-table-body');
+        const mensajeLibros = document.getElementById('books-message');
+        const totalLibros = document.getElementById('book-count');
+
+        function crearCelda(texto, clase) {
+            const celda = document.createElement('td');
+            if (clase) celda.className = clase;
+            celda.textContent = texto;
+            return celda;
+        }
+
+        function dibujarLibros(libros) {
+            cuerpoLibros.replaceChildren();
+            totalLibros.textContent = libros.length;
+            if (libros.length === 0) {
+                const fila = document.createElement('tr');
+                const celda = crearCelda('No se encontraron libros.', 'text-center py-4');
+                celda.colSpan = 7;
+                fila.append(celda);
+                cuerpoLibros.append(fila);
+                return;
+            }
+
+            libros.forEach(libro => {
+                const fila = document.createElement('tr');
+                const seleccion = document.createElement('td');
+                const casilla = document.createElement('input');
+                casilla.type = 'checkbox';
+                casilla.setAttribute('aria-label', `Seleccionar ${libro.titulo}`);
+                seleccion.append(casilla);
+                fila.append(seleccion);
+
+                const nombre = document.createElement('td');
+                const contenedor = document.createElement('div');
+                contenedor.className = 'book-title-cell';
+                const titulo = document.createElement('b');
+                titulo.textContent = libro.titulo || 'Sin título';
+                const subtitulo = document.createElement('small');
+                subtitulo.textContent = (libro.autores || []).join(', ') || (libro.isbn ? `ISBN ${libro.isbn}` : '');
+                const enlace = document.createElement('a');
+                enlace.className = 'link-dark text-decoration-none d-flex flex-column';
+                enlace.href = `/libros/editar?id=${encodeURIComponent(libro.idLibro)}`;
+                enlace.append(titulo, subtitulo);
+                contenedor.append(enlace);
+                nombre.append(contenedor);
+                fila.append(nombre);
+
+                fila.append(crearCelda(`#${libro.idLibro}`, 'employee-id'));
+                fila.append(crearCelda(libro.formato || 'Sin ejemplares'));
+                fila.append(crearCelda((libro.categorias || []).join(', ') || '—'));
+                const estado = document.createElement('td');
+                const etiqueta = document.createElement('span');
+                const disponible = libro.estado === 'Disponible';
+                etiqueta.className = `user-state ${disponible ? 'state-on' : 'state-off'}`;
+                etiqueta.textContent = `● ${libro.estado || 'Sin estado'}`;
+                estado.append(etiqueta);
+                fila.append(estado);
+                const acciones = document.createElement('td');
+                const boton = document.createElement('button');
+                boton.className = 'row-menu';
+                boton.type = 'button';
+                boton.setAttribute('aria-label', 'Opciones del libro');
+                boton.textContent = '⋮';
+                boton.addEventListener('click', () => {
+                    if (window.confirm(`¿Eliminar “${libro.titulo}”?`)) eliminarLibro(libro.idLibro);
+                });
+                acciones.append(boton);
+                fila.append(acciones);
+                cuerpoLibros.append(fila);
+            });
+        }
+
+        async function eliminarLibro(id) {
+            try {
+                const response = await fetch(`${apiLibrosUrl}/${encodeURIComponent(id)}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+                cargarLibros();
+            } catch (error) {
+                mensajeLibros.hidden = false;
+                mensajeLibros.textContent = `No se pudo eliminar el libro: ${error.message}`;
+            }
+        }
+
+        async function cargarLibros(q = '') {
+            mensajeLibros.textContent = 'Cargando libros…';
+            try {
+                const url = new URL(apiLibrosUrl, window.location.origin);
+                if (q.trim()) url.searchParams.set('q', q.trim());
+                const respuesta = await fetch(url, { headers: { Accept: 'application/json' } });
+                if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
+                const libros = await respuesta.json();
+                dibujarLibros(libros);
+                mensajeLibros.hidden = true;
+            } catch (error) {
+                mensajeLibros.hidden = false;
+                mensajeLibros.textContent = 'No se pudo cargar el catálogo. Comprueba la conexión con el servidor.';
+            }
+        }
+
+        document.querySelectorAll('.api-book-search').forEach(formulario => {
+            formulario.addEventListener('submit', evento => {
+                evento.preventDefault();
+                cargarLibros(formulario.querySelector('input[type="search"]').value);
+            });
+        });
+        const busquedaInicial = new URLSearchParams(window.location.search).get('q') || '';
+        document.querySelectorAll('.api-book-search input[type="search"]').forEach(input => input.value = busquedaInicial);
+        cargarLibros(busquedaInicial);
+    </script>
 </body>
 
 </html>

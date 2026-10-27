@@ -40,8 +40,8 @@
                         class="round-action user-action" type="button" aria-label="Perfil"><span
                             class="material-symbols-outlined">account_circle</span></button></div>
             </header>
-            <section class="profile-content profile-page" aria-labelledby="profile-page-title">
-                <div class="alert alert-info" role="status">Perfil de muestra; estos datos no corresponden a una cuenta conectada.</div>
+            <section class="profile-content profile-page" aria-labelledby="profile-page-title" id="user-detail">
+                <div class="alert alert-info" id="user-message" role="status">Cargando usuario...</div>
                 <div class="profile-title-row">
                     <div>
                         <h1 class="page-heading" id="profile-page-title">Perfil de usuario</h1>
@@ -59,7 +59,7 @@
                     <article class="profile-card" aria-labelledby="profile-name">
                         <div class="profile-identity">
                             <div class="profile-avatar" aria-hidden="true">EM</div>
-                            <h2 class="profile-name" id="profile-name">Emeto Mamani</h2>
+                            <h2 class="profile-name" id="profile-name">Cargando...</h2>
                         </div>
                         <div class="profile-info">
                             <h3>Información</h3>
@@ -105,7 +105,7 @@
                                             <th scope="col">Estado</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="user-loans">
                                         <tr>
                                             <td data-label="Libro">Cien años de soledad</td>
                                             <td data-label="Fecha del préstamo"><time datetime="2026-05-12">12 de mayo de 2026</time></td>
@@ -153,6 +153,40 @@
             </section>
         </main>
     </div>
+<script th:inline="javascript">
+const usersApi = /*[[@{/api/admin/usuarios}]]*/ "/api/admin/usuarios";
+const loansApi = /*[[@{/api/lector/mis-prestamos}]]*/ "/api/lector/mis-prestamos";
+(async () => {
+ const id = new URLSearchParams(location.search).get("id");
+ const message = document.getElementById("user-message");
+ const tbody = document.getElementById("user-loans");
+ document.getElementById("profile-name").textContent = "Cargando usuario...";
+ document.querySelectorAll(".profile-info dd").forEach(field => field.textContent = "Cargando...");
+ tbody.replaceChildren();
+ document.querySelector(".activity-list").replaceChildren();
+ if (!id) { message.className = "alert alert-warning"; message.textContent = "Falta el identificador del usuario."; return; }
+ try {
+  const [userResponse, loansResponse] = await Promise.all([fetch(`${usersApi}/${encodeURIComponent(id)}`), fetch(`${loansApi}/${encodeURIComponent(id)}`)]);
+  if (!userResponse.ok) throw new Error(`Error al cargar el usuario (${userResponse.status})`);
+  const user = await userResponse.json();
+  const fullName = `${user.nombres || ""} ${user.apellidos || ""}`.trim();
+  document.getElementById("profile-name").textContent = fullName || "Usuario";
+  document.querySelector(".profile-avatar").textContent = `${user.nombres?.[0] || ""}${user.apellidos?.[0] || ""}`.toUpperCase();
+  const dds = document.querySelectorAll(".profile-info dd");
+  dds[0].textContent = fullName || "—"; dds[1].textContent = fullName || "—";
+  dds[2].replaceChildren(); if (user.email) { const email = document.createElement("a"); email.href = `mailto:${user.email}`; email.textContent = user.email; dds[2].append(email); } else dds[2].textContent = "—";
+  dds[3].textContent = user.rol || "—";
+  const badge = document.createElement("span"); badge.className = `profile-status ${user.activo ? "profile-status-active" : "profile-status-inactive"}`; badge.textContent = user.activo ? "Activo" : "Inactivo"; dds[4].replaceChildren(badge);
+  const edit = document.querySelector(".profile-buttons a"); edit.href = `/usuarios/editar?id=${encodeURIComponent(user.idUsuario)}`;
+  if (loansResponse.ok) {
+   const loans = await loansResponse.json(); tbody.replaceChildren();
+   loans.forEach(loan => { const row = document.createElement("tr"); const values = [loan.tituloLibro || `Ejemplar #${loan.idEjemplar}`, loan.fechaPrestamo, loan.fechaVencimiento, loan.estado]; values.forEach((value, i) => { const cell = document.createElement("td"); cell.dataset.label = ["Libro", "Fecha del préstamo", "Fecha de vencimiento", "Estado"][i]; cell.textContent = value || "—"; row.append(cell); }); tbody.append(row); });
+   if (!loans.length) { const row = document.createElement("tr"); const cell = document.createElement("td"); cell.colSpan = 4; cell.textContent = "No hay préstamos registrados."; row.append(cell); tbody.append(row); }
+  } else { tbody.replaceChildren(); const row = document.createElement("tr"); const cell = document.createElement("td"); cell.colSpan = 4; cell.textContent = "No se pudieron cargar los préstamos."; row.append(cell); tbody.append(row); }
+  document.querySelector(".activity-list").replaceChildren(); message.hidden = true;
+ } catch (error) { message.className = "alert alert-danger"; message.textContent = `No se pudo cargar el usuario. ${error.message}`; }
+})();
+</script>
 </body>
 
 </html>

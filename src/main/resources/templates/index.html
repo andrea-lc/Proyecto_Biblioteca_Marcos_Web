@@ -52,7 +52,7 @@
 
         <section class="featured-section">
             <div class="featured-heading"><h1>Libros Destacados</h1><a th:href="@{/explorar}">Ver todos <span aria-hidden="true">→</span></a></div>
-            <div class="featured-books">
+            <div class="featured-books" id="featured-books">
                 <a class="featured-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780553418026-L.jpg" alt="Portada del libro El marciano" loading="lazy"><span>El marciano</span></a>
                 <a class="featured-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780399226908-L.jpg" alt="Portada de La pequeña oruga glotona" loading="lazy"><span>La pequeña oruga glotona</span></a>
                 <a class="featured-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780553380163-L.jpg" alt="Portada de Breve historia del tiempo" loading="lazy"><span>Breve historia del tiempo</span></a>
@@ -62,5 +62,37 @@
         </section>
     </section>
 </main>
+<script th:inline="javascript">
+    const featuredApi = /*[[@{/api/catalogo/libros}]]*/ '/api/catalogo/libros';
+    (async () => {
+        const container = document.getElementById('featured-books');
+        try {
+            const response = await fetch(featuredApi, { headers: { Accept: 'application/json' } });
+            if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+            const books = (await response.json()).slice(0, 5);
+            container.replaceChildren();
+            books.forEach(book => {
+                const link = document.createElement('a');
+                link.className = 'featured-book';
+                const isDigital = book.formato === 'Digital';
+                link.href = `/${isDigital ? 'detalle-virtual' : 'detalle-fisico'}?id=${encodeURIComponent(book.idLibro)}`;
+                const cover = document.createElement('img');
+                cover.src = book.isbn ? `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(book.isbn)}-L.jpg` : '';
+                cover.alt = `Portada de ${book.titulo || 'libro'}`;
+                cover.loading = 'lazy';
+                const title = document.createElement('span');
+                title.textContent = book.titulo || 'Sin título';
+                link.append(cover, title);
+                container.append(link);
+            });
+        } catch (error) {
+            container.replaceChildren();
+            const notice = document.createElement('p');
+            notice.className = 'text-secondary';
+            notice.textContent = 'No se pudo cargar el catálogo en este momento.';
+            container.append(notice);
+        }
+    })();
+</script>
 </body>
 </html>

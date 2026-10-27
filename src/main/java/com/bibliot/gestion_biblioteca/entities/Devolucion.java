@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,8 +36,10 @@ public class Devolucion {
 
     @Column(name = "fecha_devolucion", nullable = false)
     @NotNull(message = "La fecha de devolución es obligatoria")
+    @PastOrPresent(message = "La fecha de devolución no puede ser futura")
     private LocalDateTime fechaDevolucion;
 
     @Column(name = "observacion", columnDefinition = "TEXT")
+    @Size(max = 2000, message = "La observación no debe superar 2000 caracteres")
     private String observacion;
 }

@@ -16,13 +16,13 @@
     <header class="catalog-topbar"><button class="catalog-menu" type="button" aria-label="Abrir menú">☰</button><div class="catalog-account-actions"><a th:href="@{/notificaciones}" class="catalog-icon-button" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></a><a th:href="@{/perfil}" class="catalog-icon-button" aria-label="Mi perfil"><span class="material-symbols-outlined">account_circle</span></a></div></header>
     <section class="book-detail-content">
         <div class="book-summary">
-            <img class="detail-cover" src="https://covers.openlibrary.org/b/isbn/9780140440854-L.jpg" alt="Portada de Argonauta">
-            <div class="book-primary-info"><h1>Argonauta</h1><p class="detail-author-label">Autor:</p><p class="detail-author">Apolonio de Rodas</p>
-                <div class="detail-metadata"><div><span>Fecha de publicación</span><b>1996</b></div><div><span>Páginas</span><b>225</b></div><div><span>Estado</span><b>Disponible</b></div></div>
+            <img class="detail-cover" id="detail-cover" src="" alt="Portada del libro">
+            <div class="book-primary-info"><h1 id="detail-title">Cargando libro...</h1><p class="detail-author-label">Autor:</p><p class="detail-author" id="detail-authors"></p>
+                <div class="detail-metadata"><div><span>Fecha de publicación</span><b id="detail-year">—</b></div><div><span>Páginas</span><b id="detail-pages">—</b></div><div><span>Estado</span><b id="detail-state">—</b></div></div>
             </div>
             <div class="detail-actions"><div class="action-buttons"><button class="reserve-button read-button" type="button" disabled aria-describedby="digital-status"><span aria-hidden="true"><span class="material-symbols-outlined">menu_book</span></span>Lectura no disponible</button></div><p class="small text-secondary mt-2 mb-0" id="digital-status">El archivo digital aún no está disponible.</p><a class="book-category" th:href="@{/explorar(categoria='fantasia')}"><span aria-hidden="true">♙</span>Fantasía <b>›</b></a></div>
         </div>
-        <section class="book-description"><h2>Descripción</h2><div class="description-copy">
+        <section class="book-description"><h2>Descripción</h2><div class="description-copy" id="detail-description">
             <p>Los argonautas son los últimos sobrevivientes de sus mundos. No héroes, no dioses, sino fragmentos de historias olvidadas, vagando entre los restos del omniverso. En la Ciudad NUO, una entidad en constante movimiento entre dimensiones, los recién llegados deben tomar una decisión: aceptar su destino y recibir el poder de un argonauta, ser expulsados al mar de la entropía o buscar redención en un nuevo mundo.</p>
             <p>Bajo el gobierno de tres grandes fuerzas —Onus, Orlum y los propios Argonautas— la Ciudad NUO se mantiene en equilibrio, protegida de la realidad de amenazas que trascienden el tiempo y el espacio. Pero algo se mueve en las sombras del infinito. Una verdad oculta en las ruinas de los mundos desaparecidos.</p>
             <p>Nour, Elen y Leen son tres almas marcadas por la tragedia, unidas por la misma condena: haber sobrevivido. A medida que descubren los secretos de NUO y los límites de su propio poder, se enfrentan a una verdad aterradora: tal vez la existencia misma sea un error.</p>
@@ -30,5 +30,29 @@
         </div></section>
     </section>
 </main>
+<script th:inline="javascript">
+const bookApi = /*[[@{/api/catalogo/libros}]]*/ "/api/catalogo/libros";
+(async () => {
+ const id = new URLSearchParams(location.search).get("id");
+ const status = document.getElementById("reservation-status") || document.getElementById("digital-status");
+ if (!id) { status.textContent = "Falta el identificador del libro en la dirección."; return; }
+ try {
+  const response = await fetch(`${bookApi}/${encodeURIComponent(id)}`, { headers: { Accept: "application/json" } });
+  if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+  const book = await response.json();
+  document.title = `${book.titulo} | Bibliot.`;
+  document.getElementById("detail-title").textContent = book.titulo || "Sin título";
+  document.getElementById("detail-authors").textContent = (book.autores || []).join(", ") || "Autor no registrado";
+  const date = book.fechaPublicacion;
+  document.getElementById("detail-year").textContent = date ? (Array.isArray(date) ? date[0] : String(date).slice(0, 4)) : "—";
+  document.getElementById("detail-pages").textContent = book.paginas ?? "—";
+  const copies = document.getElementById("detail-copies"); if (copies) copies.textContent = book.cantidadEjemplares ?? "0";
+  const state = document.getElementById("detail-state"); if (state) state.textContent = book.estado || "Sin estado";
+  const cover = document.getElementById("detail-cover"); if (book.isbn) cover.src = `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(book.isbn)}-L.jpg`; cover.alt = `Portada de ${book.titulo || "libro"}`;
+  const categoryLink = document.querySelector(".book-category"); const categoryName = (book.categorias || [])[0]; if (categoryLink) { if (categoryLink.childNodes[1]) categoryLink.childNodes[1].textContent = ` ${categoryName || "Sin categoría"} `; categoryLink.href = categoryName ? `/explorar?categoria=${encodeURIComponent(categoryName)}` : "/explorar"; }
+  const description = document.getElementById("detail-description"); description.replaceChildren(); const paragraph = document.createElement("p"); paragraph.textContent = book.descripcion || book.contenidoTexto || "Este libro no tiene descripción registrada."; description.append(paragraph);
+ } catch (error) { document.getElementById("detail-title").textContent = "No se pudo cargar el libro"; status.textContent = `No se encontró el libro o el servicio no está disponible. ${error.message}`; }
+})();
+</script>
 </body>
 </html>

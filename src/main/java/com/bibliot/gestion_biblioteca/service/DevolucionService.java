@@ -22,6 +22,11 @@ public class DevolucionService {
                 .orElseThrow(() -> new RuntimeException("Devolución no encontrada con ID: " + id));
     }
 
+    public Devolucion buscarPorPrestamo(Integer idPrestamo) {
+        return devolucionRepository.findByPrestamoIdPrestamo(idPrestamo)
+                .orElseThrow(() -> new RuntimeException("Devolución no encontrada para préstamo: " + idPrestamo));
+    }
+
     @Transactional
     public Devolucion guardar(Devolucion devolucion) {
         return devolucionRepository.save(devolucion);

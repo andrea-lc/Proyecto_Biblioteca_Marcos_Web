@@ -41,4 +41,8 @@ public class PrestamoService {
     public List<Prestamo> buscarPrestamosActivos() {
         return prestamoRepository.findByEstado("ACTIVO");
     }
+
+    public List<Prestamo> buscarPorUsuario(Integer idUsuario) {
+        return prestamoRepository.findByUsuarioIdUsuario(idUsuario);
+    }
 }

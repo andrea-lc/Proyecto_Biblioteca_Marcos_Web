@@ -11,24 +11,90 @@
 </head>
 <body class="admin-body">
 <main class="new-book-page">
-    <header class="new-book-header"><a th:href="@{/libros}" class="back-link" aria-label="Volver a libros">‹</a><h1>Agregar un nuevo libro</h1><div class="new-book-actions"><a class="btn btn-brand" th:href="@{/libros}">Cancelar</a><button class="btn btn-sand" type="submit" form="book-form">Subir</button></div></header>
-    <div class="alert alert-info py-2 small mt-3" role="status" th:if="${formMessage}" th:text="${formMessage}"></div>
-    <form id="book-form" class="new-book-form" th:action="@{/libros/nuevo}" method="post" enctype="multipart/form-data">
-        <section class="cover-column"><label class="form-section-title" for="cover">Portada</label><label class="cover-upload" for="cover"><span>Subir nueva<br>Portada</span><small>Recomendado 600 x 900px</small><img id="cover-preview" alt="Vista previa de portada" hidden></label><input class="visually-hidden" id="cover" name="portada" type="file" accept="image/jpeg,image/png"><small class="cover-help">Solo se admiten los formatos JPG, JPEG y PNG.</small></section>
+    <header class="new-book-header"><a th:href="@{/libros}" class="back-link" aria-label="Volver a libros">‹</a><h1>Agregar un nuevo libro</h1><div class="new-book-actions"><a class="btn btn-brand" th:href="@{/libros}">Cancelar</a><button class="btn btn-sand" type="submit" form="book-form">Guardar libro</button></div></header>
+    <div class="alert alert-info py-2 small mt-3" id="form-message" role="status" hidden></div>
+    <form id="book-form" class="new-book-form">
+        <section class="cover-column"><label class="form-section-title">Portada</label><div class="cover-upload"><span>Portada</span><small>La API actual todavía no guarda imágenes.</small></div></section>
         <section class="book-fields"><h2 class="form-section-title">Información del libro</h2>
             <div class="book-form-grid">
-                <div class="book-field field-wide"><label for="title">Título <span>*</span></label><input id="title" name="titulo" class="form-control" type="text" placeholder="Título del libro" required></div>
-                <div class="book-field"><label for="category">Categoría <span>*</span></label><select id="category" name="categoria" class="form-select" required><option value="" selected disabled>Seleccionar categoría</option><option>Novela</option><option>Ciencia ficción</option><option>Historia</option><option>Infantil y juvenil</option></select></div>
-                <div class="book-field"><label for="pages">Nº Páginas <span>*</span></label><div class="input-with-action"><input id="pages" name="paginas" type="number" min="1" class="form-control" placeholder="Cantidad de páginas" required><span class="field-plus">＋</span></div></div>
-                <div class="book-field"><label for="copies">Cantidad de ejemplares <span>*</span></label><select id="copies" name="ejemplares" class="form-select" required><option value="" selected disabled>Seleccionar cantidad</option><option>1</option><option>2</option><option>5</option><option>10</option></select></div>
-                <div class="book-field"><label for="publication">Fecha de publicación <span>*</span></label><input id="publication" name="fechaPublicacion" class="form-control" type="date" required></div>
-                <div class="book-field"><label for="status">Estado <span>*</span></label><select id="status" name="estado" class="form-select" required><option value="" selected disabled>Seleccionar estado</option><option>Disponible</option><option>No disponible</option></select></div>
-                <div class="book-field"><label for="publisher">Editorial</label><input id="publisher" name="editorial" class="form-control" type="text" placeholder="Editorial"></div>
-                <div class="book-field"><label for="book-file">Archivo PDF</label><label class="file-pick" for="book-file">Agregar archivo <span>＋</span></label><input class="visually-hidden" id="book-file" name="archivo" type="file" accept="application/pdf"></div>
-                <div class="book-field field-wide"><label for="description">Descripción <span>*</span></label><textarea id="description" name="descripcion" class="form-control description-field" placeholder="Sinopsis de la historia" required></textarea></div>
+                <div class="book-field field-wide"><label for="title">Título <span>*</span></label><input id="title" name="titulo" class="form-control" type="text" maxlength="255" placeholder="Título del libro" required></div>
+                <div class="book-field"><label for="isbn">ISBN</label><input id="isbn" name="isbn" class="form-control" type="text" placeholder="ISBN del libro"></div>
+                <div class="book-field"><label for="pages">N.º de páginas</label><div class="input-with-action"><input id="pages" name="paginas" type="number" min="1" class="form-control" placeholder="Cantidad de páginas"><span class="field-plus">＋</span></div></div>
+                <div class="book-field"><label for="publication">Fecha de publicación</label><input id="publication" name="fechaPublicacion" class="form-control" type="date"></div>
+                <div class="book-field"><label for="status">Estado</label><select id="status" name="estado" class="form-select"><option value="">Seleccionar estado</option><option value="Disponible">Disponible</option><option value="No disponible">No disponible</option></select></div>
+                <div class="book-field"><label for="publisher">Editorial</label><select id="publisher" name="idEditorial" class="form-select"><option value="">Seleccionar editorial</option></select></div>
+                <div class="book-field"><label for="authors">Autores</label><select id="authors" name="autorIds" class="form-select" multiple aria-describedby="authors-help"></select><small id="authors-help" class="text-secondary">Puedes elegir más de uno.</small></div>
+                <div class="book-field"><label for="categories">Categorías</label><select id="categories" name="categoriaIds" class="form-select" multiple aria-describedby="categories-help"></select><small id="categories-help" class="text-secondary">Puedes elegir más de una.</small></div>
+                <div class="book-field"><label>Archivo PDF</label><div class="file-pick text-secondary">La API actual no guarda archivos</div></div>
+                <div class="book-field field-wide"><label for="description">Descripción</label><textarea id="description" name="descripcion" class="form-control description-field" placeholder="Sinopsis del libro"></textarea></div>
+                <div class="book-field field-wide"><label for="contentText">Contenido de lectura</label><textarea id="contentText" name="contenidoTexto" class="form-control description-field" rows="6" placeholder="Texto digital del libro (opcional)"></textarea></div>
             </div>
         </section>
     </form>
 </main>
+<script th:inline="javascript">
+    const apiLibrosUrl = /*[[@{/api/admin/libros}]]*/ '/api/admin/libros';
+    const listaLibrosUrl = /*[[@{/libros}]]*/ '/libros';
+    const formularioLibro = document.getElementById('book-form');
+    const mensajeFormulario = document.getElementById('form-message');
+
+    async function cargarOpciones() {
+        const [editorialesRespuesta, autoresRespuesta, categoriasRespuesta] = await Promise.all([
+            fetch(/*[[@{/api/admin/editoriales}]]*/ '/api/admin/editoriales'),
+            fetch(/*[[@{/api/admin/autores}]]*/ '/api/admin/autores'),
+            fetch(/*[[@{/api/admin/categorias}]]*/ '/api/admin/categorias')
+        ]);
+        if (![editorialesRespuesta, autoresRespuesta, categoriasRespuesta].every(r => r.ok)) throw new Error('No se pudieron cargar editoriales, autores o categorías.');
+        const [editoriales, autores, categorias] = await Promise.all([editorialesRespuesta.json(), autoresRespuesta.json(), categoriasRespuesta.json()]);
+        editoriales.forEach(item => document.getElementById('publisher').add(new Option(item.nombre, item.idEditorial)));
+        autores.forEach(item => document.getElementById('authors').add(new Option(`${item.nombres} ${item.apellidos}`, item.idAutor)));
+        categorias.forEach(item => document.getElementById('categories').add(new Option(item.nombre, item.idCategoria)));
+    }
+
+    let errorOpciones = false;
+    const opcionesListas = cargarOpciones().catch(error => {
+        errorOpciones = true;
+        mensajeFormulario.hidden = false;
+        mensajeFormulario.className = 'alert alert-warning py-2 small mt-3';
+        mensajeFormulario.textContent = error.message;
+    });
+
+    formularioLibro.addEventListener('submit', async evento => {
+        evento.preventDefault();
+        await opcionesListas;
+        if (errorOpciones) return;
+        const datos = new FormData(formularioLibro);
+        const idEditorial = datos.get('idEditorial');
+        const paginas = datos.get('paginas');
+        const payload = {
+            titulo: datos.get('titulo').trim(),
+            isbn: datos.get('isbn').trim() || null,
+            paginas: paginas ? Number(paginas) : null,
+            fechaPublicacion: datos.get('fechaPublicacion') || null,
+            estado: datos.get('estado') || null,
+            descripcion: datos.get('descripcion').trim() || null,
+            contenidoTexto: datos.get('contenidoTexto').trim() || null,
+            idEditorial: idEditorial ? Number(idEditorial) : null,
+            autorIds: [...document.getElementById('authors').selectedOptions].map(o => Number(o.value)),
+            categoriaIds: [...document.getElementById('categories').selectedOptions].map(o => Number(o.value))
+        };
+
+        mensajeFormulario.hidden = false;
+        mensajeFormulario.className = 'alert alert-info py-2 small mt-3';
+        mensajeFormulario.textContent = 'Guardando libro…';
+        try {
+            const respuesta = await fetch(apiLibrosUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!respuesta.ok) throw new Error((await respuesta.text()) || `Error HTTP ${respuesta.status}`);
+            window.location.assign(listaLibrosUrl);
+        } catch (error) {
+            mensajeFormulario.className = 'alert alert-danger py-2 small mt-3';
+            mensajeFormulario.textContent = `No se pudo guardar el libro. ${error.message}`;
+        }
+    });
+</script>
 </body>
 </html>

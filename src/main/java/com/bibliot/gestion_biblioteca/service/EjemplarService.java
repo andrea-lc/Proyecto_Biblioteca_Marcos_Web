@@ -49,4 +49,8 @@ public class EjemplarService {
         return ejemplarRepository.findByCodigoInventario(codigo)
                 .orElseThrow(() -> new RuntimeException("Ejemplar no encontrado con código: " + codigo));
     }
+
+    public List<Ejemplar> buscarPorLibro(Integer idLibro) {
+        return ejemplarRepository.findByLibroIdLibro(idLibro);
+    }
 }

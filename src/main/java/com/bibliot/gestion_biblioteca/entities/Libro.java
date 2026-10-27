@@ -42,6 +42,7 @@ public class Libro {
     private Integer paginas;
 
     @Column(name = "descripcion", columnDefinition = "TEXT")
+    @Size(max = 5000, message = "La descripción no debe superar 5000 caracteres")
     private String descripcion;
 
     @Column(name = "contenido_texto", columnDefinition = "LONGTEXT")
@@ -56,6 +57,7 @@ public class Libro {
     private String isbn;
 
     @Column(name = "estado", length = 30)
+    @Size(max = 30)
     private String estado;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -35,19 +35,20 @@
             <a class="genre-card genre-romance" th:href="@{/explorar(categoria='romance')}"><span>Romance</span></a>
             <a class="genre-card genre-politics" th:href="@{/explorar(categoria='politica')}"><span>Política</span></a>
         </nav>
-        <form class="explore-search-row" th:action="@{/explorar}" method="get" role="search">
+        <form class="explore-search-row" id="catalog-search-form" th:action="@{/explorar}" method="get" role="search">
             <label class="explore-search"><input type="search" name="q" placeholder="Buscar libro" aria-label="Buscar libro"><button type="submit" aria-label="Buscar">⌕</button></label>
             <button class="advanced-search" type="button" disabled aria-label="Búsqueda avanzada no disponible">Búsqueda avanzada</button>
         </form>
         <form class="explore-filters" th:action="@{/explorar}" method="get" aria-label="Filtros de libros">
-            <select class="form-select" name="autor" aria-label="Filtrar por autor"><option value="">Autor</option><option>Gabriel García Márquez</option><option>George Orwell</option><option>Antoine de Saint-Exupéry</option></select>
-            <select class="form-select" name="categoria" aria-label="Filtrar por categoría"><option value="">Categoría</option><option>Literatura clásica</option><option>Romance</option><option>Infantil</option><option>Política</option></select>
-            <select class="form-select" name="paginas" aria-label="Filtrar por cantidad de páginas"><option value="">Cantidad de páginas</option><option>Menos de 200</option><option>200 a 400</option><option>Más de 400</option></select>
-            <select class="form-select" name="editorial" aria-label="Filtrar por editorial"><option value="">Editorial</option><option>Penguin Random House</option><option>Planeta</option><option>Alianza Editorial</option></select>
-            <select class="form-select year-filter" name="anio" aria-label="Filtrar por año de publicación"><option value="">Año de publicación</option><option>2020–2026</option><option>2000–2019</option><option>Antes de 2000</option></select>
+            <select class="form-select" name="autorId" aria-label="Filtrar por autor"><option value="">Autor</option></select>
+            <select class="form-select" name="categoriaId" aria-label="Filtrar por categoría"><option value="">Categoría</option></select>
+            <select class="form-select" name="paginas" aria-label="Filtrar por cantidad de páginas"><option value="">Cantidad de páginas</option><option value="menos200">Menos de 200</option><option value="200a400">200 a 400</option><option value="mas400">Más de 400</option></select>
+            <select class="form-select" name="editorialId" aria-label="Filtrar por editorial"><option value="">Editorial</option></select>
+            <select class="form-select year-filter" name="anio" aria-label="Filtrar por año de publicación"><option value="">Año de publicación</option><option value="2020-2026">2020–2026</option><option value="2000-2019">2000–2019</option><option value="-1999">Antes de 2000</option></select>
         </form>
         <div class="explore-view-tools" aria-label="Opciones de vista"><button type="button" class="selected" aria-label="Vista de lista" disabled>▤</button><span></span><button type="button" aria-label="Vista de cuadrícula" disabled>▦</button></div>
-        <section class="explore-results" aria-label="Libros">
+        <div class="alert alert-info" id="catalog-message" role="status">Cargando catálogo…</div>
+        <section class="explore-results" id="catalog-results" aria-label="Libros">
             <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449136-L.jpg" alt="Portada de La Odisea" loading="lazy"><span>La Odisea</span></a>
             <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449266-L.jpg" alt="Portada de La Ilíada" loading="lazy"><span>La Ilíada</span></a>
             <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780062315007-L.jpg" alt="Portada de El alquimista" loading="lazy"><span>El alquimista</span></a>
@@ -61,5 +62,88 @@
         </section>
     </section>
 </main>
+<script th:inline="javascript">
+    const catalogApi = /*[[@{/api/catalogo/libros}]]*/ '/api/catalogo/libros';
+    const authorsApi = /*[[@{/api/admin/autores}]]*/ '/api/admin/autores';
+    const categoriesApi = /*[[@{/api/admin/categorias}]]*/ '/api/admin/categorias';
+    const publishersApi = /*[[@{/api/admin/editoriales}]]*/ '/api/admin/editoriales';
+    const results = document.getElementById('catalog-results');
+    const message = document.getElementById('catalog-message');
+    const filters = document.querySelector('.explore-filters');
+    const searchForm = document.getElementById('catalog-search-form');
+    const params = new URLSearchParams(window.location.search);
+    results.replaceChildren();
+    const addOptions = (select, items, idKey, labelFn) => items.forEach(item => select.add(new Option(labelFn(item), item[idKey])));
+    async function loadOptions() {
+        const [authors, categories, publishers] = await Promise.all([authorsApi, categoriesApi, publishersApi].map(async url => {
+            const response = await fetch(url, { headers: { Accept: 'application/json' } });
+            if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+            return response.json();
+        }));
+        addOptions(filters.elements.autorId, authors, 'idAutor', item => `${item.nombres || ''} ${item.apellidos || ''}`.trim());
+        addOptions(filters.elements.categoriaId, categories, 'idCategoria', item => item.nombre);
+        addOptions(filters.elements.editorialId, publishers, 'idEditorial', item => item.nombre);
+    }
+    function selectFromQuery(select, key) {
+        if (params.has(key)) select.value = params.get(key);
+    }
+    function drawBooks(books) {
+        results.replaceChildren();
+        books.forEach(book => {
+            const link = document.createElement('a');
+            link.className = 'explore-book';
+            link.href = `/${book.formato === 'Digital' ? 'detalle-virtual' : 'detalle-fisico'}?id=${encodeURIComponent(book.idLibro)}`;
+            const cover = document.createElement('img');
+            cover.src = book.isbn ? `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(book.isbn)}-L.jpg` : '';
+            cover.alt = `Portada de ${book.titulo || 'libro'}`;
+            cover.loading = 'lazy';
+            const title = document.createElement('span');
+            title.textContent = book.titulo || 'Sin título';
+            link.append(cover, title);
+            results.append(link);
+        });
+        if (!books.length) { message.textContent = 'No se encontraron libros con esos filtros.'; message.hidden = false; }
+        else message.hidden = true;
+    }
+    async function searchBooks() {
+        const query = new URLSearchParams();
+        const q = searchForm.elements.q.value.trim();
+        if (q) query.set('q', q);
+        ['autorId', 'categoriaId', 'paginas', 'editorialId'].forEach(key => { if (filters.elements[key].value) query.set(key, filters.elements[key].value); });
+        if (!filters.elements.categoriaId.value && params.get('categoria')) query.set('categoria', params.get('categoria'));
+        const year = filters.elements.anio.value;
+        if (year) {
+            if (year.startsWith('-')) query.set('anioHasta', year.slice(1));
+            else { const [from, to] = year.split('-'); query.set('anioDesde', from); query.set('anioHasta', to); }
+        }
+        message.hidden = false; message.textContent = 'Cargando catálogo…';
+        try {
+            const response = await fetch(`${catalogApi}?${query}`, { headers: { Accept: 'application/json' } });
+            if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+            drawBooks(await response.json());
+        } catch (error) { message.hidden = false; message.textContent = `No se pudo cargar el catálogo. ${error.message}`; }
+    }
+    searchForm.addEventListener('submit', event => { event.preventDefault(); searchBooks(); });
+    filters.addEventListener('change', searchBooks);
+    (async () => {
+        try {
+            await loadOptions();
+            searchForm.elements.q.value = params.get('q') || '';
+            ['autorId', 'categoriaId', 'paginas', 'editorialId'].forEach(key => selectFromQuery(filters.elements[key], key));
+            if (params.has('anio')) {
+                filters.elements.anio.value = params.get('anio');
+            } else if (params.has('anioDesde') || params.has('anioHasta')) {
+                const start = params.get('anioDesde'), end = params.get('anioHasta');
+                filters.elements.anio.value = !start && end ? `-${end}` : `${start || ''}-${end || ''}`;
+            }
+            const categoryName = params.get('categoria');
+            if (categoryName && !filters.elements.categoriaId.value) {
+                const match = [...filters.elements.categoriaId.options].find(option => option.text.toLowerCase().includes(categoryName.toLowerCase()));
+                if (match) filters.elements.categoriaId.value = match.value;
+            }
+            await searchBooks();
+        } catch (error) { message.hidden = false; message.textContent = `No se pudieron cargar los filtros del catálogo. ${error.message}`; }
+    })();
+</script>
 </body>
 </html>

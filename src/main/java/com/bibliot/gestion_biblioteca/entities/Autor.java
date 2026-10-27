@@ -39,5 +39,6 @@ public class Autor {
     private String nacionalidad;
 
     @Column(name = "biografia", columnDefinition = "TEXT")
+    @Size(max = 5000, message = "La biografía no debe superar 5000 caracteres")
     private String biografia;
 }
