@@ -1,7 +1,7 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.LibroRequest;
-import com.bibliot.gestion_biblioteca.dto.LibroResponse;
+import com.bibliot.gestion_biblioteca.dto.LibroDtos.Request;
+import com.bibliot.gestion_biblioteca.dto.LibroDtos.Response;
 import com.bibliot.gestion_biblioteca.entities.Libro;
 import com.bibliot.gestion_biblioteca.repository.EditorialRepository;
 import com.bibliot.gestion_biblioteca.service.LibroService;
@@ -36,7 +36,7 @@ public class LibroController {
     }
 
     @GetMapping
-    public List<LibroResponse> listar(@RequestParam(required = false) String q,
+    public List<Response> listar(@RequestParam(required = false) String q,
             @RequestParam(required = false) String titulo) {
         String filtro = q != null ? q : titulo;
         List<Libro> libros = filtro == null || filtro.isBlank() ? service.listarTodos()
@@ -45,22 +45,22 @@ public class LibroController {
     }
 
     @GetMapping("/{id}")
-    public LibroResponse buscar(@PathVariable Integer id) {
+    public Response buscar(@PathVariable Integer id) {
         return assembler.desde(service.buscarPorId(id));
     }
 
     @GetMapping("/buscar")
-    public List<LibroResponse> buscarTitulo(@RequestParam String titulo) {
+    public List<Response> buscarTitulo(@RequestParam String titulo) {
         return assembler.desdeTodos(service.buscarPorTitulo(titulo));
     }
 
     @GetMapping("/editorial/{idEditorial}")
-    public List<LibroResponse> porEditorial(@PathVariable Integer idEditorial) {
+    public List<Response> porEditorial(@PathVariable Integer idEditorial) {
         return assembler.desdeTodos(service.buscarPorEditorial(idEditorial));
     }
 
     @PostMapping
-    public ResponseEntity<LibroResponse> crear(@Valid @RequestBody LibroRequest dto) {
+    public ResponseEntity<Response> crear(@Valid @RequestBody Request dto) {
         Libro libro = service.guardar(map(dto, null));
         autores.reemplazarPorLibro(libro.getIdLibro(), dto.autorIds());
         categorias.reemplazarPorLibro(libro.getIdLibro(), dto.categoriaIds());
@@ -68,7 +68,7 @@ public class LibroController {
     }
 
     @PutMapping("/{id}")
-    public LibroResponse actualizar(@PathVariable Integer id, @Valid @RequestBody LibroRequest dto) {
+    public Response actualizar(@PathVariable Integer id, @Valid @RequestBody Request dto) {
         Libro libro = service.guardar(map(dto, id));
         if (dto.autorIds() != null) autores.reemplazarPorLibro(id, dto.autorIds());
         if (dto.categoriaIds() != null) categorias.reemplazarPorLibro(id, dto.categoriaIds());
@@ -83,7 +83,7 @@ public class LibroController {
         return ResponseEntity.noContent().build();
     }
 
-    private Libro map(LibroRequest d, Integer id) {
+    private Libro map(Request d, Integer id) {
         Libro x = id == null ? new Libro() : service.buscarPorId(id);
         x.setTitulo(d.titulo());
         x.setIsbn(d.isbn());

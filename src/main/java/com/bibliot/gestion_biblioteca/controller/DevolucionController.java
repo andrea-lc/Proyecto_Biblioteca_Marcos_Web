@@ -1,6 +1,7 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.ApiDtos.DevolucionDto;
+import com.bibliot.gestion_biblioteca.dto.DevolucionDtos.Request;
+import com.bibliot.gestion_biblioteca.dto.DevolucionDtos.Response;
 import com.bibliot.gestion_biblioteca.service.DevolucionService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -19,32 +20,32 @@ public class DevolucionController {
     }
 
     @GetMapping
-    public List<DevolucionDto> listar() {
-        return service.listarTodos().stream().map(DevolucionDto::from).toList();
+    public List<Response> listar() {
+        return service.listarTodos().stream().map(Response::desde).toList();
     }
 
     @GetMapping("/{id}")
-    public DevolucionDto buscar(@PathVariable Integer id) {
-        return DevolucionDto.from(service.buscarPorId(id));
+    public Response buscar(@PathVariable Integer id) {
+        return Response.desde(service.buscarPorId(id));
     }
 
     @GetMapping("/prestamo/{idPrestamo}")
-    public DevolucionDto porPrestamo(@PathVariable Integer idPrestamo) {
-        return DevolucionDto.from(service.buscarPorPrestamo(idPrestamo));
+    public Response porPrestamo(@PathVariable Integer idPrestamo) {
+        return Response.desde(service.buscarPorPrestamo(idPrestamo));
     }
 
     @PostMapping
-    public ResponseEntity<DevolucionDto> crear(@Valid @RequestBody DevolucionDto d) {
+    public ResponseEntity<Response> crear(@Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdDevolucion(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(DevolucionDto.from(service.guardar(x)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.guardar(x)));
     }
 
     @PutMapping("/{id}")
-    public DevolucionDto actualizar(@PathVariable Integer id, @Valid @RequestBody DevolucionDto d) {
+    public Response actualizar(@PathVariable Integer id, @Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdDevolucion(id);
-        return DevolucionDto.from(service.guardar(x));
+        return Response.desde(service.guardar(x));
     }
 
     @DeleteMapping("/{id}")

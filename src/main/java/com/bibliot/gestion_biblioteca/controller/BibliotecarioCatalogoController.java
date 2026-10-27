@@ -1,6 +1,6 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.LibroResponse;
+import com.bibliot.gestion_biblioteca.dto.LibroDtos.Response;
 import com.bibliot.gestion_biblioteca.service.LibroService;
 import com.bibliot.gestion_biblioteca.service.LibroResponseAssembler;
 import org.springframework.web.bind.annotation.*;
@@ -20,17 +20,17 @@ public class BibliotecarioCatalogoController {
     }
 
     @GetMapping
-    public List<LibroResponse> listar() {
+    public List<Response> listar() {
         return assembler.desdeTodos(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public LibroResponse buscar(@PathVariable Integer id) {
+    public Response buscar(@PathVariable Integer id) {
         return assembler.desde(service.buscarPorId(id));
     }
 
     @GetMapping("/buscar")
-    public List<LibroResponse> buscarTitulo(@RequestParam String titulo) {
+    public List<Response> buscarTitulo(@RequestParam String titulo) {
         return assembler.desdeTodos(service.buscarPorTitulo(titulo));
     }
 }

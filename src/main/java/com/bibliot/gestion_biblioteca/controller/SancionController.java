@@ -1,6 +1,7 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.ApiDtos.SancionDto;
+import com.bibliot.gestion_biblioteca.dto.SancionDtos.Request;
+import com.bibliot.gestion_biblioteca.dto.SancionDtos.Response;
 import com.bibliot.gestion_biblioteca.service.SancionService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -19,28 +20,28 @@ public class SancionController {
     }
 
     @GetMapping
-    public List<SancionDto> listar(@RequestParam(required = false) String estado) {
+    public List<Response> listar(@RequestParam(required = false) String estado) {
         var xs = estado == null ? service.listarTodos() : service.buscarPorEstado(estado);
-        return xs.stream().map(SancionDto::from).toList();
+        return xs.stream().map(Response::desde).toList();
     }
 
     @GetMapping("/{id}")
-    public SancionDto buscar(@PathVariable Integer id) {
-        return SancionDto.from(service.buscarPorId(id));
+    public Response buscar(@PathVariable Integer id) {
+        return Response.desde(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<SancionDto> crear(@Valid @RequestBody SancionDto d) {
+    public ResponseEntity<Response> crear(@Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdSancion(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(SancionDto.from(service.guardar(x)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.guardar(x)));
     }
 
     @PutMapping("/{id}")
-    public SancionDto actualizar(@PathVariable Integer id, @Valid @RequestBody SancionDto d) {
+    public Response actualizar(@PathVariable Integer id, @Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdSancion(id);
-        return SancionDto.from(service.guardar(x));
+        return Response.desde(service.guardar(x));
     }
 
     @DeleteMapping("/{id}")

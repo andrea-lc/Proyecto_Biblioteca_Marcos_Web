@@ -1,6 +1,7 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.ApiDtos.EditorialDto;
+import com.bibliot.gestion_biblioteca.dto.EditorialDtos.Request;
+import com.bibliot.gestion_biblioteca.dto.EditorialDtos.Response;
 import com.bibliot.gestion_biblioteca.service.EditorialService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -17,27 +18,27 @@ public class EditorialController {
     }
 
     @GetMapping
-    public List<EditorialDto> listar() {
-        return service.listarTodos().stream().map(EditorialDto::from).toList();
+    public List<Response> listar() {
+        return service.listarTodos().stream().map(Response::desde).toList();
     }
 
     @GetMapping("/{id}")
-    public EditorialDto buscar(@PathVariable Integer id) {
-        return EditorialDto.from(service.buscarPorId(id));
+    public Response buscar(@PathVariable Integer id) {
+        return Response.desde(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<EditorialDto> crear(@Valid @RequestBody EditorialDto d) {
+    public ResponseEntity<Response> crear(@Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdEditorial(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(EditorialDto.from(service.guardar(x)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.guardar(x)));
     }
 
     @PutMapping("/{id}")
-    public EditorialDto actualizar(@PathVariable Integer id, @Valid @RequestBody EditorialDto d) {
+    public Response actualizar(@PathVariable Integer id, @Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdEditorial(id);
-        return EditorialDto.from(service.guardar(x));
+        return Response.desde(service.guardar(x));
     }
 
     @DeleteMapping("/{id}")

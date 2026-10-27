@@ -1,6 +1,7 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.ApiDtos.CategoriaDto;
+import com.bibliot.gestion_biblioteca.dto.CategoriaDtos.Request;
+import com.bibliot.gestion_biblioteca.dto.CategoriaDtos.Response;
 import com.bibliot.gestion_biblioteca.service.CategoriaService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -17,27 +18,27 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public List<CategoriaDto> listar() {
-        return service.listarTodos().stream().map(CategoriaDto::from).toList();
+    public List<Response> listar() {
+        return service.listarTodos().stream().map(Response::desde).toList();
     }
 
     @GetMapping("/{id}")
-    public CategoriaDto buscar(@PathVariable Integer id) {
-        return CategoriaDto.from(service.buscarPorId(id));
+    public Response buscar(@PathVariable Integer id) {
+        return Response.desde(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<CategoriaDto> crear(@Valid @RequestBody CategoriaDto d) {
+    public ResponseEntity<Response> crear(@Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdCategoria(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CategoriaDto.from(service.guardar(x)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.guardar(x)));
     }
 
     @PutMapping("/{id}")
-    public CategoriaDto actualizar(@PathVariable Integer id, @Valid @RequestBody CategoriaDto d) {
+    public Response actualizar(@PathVariable Integer id, @Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdCategoria(id);
-        return CategoriaDto.from(service.guardar(x));
+        return Response.desde(service.guardar(x));
     }
 
     @DeleteMapping("/{id}")

@@ -1,6 +1,7 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.ApiDtos.LibroDigitalDto;
+import com.bibliot.gestion_biblioteca.dto.LibroDigitalDtos.Request;
+import com.bibliot.gestion_biblioteca.dto.LibroDigitalDtos.Response;
 import com.bibliot.gestion_biblioteca.service.LibroDigitalService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -19,32 +20,32 @@ public class LibroDigitalController {
     }
 
     @GetMapping
-    public List<LibroDigitalDto> listar() {
-        return service.listarTodos().stream().map(LibroDigitalDto::from).toList();
+    public List<Response> listar() {
+        return service.listarTodos().stream().map(Response::desde).toList();
     }
 
     @GetMapping("/{id}")
-    public LibroDigitalDto buscar(@PathVariable Integer id) {
-        return LibroDigitalDto.from(service.buscarPorId(id));
+    public Response buscar(@PathVariable Integer id) {
+        return Response.desde(service.buscarPorId(id));
     }
 
     @GetMapping("/libro/{idLibro}")
-    public LibroDigitalDto porLibro(@PathVariable Integer idLibro) {
-        return LibroDigitalDto.from(service.buscarPorLibro(idLibro));
+    public Response porLibro(@PathVariable Integer idLibro) {
+        return Response.desde(service.buscarPorLibro(idLibro));
     }
 
     @PostMapping
-    public ResponseEntity<LibroDigitalDto> crear(@Valid @RequestBody LibroDigitalDto d) {
+    public ResponseEntity<Response> crear(@Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdLibroDigital(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(LibroDigitalDto.from(service.guardar(x)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.guardar(x)));
     }
 
     @PutMapping("/{id}")
-    public LibroDigitalDto actualizar(@PathVariable Integer id, @Valid @RequestBody LibroDigitalDto d) {
+    public Response actualizar(@PathVariable Integer id, @Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdLibroDigital(id);
-        return LibroDigitalDto.from(service.guardar(x));
+        return Response.desde(service.guardar(x));
     }
 
     @DeleteMapping("/{id}")

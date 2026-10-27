@@ -1,6 +1,7 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.ApiDtos.LibroAutorDto;
+import com.bibliot.gestion_biblioteca.dto.LibroAutorDtos.Request;
+import com.bibliot.gestion_biblioteca.dto.LibroAutorDtos.Response;
 import com.bibliot.gestion_biblioteca.service.LibroAutorService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -19,31 +20,31 @@ public class LibroAutorController {
     }
 
     @GetMapping
-    public List<LibroAutorDto> listar() {
-        return service.listar().stream().map(LibroAutorDto::from).toList();
+    public List<Response> listar() {
+        return service.listar().stream().map(Response::desde).toList();
     }
 
     @GetMapping("/libro/{idLibro}")
-    public List<LibroAutorDto> delLibro(@PathVariable Integer idLibro) {
-        return service.buscarPorLibro(idLibro).stream().map(LibroAutorDto::from).toList();
+    public List<Response> delLibro(@PathVariable Integer idLibro) {
+        return service.buscarPorLibro(idLibro).stream().map(Response::desde).toList();
     }
 
     @GetMapping("/{idLibro}/{idAutor}")
-    public LibroAutorDto buscar(@PathVariable Integer idLibro, @PathVariable Integer idAutor) {
-        return LibroAutorDto.from(service.buscar(idLibro, idAutor));
+    public Response buscar(@PathVariable Integer idLibro, @PathVariable Integer idAutor) {
+        return Response.desde(service.buscar(idLibro, idAutor));
     }
 
     @PostMapping
-    public ResponseEntity<LibroAutorDto> crear(@Valid @RequestBody LibroAutorDto d) {
+    public ResponseEntity<Response> crear(@Valid @RequestBody Request d) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(LibroAutorDto.from(service.guardar(d.idLibro(), d.idAutor())));
+                .body(Response.desde(service.guardar(d.idLibro(), d.idAutor())));
     }
 
     @PutMapping("/{idLibro}/{idAutor}")
-    public LibroAutorDto actualizar(@PathVariable Integer idLibro, @PathVariable Integer idAutor,
-            @Valid @RequestBody LibroAutorDto d) {
+    public Response actualizar(@PathVariable Integer idLibro, @PathVariable Integer idAutor,
+            @Valid @RequestBody Request d) {
         service.eliminar(idLibro, idAutor);
-        return LibroAutorDto.from(service.guardar(d.idLibro(), d.idAutor()));
+        return Response.desde(service.guardar(d.idLibro(), d.idAutor()));
     }
 
     @DeleteMapping("/{idLibro}/{idAutor}")

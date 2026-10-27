@@ -1,6 +1,7 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.ApiDtos.PrestamoDto;
+import com.bibliot.gestion_biblioteca.dto.PrestamoDtos.Request;
+import com.bibliot.gestion_biblioteca.dto.PrestamoDtos.Response;
 import com.bibliot.gestion_biblioteca.service.PrestamoService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -19,32 +20,32 @@ public class PrestamoController {
     }
 
     @GetMapping("/bibliotecario/prestamos")
-    public List<PrestamoDto> listar() {
-        return service.listarTodos().stream().map(PrestamoDto::from).toList();
+    public List<Response> listar() {
+        return service.listarTodos().stream().map(Response::desde).toList();
     }
 
     @GetMapping("/bibliotecario/prestamos/activos")
-    public List<PrestamoDto> activos() {
-        return service.buscarPrestamosActivos().stream().map(PrestamoDto::from).toList();
+    public List<Response> activos() {
+        return service.buscarPrestamosActivos().stream().map(Response::desde).toList();
     }
 
     @GetMapping("/bibliotecario/prestamos/{id}")
-    public PrestamoDto buscar(@PathVariable Integer id) {
-        return PrestamoDto.from(service.buscarPorId(id));
+    public Response buscar(@PathVariable Integer id) {
+        return Response.desde(service.buscarPorId(id));
     }
 
     @PostMapping("/bibliotecario/prestamos")
-    public ResponseEntity<PrestamoDto> crear(@Valid @RequestBody PrestamoDto d) {
+    public ResponseEntity<Response> crear(@Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdPrestamo(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(PrestamoDto.from(service.guardar(x)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.guardar(x)));
     }
 
     @PutMapping("/bibliotecario/prestamos/{id}")
-    public PrestamoDto actualizar(@PathVariable Integer id, @Valid @RequestBody PrestamoDto d) {
+    public Response actualizar(@PathVariable Integer id, @Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdPrestamo(id);
-        return PrestamoDto.from(service.guardar(x));
+        return Response.desde(service.guardar(x));
     }
 
     @DeleteMapping("/bibliotecario/prestamos/{id}")
@@ -54,14 +55,14 @@ public class PrestamoController {
     }
 
     @GetMapping("/lector/mis-prestamos/{idUsuario}")
-    public List<PrestamoDto> delUsuario(@PathVariable Integer idUsuario) {
-        return service.buscarPorUsuario(idUsuario).stream().map(PrestamoDto::from).toList();
+    public List<Response> delUsuario(@PathVariable Integer idUsuario) {
+        return service.buscarPorUsuario(idUsuario).stream().map(Response::desde).toList();
     }
 
     @PostMapping("/lector/solicitar-prestamo")
-    public ResponseEntity<PrestamoDto> solicitar(@Valid @RequestBody PrestamoDto d) {
+    public ResponseEntity<Response> solicitar(@Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdPrestamo(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(PrestamoDto.from(service.guardar(x)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.guardar(x)));
     }
 }

@@ -1,6 +1,7 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.ApiDtos.RolDto;
+import com.bibliot.gestion_biblioteca.dto.RolDtos.Request;
+import com.bibliot.gestion_biblioteca.dto.RolDtos.Response;
 import com.bibliot.gestion_biblioteca.service.RolService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -17,32 +18,32 @@ public class RolController {
     }
 
     @GetMapping
-    public List<RolDto> listar() {
-        return service.listarTodos().stream().map(RolDto::from).toList();
+    public List<Response> listar() {
+        return service.listarTodos().stream().map(Response::desde).toList();
     }
 
     @GetMapping("/{id}")
-    public RolDto buscar(@PathVariable Integer id) {
-        return RolDto.from(service.buscarPorId(id));
+    public Response buscar(@PathVariable Integer id) {
+        return Response.desde(service.buscarPorId(id));
     }
 
     @GetMapping("/nombre/{nombre}")
-    public RolDto porNombre(@PathVariable String nombre) {
-        return RolDto.from(service.buscarPorNombre(nombre));
+    public Response porNombre(@PathVariable String nombre) {
+        return Response.desde(service.buscarPorNombre(nombre));
     }
 
     @PostMapping
-    public ResponseEntity<RolDto> crear(@Valid @RequestBody RolDto d) {
+    public ResponseEntity<Response> crear(@Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdRol(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(RolDto.from(service.guardar(x)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.guardar(x)));
     }
 
     @PutMapping("/{id}")
-    public RolDto actualizar(@PathVariable Integer id, @Valid @RequestBody RolDto d) {
+    public Response actualizar(@PathVariable Integer id, @Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdRol(id);
-        return RolDto.from(service.guardar(x));
+        return Response.desde(service.guardar(x));
     }
 
     @DeleteMapping("/{id}")

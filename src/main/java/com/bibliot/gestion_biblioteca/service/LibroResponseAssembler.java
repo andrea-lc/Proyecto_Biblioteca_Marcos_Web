@@ -1,6 +1,6 @@
 package com.bibliot.gestion_biblioteca.service;
 
-import com.bibliot.gestion_biblioteca.dto.LibroResponse;
+import com.bibliot.gestion_biblioteca.dto.LibroDtos.Response;
 import com.bibliot.gestion_biblioteca.entities.Libro;
 import com.bibliot.gestion_biblioteca.repository.LibroAutorRepository;
 import com.bibliot.gestion_biblioteca.repository.LibroCategoriaRepository;
@@ -27,7 +27,7 @@ public class LibroResponseAssembler {
         this.ejemplares = ejemplares;
     }
 
-    public LibroResponse desde(Libro libro) {
+    public Response desde(Libro libro) {
         var relacionesAutor = autores.findByLibroIdLibro(libro.getIdLibro());
         var relacionesCategoria = categorias.findByLibroIdLibro(libro.getIdLibro());
         List<String> nombresAutores = relacionesAutor.stream()
@@ -40,14 +40,14 @@ public class LibroResponseAssembler {
         List<String> formatos = new ArrayList<>();
         if (tieneFisico) formatos.add("Físico");
         if (tieneDigital) formatos.add("Digital");
-        LibroResponse base = LibroResponse.desde(libro);
-        return new LibroResponse(base.idLibro(), base.titulo(), base.isbn(), base.paginas(), base.fechaPublicacion(),
+        Response base = Response.desde(libro);
+        return new Response(base.idLibro(), base.titulo(), base.isbn(), base.paginas(), base.fechaPublicacion(),
                 base.estado(), base.descripcion(), base.contenidoTexto(), base.idEditorial(), base.editorial(),
                 nombresAutores, idsAutores, nombresCategorias, idsCategorias,
                 formatos.isEmpty() ? "Sin ejemplares" : String.join(" / ", formatos), ejemplares.findByLibroIdLibro(libro.getIdLibro()).size());
     }
 
-    public List<LibroResponse> desdeTodos(List<Libro> libros) {
+    public List<Response> desdeTodos(List<Libro> libros) {
         return libros.stream().map(this::desde).toList();
     }
 }

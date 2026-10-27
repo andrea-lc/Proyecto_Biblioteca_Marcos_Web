@@ -1,6 +1,7 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-import com.bibliot.gestion_biblioteca.dto.ApiDtos.ReservaDto;
+import com.bibliot.gestion_biblioteca.dto.ReservaDtos.Request;
+import com.bibliot.gestion_biblioteca.dto.ReservaDtos.Response;
 import com.bibliot.gestion_biblioteca.service.ReservaService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -19,32 +20,32 @@ public class ReservaController {
     }
 
     @GetMapping("/bibliotecario/reservas")
-    public List<ReservaDto> listar() {
-        return service.listarTodos().stream().map(ReservaDto::from).toList();
+    public List<Response> listar() {
+        return service.listarTodos().stream().map(Response::desde).toList();
     }
 
     @GetMapping("/bibliotecario/reservas/libro/{idLibro}")
-    public List<ReservaDto> porLibro(@PathVariable Integer idLibro) {
-        return service.buscarPorLibro(idLibro).stream().map(ReservaDto::from).toList();
+    public List<Response> porLibro(@PathVariable Integer idLibro) {
+        return service.buscarPorLibro(idLibro).stream().map(Response::desde).toList();
     }
 
     @GetMapping("/bibliotecario/reservas/{id}")
-    public ReservaDto buscar(@PathVariable Integer id) {
-        return ReservaDto.from(service.buscarPorId(id));
+    public Response buscar(@PathVariable Integer id) {
+        return Response.desde(service.buscarPorId(id));
     }
 
     @PostMapping("/bibliotecario/reservas")
-    public ResponseEntity<ReservaDto> crear(@Valid @RequestBody ReservaDto d) {
+    public ResponseEntity<Response> crear(@Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdReserva(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ReservaDto.from(service.guardar(x)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.guardar(x)));
     }
 
     @PutMapping("/bibliotecario/reservas/{id}")
-    public ReservaDto actualizar(@PathVariable Integer id, @Valid @RequestBody ReservaDto d) {
+    public Response actualizar(@PathVariable Integer id, @Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdReserva(id);
-        return ReservaDto.from(service.guardar(x));
+        return Response.desde(service.guardar(x));
     }
 
     @DeleteMapping("/bibliotecario/reservas/{id}")
@@ -54,15 +55,15 @@ public class ReservaController {
     }
 
     @GetMapping("/lector/mis-reservas/{idUsuario}")
-    public List<ReservaDto> delUsuario(@PathVariable Integer idUsuario) {
-        return service.buscarPorUsuario(idUsuario).stream().map(ReservaDto::from).toList();
+    public List<Response> delUsuario(@PathVariable Integer idUsuario) {
+        return service.buscarPorUsuario(idUsuario).stream().map(Response::desde).toList();
     }
 
     @PostMapping("/lector/reservar-libro")
-    public ResponseEntity<ReservaDto> reservar(@Valid @RequestBody ReservaDto d) {
+    public ResponseEntity<Response> reservar(@Valid @RequestBody Request d) {
         var x = d.toEntity();
         x.setIdReserva(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ReservaDto.from(service.guardar(x)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.guardar(x)));
     }
 
     @DeleteMapping("/lector/reservas/{idReserva}")
