@@ -10,55 +10,54 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=home,explore,person,help,search,notifications,account_circle,view_list,grid_view" />
 </head>
-<body class="catalog-body">
-<aside class="catalog-sidebar">
+<body class="catalog-body bg-body text-body" style="--active: #665941; --bs-body-bg: var(--cream); --bs-body-bg-rgb: 247, 241, 231; --bs-body-color: var(--ink); --bs-body-color-rgb: 36, 31, 26; --bs-emphasis-color-rgb: 36, 31, 26; --bs-border-color: var(--line); --bs-primary: var(--taupe); --bs-primary-rgb: 120, 107, 85; --bs-secondary-color: var(--muted); --bs-secondary-color-rgb: 88, 99, 109;">
+<aside class="catalog-sidebar bg-body border-end px-3 py-4">
     <a class="catalog-brand" th:href="@{/index}">Bibliot.</a>
     <nav class="catalog-nav" aria-label="Navegación principal">
-        <a th:href="@{/index}"><span aria-hidden="true">⌂</span>Inicio</a>
-        <a class="active" th:href="@{/explorar}" aria-current="page"><span aria-hidden="true">⊘</span>Explorar</a>
+        <a th:href="@{/index}"><span class="material-symbols-outlined" aria-hidden="true">home</span>Inicio</a>
+        <a class="active" th:href="@{/explorar}" aria-current="page"><span class="material-symbols-outlined" aria-hidden="true">explore</span>Explorar</a>
     </nav>
     <nav class="catalog-nav catalog-bottom-nav" aria-label="Ayuda y configuración">
-        <a th:href="@{/perfil}"><span aria-hidden="true">♙</span>Mi cuenta</a>
-        <a th:href="@{/ayuda}"><span aria-hidden="true">ⓘ</span>Ayuda</a>
+        <a th:href="@{/perfil}"><span class="material-symbols-outlined" aria-hidden="true">person</span>Mi cuenta</a>
+        <a th:href="@{/ayuda}"><span class="material-symbols-outlined" aria-hidden="true">help</span>Ayuda</a>
     </nav>
 </aside>
 <main class="catalog-main">
-    <header class="catalog-topbar">
-        <button class="catalog-menu" type="button" aria-label="Abrir menú">☰</button>
-        <div class="catalog-account-actions"><a th:href="@{/notificaciones}" class="catalog-icon-button" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></a><a th:href="@{/perfil}" class="catalog-icon-button" aria-label="Mi perfil"><span class="material-symbols-outlined">account_circle</span></a></div>
+    <header class="catalog-topbar bg-body border-bottom px-3 px-lg-4 justify-content-end">
+        <div class="catalog-account-actions"><a th:href="@{/notificaciones}" class="catalog-icon-button w-auto h-auto p-2" aria-label="Notificaciones"><span class="material-symbols-outlined" aria-hidden="true">notifications</span></a><a th:href="@{/perfil}" class="catalog-icon-button w-auto h-auto p-2" aria-label="Mi perfil"><span class="material-symbols-outlined" aria-hidden="true">account_circle</span></a></div>
     </header>
     <section class="explore-content">
         <nav class="genre-cards" aria-label="Géneros destacados">
-            <a class="genre-card genre-kids" th:href="@{/explorar(categoria='infantil')}"><span>Infantil</span></a>
-            <a class="genre-card genre-romance" th:href="@{/explorar(categoria='romance')}"><span>Romance</span></a>
-            <a class="genre-card genre-politics" th:href="@{/explorar(categoria='politica')}"><span>Política</span></a>
+            <a class="genre-card genre-kids rounded-3 shadow-sm" th:href="@{/explorar(categoria='infantil')}"><span>Infantil</span></a>
+            <a class="genre-card genre-romance rounded-3 shadow-sm" th:href="@{/explorar(categoria='romance')}"><span>Romance</span></a>
+            <a class="genre-card genre-politics rounded-3 shadow-sm" th:href="@{/explorar(categoria='politica')}"><span>Política</span></a>
         </nav>
         <form class="explore-search-row" id="catalog-search-form" th:action="@{/explorar}" method="get" role="search">
-            <label class="explore-search"><input type="search" name="q" placeholder="Buscar libro" aria-label="Buscar libro"><button type="submit" aria-label="Buscar">⌕</button></label>
-            <button class="advanced-search" type="button" disabled aria-label="Búsqueda avanzada no disponible">Búsqueda avanzada</button>
+            <label class="explore-search bg-white border rounded-2 shadow-sm"><input class="form-control border-0 rounded-2 bg-transparent text-body" type="search" name="q" placeholder="Buscar libro" aria-label="Buscar libro"><button type="submit" aria-label="Buscar"><span class="material-symbols-outlined" aria-hidden="true">search</span></button></label>
+            <button class="advanced-search btn" type="button" disabled aria-label="Búsqueda avanzada no disponible">Búsqueda avanzada</button>
         </form>
         <form class="explore-filters" th:action="@{/explorar}" method="get" aria-label="Filtros de libros">
-            <select class="form-select" name="autorId" aria-label="Filtrar por autor"><option value="">Autor</option></select>
-            <select class="form-select" name="categoriaId" aria-label="Filtrar por categoría"><option value="">Categoría</option></select>
-            <select class="form-select" name="paginas" aria-label="Filtrar por cantidad de páginas"><option value="">Cantidad de páginas</option><option value="menos200">Menos de 200</option><option value="200a400">200 a 400</option><option value="mas400">Más de 400</option></select>
-            <select class="form-select" name="editorialId" aria-label="Filtrar por editorial"><option value="">Editorial</option></select>
-            <select class="form-select year-filter" name="anio" aria-label="Filtrar por año de publicación"><option value="">Año de publicación</option><option value="2020-2026">2020–2026</option><option value="2000-2019">2000–2019</option><option value="-1999">Antes de 2000</option></select>
+            <select class="form-select bg-white border rounded-2 text-body" name="autorId" aria-label="Filtrar por autor"><option value="">Autor</option></select>
+            <select class="form-select bg-white border rounded-2 text-body" name="categoriaId" aria-label="Filtrar por categoría"><option value="">Categoría</option></select>
+            <select class="form-select bg-white border rounded-2 text-body" name="paginas" aria-label="Filtrar por cantidad de páginas"><option value="">Cantidad de páginas</option><option value="menos200">Menos de 200</option><option value="200a400">200 a 400</option><option value="mas400">Más de 400</option></select>
+            <select class="form-select bg-white border rounded-2 text-body" name="editorialId" aria-label="Filtrar por editorial"><option value="">Editorial</option></select>
+            <select class="form-select year-filter bg-white border rounded-2 text-body" name="anio" aria-label="Filtrar por año de publicación"><option value="">Año de publicación</option><option value="2020-2026">2020–2026</option><option value="2000-2019">2000–2019</option><option value="-1999">Antes de 2000</option></select>
         </form>
-        <div class="explore-view-tools" aria-label="Opciones de vista"><button type="button" class="selected" aria-label="Vista de lista" disabled>▤</button><span></span><button type="button" aria-label="Vista de cuadrícula" disabled>▦</button></div>
+        <div class="explore-view-tools border rounded-2" aria-label="Opciones de vista"><button type="button" class="selected" aria-label="Vista de lista" disabled><span class="material-symbols-outlined" aria-hidden="true">view_list</span></button><span></span><button type="button" aria-label="Vista de cuadrícula" disabled><span class="material-symbols-outlined" aria-hidden="true">grid_view</span></button></div>
         <div class="alert alert-info" id="catalog-message" role="status">Cargando catálogo…</div>
         <section class="explore-results" id="catalog-results" aria-label="Libros">
-            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449136-L.jpg" alt="Portada de La Odisea" loading="lazy"><span>La Odisea</span></a>
-            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449266-L.jpg" alt="Portada de La Ilíada" loading="lazy"><span>La Ilíada</span></a>
-            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780062315007-L.jpg" alt="Portada de El alquimista" loading="lazy"><span>El alquimista</span></a>
-            <a class="explore-book" th:href="@{/detalle_virtual}"><img src="https://covers.openlibrary.org/b/isbn/9780140449273-L.jpg" alt="Portada de La Eneida" loading="lazy"><span>La Eneida</span></a>
-            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780553380163-L.jpg" alt="Portada de Breve historia del tiempo" loading="lazy"><span>Breve historia del tiempo</span></a>
-            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449266-L.jpg" alt="Portada de La Ilíada" loading="lazy"><span>El viento entre los sauces</span></a>
-            <a class="explore-book" th:href="@{/detalle_virtual}"><img src="https://covers.openlibrary.org/b/isbn/9780140449136-L.jpg" alt="Portada de La Odisea" loading="lazy"><span>Antología de cuentos</span></a>
-            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780140449273-L.jpg" alt="Portada de La Eneida" loading="lazy"><span>La invención de Morel</span></a>
-            <a class="explore-book" th:href="@{/detalle_virtual}"><img src="https://covers.openlibrary.org/b/isbn/9780062315007-L.jpg" alt="Portada de El alquimista" loading="lazy"><span>El viaje del héroe</span></a>
-            <a class="explore-book" th:href="@{/detalle_fisico}"><img src="https://covers.openlibrary.org/b/isbn/9780553380163-L.jpg" alt="Portada de Breve historia del tiempo" loading="lazy"><span>Ciencia para todos</span></a>
+            <a class="explore-book link-body-emphasis" th:href="@{/detalle_fisico}"><img class="rounded-1 border shadow-sm" src="https://covers.openlibrary.org/b/isbn/9780140449136-L.jpg" alt="Portada de La Odisea" loading="lazy"><span>La Odisea</span></a>
+            <a class="explore-book link-body-emphasis" th:href="@{/detalle_fisico}"><img class="rounded-1 border shadow-sm" src="https://covers.openlibrary.org/b/isbn/9780140449266-L.jpg" alt="Portada de La Ilíada" loading="lazy"><span>La Ilíada</span></a>
+            <a class="explore-book link-body-emphasis" th:href="@{/detalle_fisico}"><img class="rounded-1 border shadow-sm" src="https://covers.openlibrary.org/b/isbn/9780062315007-L.jpg" alt="Portada de El alquimista" loading="lazy"><span>El alquimista</span></a>
+            <a class="explore-book link-body-emphasis" th:href="@{/detalle_virtual}"><img class="rounded-1 border shadow-sm" src="https://covers.openlibrary.org/b/isbn/9780140449273-L.jpg" alt="Portada de La Eneida" loading="lazy"><span>La Eneida</span></a>
+            <a class="explore-book link-body-emphasis" th:href="@{/detalle_fisico}"><img class="rounded-1 border shadow-sm" src="https://covers.openlibrary.org/b/isbn/9780553380163-L.jpg" alt="Portada de Breve historia del tiempo" loading="lazy"><span>Breve historia del tiempo</span></a>
+            <a class="explore-book link-body-emphasis" th:href="@{/detalle_fisico}"><img class="rounded-1 border shadow-sm" src="https://covers.openlibrary.org/b/isbn/9780140449266-L.jpg" alt="Portada de La Ilíada" loading="lazy"><span>El viento entre los sauces</span></a>
+            <a class="explore-book link-body-emphasis" th:href="@{/detalle_virtual}"><img class="rounded-1 border shadow-sm" src="https://covers.openlibrary.org/b/isbn/9780140449136-L.jpg" alt="Portada de La Odisea" loading="lazy"><span>Antología de cuentos</span></a>
+            <a class="explore-book link-body-emphasis" th:href="@{/detalle_fisico}"><img class="rounded-1 border shadow-sm" src="https://covers.openlibrary.org/b/isbn/9780140449273-L.jpg" alt="Portada de La Eneida" loading="lazy"><span>La invención de Morel</span></a>
+            <a class="explore-book link-body-emphasis" th:href="@{/detalle_virtual}"><img class="rounded-1 border shadow-sm" src="https://covers.openlibrary.org/b/isbn/9780062315007-L.jpg" alt="Portada de El alquimista" loading="lazy"><span>El viaje del héroe</span></a>
+            <a class="explore-book link-body-emphasis" th:href="@{/detalle_fisico}"><img class="rounded-1 border shadow-sm" src="https://covers.openlibrary.org/b/isbn/9780553380163-L.jpg" alt="Portada de Breve historia del tiempo" loading="lazy"><span>Ciencia para todos</span></a>
         </section>
     </section>
 </main>
@@ -91,9 +90,10 @@
         results.replaceChildren();
         books.forEach(book => {
             const link = document.createElement('a');
-            link.className = 'explore-book';
+            link.className = 'explore-book link-body-emphasis';
             link.href = `/${book.formato === 'Digital' ? 'detalle-virtual' : 'detalle-fisico'}?id=${encodeURIComponent(book.idLibro)}`;
             const cover = document.createElement('img');
+            cover.className = 'rounded-1 border shadow-sm';
             cover.src = book.isbn ? `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(book.isbn)}-L.jpg` : '';
             cover.alt = `Portada de ${book.titulo || 'libro'}`;
             cover.loading = 'lazy';

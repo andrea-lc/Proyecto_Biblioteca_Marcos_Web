@@ -22,9 +22,29 @@
                 <div class="book-field"><label for="pages">N.º de páginas</label><div class="input-with-action"><input id="pages" name="paginas" type="number" min="1" class="form-control" placeholder="Cantidad de páginas"><span class="field-plus">＋</span></div></div>
                 <div class="book-field"><label for="publication">Fecha de publicación</label><input id="publication" name="fechaPublicacion" class="form-control" type="date"></div>
                 <div class="book-field"><label for="status">Estado</label><select id="status" name="estado" class="form-select"><option value="">Seleccionar estado</option><option value="Disponible">Disponible</option><option value="No disponible">No disponible</option></select></div>
-                <div class="book-field"><label for="publisher">Editorial</label><select id="publisher" name="idEditorial" class="form-select"><option value="">Seleccionar editorial</option></select></div>
-                <div class="book-field"><label for="authors">Autores</label><select id="authors" name="autorIds" class="form-select" multiple aria-describedby="authors-help"></select><small id="authors-help" class="text-secondary">Puedes elegir más de uno.</small></div>
-                <div class="book-field"><label for="categories">Categorías</label><select id="categories" name="categoriaIds" class="form-select" multiple aria-describedby="categories-help"></select><small id="categories-help" class="text-secondary">Puedes elegir más de una.</small></div>
+                <div class="book-field">
+                    <label for="publisher">Editorial</label>
+                    <div class="d-flex flex-wrap align-items-start gap-2">
+                        <select id="publisher" name="idEditorial" class="form-select flex-grow-1"><option value="">Seleccionar editorial</option></select>
+                        <button class="btn btn-outline-secondary btn-sm text-nowrap" type="button" data-bs-toggle="modal" data-bs-target="#createEditorialModal">Crear editorial</button>
+                    </div>
+                </div>
+                <div class="book-field">
+                    <label for="authors">Autores</label>
+                    <div class="d-flex flex-wrap align-items-start gap-2">
+                        <select id="authors" name="autorIds" class="form-select flex-grow-1" multiple aria-describedby="authors-help"></select>
+                        <button class="btn btn-outline-secondary btn-sm text-nowrap" type="button" data-bs-toggle="modal" data-bs-target="#createAuthorModal">Crear autor</button>
+                    </div>
+                    <small id="authors-help" class="text-secondary">Puedes elegir más de uno.</small>
+                </div>
+                <div class="book-field">
+                    <label for="categories">Categorías</label>
+                    <div class="d-flex flex-wrap align-items-start gap-2">
+                        <select id="categories" name="categoriaIds" class="form-select flex-grow-1" multiple aria-describedby="categories-help"></select>
+                        <button class="btn btn-outline-secondary btn-sm text-nowrap" type="button" data-bs-toggle="modal" data-bs-target="#createCategoryModal">Crear categoría</button>
+                    </div>
+                    <small id="categories-help" class="text-secondary">Puedes elegir más de una.</small>
+                </div>
                 <div class="book-field"><label>Archivo PDF</label><div class="file-pick text-secondary">La API actual no guarda archivos</div></div>
                 <div class="book-field field-wide"><label for="description">Descripción</label><textarea id="description" name="descripcion" class="form-control description-field" placeholder="Sinopsis del libro"></textarea></div>
                 <div class="book-field field-wide"><label for="contentText">Contenido de lectura</label><textarea id="contentText" name="contenidoTexto" class="form-control description-field" rows="6" placeholder="Texto digital del libro (opcional)"></textarea></div>
@@ -32,11 +52,252 @@
         </section>
     </form>
 </main>
+<div class="modal fade" id="createEditorialModal" tabindex="-1" aria-labelledby="createEditorialTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border rounded-3 shadow-sm">
+            <form id="createEditorialForm" novalidate>
+                <div class="modal-header border-0 pb-0">
+                    <h2 class="modal-title fs-5" id="createEditorialTitle">Crear editorial</h2>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-3 p-4">
+                    <div>
+                        <label class="form-label small fw-semibold" for="editorialName">Nombre <span class="text-danger">*</span></label>
+                        <input class="form-control" id="editorialName" type="text" maxlength="150" required autocomplete="organization">
+                        <div class="invalid-feedback">Ingresa el nombre de la editorial (máximo 150 caracteres).</div>
+                    </div>
+                    <div>
+                        <label class="form-label small fw-semibold" for="editorialCountry">País</label>
+                        <input class="form-control" id="editorialCountry" type="text" maxlength="100" autocomplete="country-name">
+                    </div>
+                    <div>
+                        <label class="form-label small fw-semibold" for="editorialWebsite">Sitio web</label>
+                        <input class="form-control" id="editorialWebsite" type="url" placeholder="https://ejemplo.com">
+                        <div class="invalid-feedback">Ingresa una URL válida, por ejemplo https://ejemplo.com.</div>
+                    </div>
+                    <div class="alert alert-danger py-2 small mb-0" id="editorialCreateMessage" role="alert" hidden></div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4 gap-2">
+                    <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-sand" id="saveEditorialButton" type="submit">
+                        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true" hidden></span>
+                        <span data-submit-label>Guardar editorial</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createAuthorModal" tabindex="-1" aria-labelledby="createAuthorTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border rounded-3 shadow-sm">
+            <form id="createAuthorForm" novalidate>
+                <div class="modal-header border-0 pb-0">
+                    <h2 class="modal-title fs-5" id="createAuthorTitle">Crear autor</h2>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-3 p-4">
+                    <div>
+                        <label class="form-label small fw-semibold" for="authorFirstNames">Nombres <span class="text-danger">*</span></label>
+                        <input class="form-control" id="authorFirstNames" type="text" maxlength="100" required autocomplete="given-name">
+                        <div class="invalid-feedback">Ingresa los nombres (máximo 100 caracteres).</div>
+                    </div>
+                    <div>
+                        <label class="form-label small fw-semibold" for="authorLastNames">Apellidos <span class="text-danger">*</span></label>
+                        <input class="form-control" id="authorLastNames" type="text" maxlength="100" required autocomplete="family-name">
+                        <div class="invalid-feedback">Ingresa los apellidos (máximo 100 caracteres).</div>
+                    </div>
+                    <div>
+                        <label class="form-label small fw-semibold" for="authorNationality">Nacionalidad</label>
+                        <input class="form-control" id="authorNationality" type="text" maxlength="100" autocomplete="country-name">
+                    </div>
+                    <div>
+                        <label class="form-label small fw-semibold" for="authorBiography">Biografía</label>
+                        <textarea class="form-control" id="authorBiography" rows="4" maxlength="5000"></textarea>
+                    </div>
+                    <div class="alert alert-danger py-2 small mb-0" id="authorCreateMessage" role="alert" hidden></div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4 gap-2">
+                    <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-sand" id="saveAuthorButton" type="submit">
+                        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true" hidden></span>
+                        <span data-submit-label>Guardar autor</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border rounded-3 shadow-sm">
+            <form id="createCategoryForm" novalidate>
+                <div class="modal-header border-0 pb-0">
+                    <h2 class="modal-title fs-5" id="createCategoryTitle">Crear categoría</h2>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-3 p-4">
+                    <div>
+                        <label class="form-label small fw-semibold" for="categoryName">Nombre <span class="text-danger">*</span></label>
+                        <input class="form-control" id="categoryName" type="text" maxlength="100" required>
+                        <div class="invalid-feedback">Ingresa el nombre de la categoría (máximo 100 caracteres).</div>
+                    </div>
+                    <div>
+                        <label class="form-label small fw-semibold" for="categoryDescription">Descripción</label>
+                        <textarea class="form-control" id="categoryDescription" rows="3" maxlength="300"></textarea>
+                    </div>
+                    <div class="alert alert-danger py-2 small mb-0" id="categoryCreateMessage" role="alert" hidden></div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4 gap-2">
+                    <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-sand" id="saveCategoryButton" type="submit">
+                        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true" hidden></span>
+                        <span data-submit-label>Guardar categoría</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
     const apiLibrosUrl = /*[[@{/api/admin/libros}]]*/ '/api/admin/libros';
     const listaLibrosUrl = /*[[@{/libros}]]*/ '/libros';
+    const apiEditorialesUrl = /*[[@{/api/admin/editoriales}]]*/ '/api/admin/editoriales';
+    const apiAutoresUrl = /*[[@{/api/admin/autores}]]*/ '/api/admin/autores';
+    const apiCategoriasUrl = /*[[@{/api/admin/categorias}]]*/ '/api/admin/categorias';
     const formularioLibro = document.getElementById('book-form');
     const mensajeFormulario = document.getElementById('form-message');
+
+    async function mensajeErrorApi(respuesta) {
+        const texto = await respuesta.text();
+        if (!texto) return `Error HTTP ${respuesta.status}.`;
+        try {
+            const detalle = JSON.parse(texto);
+            if (Array.isArray(detalle.errors)) {
+                const errores = detalle.errors
+                    .map(error => typeof error === 'string' ? error : error.defaultMessage || error.message)
+                    .filter(Boolean);
+                if (errores.length) return errores.join(' ');
+            }
+            const mensaje = detalle.message || detalle.detail || detalle.error;
+            if (mensaje) return mensaje;
+            if (typeof detalle === 'object') {
+                const valores = Object.values(detalle).filter(valor => typeof valor === 'string');
+                if (valores.length) return valores.join(' ');
+            }
+        } catch (_) {
+            if (texto.trim().startsWith('<')) return `Error HTTP ${respuesta.status}. Revisa los datos e inténtalo nuevamente.`;
+        }
+        return texto;
+    }
+
+    function agregarOSeleccionarOpcion(selector, etiqueta, id) {
+        if (id == null) throw new Error('La respuesta no contiene el identificador del registro creado.');
+        const opcion = new Option(etiqueta, String(id), false, true);
+        selector.add(opcion);
+        if (!selector.multiple) selector.value = String(id);
+    }
+
+    function mostrarEstadoModal(elemento, mensaje) {
+        elemento.textContent = mensaje;
+        elemento.hidden = false;
+    }
+
+    function configurarAlta({ formId, modalId, selectId, buttonId, messageId, url, crearPayload, obtenerId, obtenerEtiqueta, mensajeExito }) {
+        const form = document.getElementById(formId);
+        const modal = document.getElementById(modalId);
+        const selector = document.getElementById(selectId);
+        const button = document.getElementById(buttonId);
+        const message = document.getElementById(messageId);
+        const spinner = button.querySelector('.spinner-border');
+        const label = button.querySelector('[data-submit-label]');
+        const textoOriginal = label.textContent;
+
+        form.addEventListener('submit', async evento => {
+            evento.preventDefault();
+            form.classList.add('was-validated');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            message.hidden = true;
+            message.textContent = '';
+            button.disabled = true;
+            button.setAttribute('aria-busy', 'true');
+            spinner.hidden = false;
+            label.textContent = 'Guardando…';
+
+            try {
+                const respuesta = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify(crearPayload())
+                });
+                if (!respuesta.ok) throw new Error(await mensajeErrorApi(respuesta));
+
+                const registro = await respuesta.json();
+                agregarOSeleccionarOpcion(selector, obtenerEtiqueta(registro), obtenerId(registro));
+                form.reset();
+                form.classList.remove('was-validated');
+
+                mensajeFormulario.hidden = false;
+                mensajeFormulario.className = 'alert alert-success py-2 small mt-3';
+                mensajeFormulario.textContent = mensajeExito(registro);
+                modal.addEventListener('hidden.bs.modal', () => selector.focus(), { once: true });
+                bootstrap.Modal.getOrCreateInstance(modal).hide();
+            } catch (error) {
+                mostrarEstadoModal(message, `No se pudo crear el registro. ${error.message}`);
+            } finally {
+                button.disabled = false;
+                button.removeAttribute('aria-busy');
+                spinner.hidden = true;
+                label.textContent = textoOriginal;
+            }
+        });
+    }
+
+    configurarAlta({
+        formId: 'createEditorialForm', modalId: 'createEditorialModal', selectId: 'publisher',
+        buttonId: 'saveEditorialButton', messageId: 'editorialCreateMessage', url: apiEditorialesUrl,
+        crearPayload: () => ({
+            nombre: document.getElementById('editorialName').value.trim(),
+            pais: document.getElementById('editorialCountry').value.trim() || null,
+            sitioWeb: document.getElementById('editorialWebsite').value.trim() || null
+        }),
+        obtenerId: registro => registro.idEditorial,
+        obtenerEtiqueta: registro => registro.nombre,
+        mensajeExito: registro => `Editorial “${registro.nombre}” creada y seleccionada.`
+    });
+
+    configurarAlta({
+        formId: 'createAuthorForm', modalId: 'createAuthorModal', selectId: 'authors',
+        buttonId: 'saveAuthorButton', messageId: 'authorCreateMessage', url: apiAutoresUrl,
+        crearPayload: () => ({
+            nombres: document.getElementById('authorFirstNames').value.trim(),
+            apellidos: document.getElementById('authorLastNames').value.trim(),
+            nacionalidad: document.getElementById('authorNationality').value.trim() || null,
+            biografia: document.getElementById('authorBiography').value.trim() || null
+        }),
+        obtenerId: registro => registro.idAutor,
+        obtenerEtiqueta: registro => `${registro.nombres} ${registro.apellidos}`.trim(),
+        mensajeExito: registro => `Autor “${registro.nombres} ${registro.apellidos}” creado y seleccionado.`
+    });
+
+    configurarAlta({
+        formId: 'createCategoryForm', modalId: 'createCategoryModal', selectId: 'categories',
+        buttonId: 'saveCategoryButton', messageId: 'categoryCreateMessage', url: apiCategoriasUrl,
+        crearPayload: () => ({
+            nombre: document.getElementById('categoryName').value.trim(),
+            descripcion: document.getElementById('categoryDescription').value.trim() || null
+        }),
+        obtenerId: registro => registro.idCategoria,
+        obtenerEtiqueta: registro => registro.nombre,
+        mensajeExito: registro => `Categoría “${registro.nombre}” creada y seleccionada.`
+    });
 
     async function cargarOpciones() {
         const [editorialesRespuesta, autoresRespuesta, categoriasRespuesta] = await Promise.all([

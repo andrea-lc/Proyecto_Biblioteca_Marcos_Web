@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T00:01:22-05:00",
+  "title": "Design System: Bibliot.",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papel de archivo",
+        "canonical": "oklch(96.0% 0.015 80.7)",
+        "tonalRamp": ["oklch(15% 0.004 80.7)", "oklch(25% 0.010 80.7)", "oklch(35% 0.015 80.7)", "oklch(45% 0.015 80.7)", "oklch(55% 0.015 80.7)", "oklch(65% 0.013 80.7)", "oklch(80% 0.008 80.7)", "oklch(95% 0.002 80.7)"]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Topo de encuadernación",
+        "canonical": "oklch(53.4% 0.037 80.8)",
+        "tonalRamp": ["oklch(15% 0.009 80.8)", "oklch(25% 0.024 80.8)", "oklch(35% 0.037 80.8)", "oklch(45% 0.037 80.8)", "oklch(55% 0.037 80.8)", "oklch(65% 0.031 80.8)", "oklch(80% 0.020 80.8)", "oklch(95% 0.005 80.8)"]
+      },
+      "active": {
+        "role": "primary",
+        "displayName": "Encuadernación profunda",
+        "canonical": "oklch(47.0% 0.040 82.6)",
+        "tonalRamp": ["oklch(15% 0.010 82.6)", "oklch(25% 0.026 82.6)", "oklch(35% 0.040 82.6)", "oklch(45% 0.040 82.6)", "oklch(55% 0.040 82.6)", "oklch(65% 0.034 82.6)", "oklch(80% 0.022 82.6)", "oklch(95% 0.006 82.6)"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta sepia",
+        "canonical": "oklch(24.3% 0.012 67.2)",
+        "tonalRamp": ["oklch(15% 0.003 67.2)", "oklch(25% 0.008 67.2)", "oklch(35% 0.012 67.2)", "oklch(45% 0.012 67.2)", "oklch(55% 0.012 67.2)", "oklch(65% 0.010 67.2)", "oklch(80% 0.007 67.2)", "oklch(95% 0.002 67.2)"]
+      },
+      "slate": {
+        "role": "neutral",
+        "displayName": "Pizarra de catálogo",
+        "canonical": "oklch(49.4% 0.021 245.7)",
+        "tonalRamp": ["oklch(15% 0.005 245.7)", "oklch(25% 0.014 245.7)", "oklch(35% 0.021 245.7)", "oklch(45% 0.021 245.7)", "oklch(55% 0.021 245.7)", "oklch(65% 0.018 245.7)", "oklch(80% 0.012 245.7)", "oklch(95% 0.003 245.7)"]
+      },
+      "divider": {
+        "role": "neutral",
+        "displayName": "Borde de papel",
+        "canonical": "oklch(88.4% 0.015 80.7)",
+        "tonalRamp": ["oklch(15% 0.004 80.7)", "oklch(25% 0.010 80.7)", "oklch(35% 0.015 80.7)", "oklch(45% 0.015 80.7)", "oklch(55% 0.015 80.7)", "oklch(65% 0.013 80.7)", "oklch(80% 0.008 80.7)", "oklch(95% 0.002 80.7)"]
+      }
+    },
+    "typographyMeta": {
+      "display": {"displayName": "Editorial display", "purpose": "Brand wordmark and primary identity."},
+      "headline": {"displayName": "Editorial headline", "purpose": "Page headings and book detail titles."},
+      "title": {"displayName": "Section title", "purpose": "Report and card headings."},
+      "body": {"displayName": "Interface body", "purpose": "Descriptions, general reading, and operational content."},
+      "label": {"displayName": "Form label", "purpose": "Form fields and supporting metadata."}
+    },
+    "shadows": [
+      {"name": "profile-panel", "value": "0 2px 8px rgb(33 27 22 / 5%)", "purpose": "Soft separation for profile and data panels."},
+      {"name": "bootstrap-card", "value": "0 8px 24px rgba(47, 39, 28, .06)", "purpose": "Visible, restrained elevation on cards over warm backgrounds."},
+      {"name": "field-focus", "value": "0 0 0 .2rem rgba(120, 107, 85, .2)", "purpose": "Focus halo for form fields, paired with a visible outline."}
+    ],
+    "breakpoints": [
+      {"name": "wide-layout", "value": "1199.98px"},
+      {"name": "profile-stack", "value": "1099.98px"},
+      {"name": "mobile-navigation", "value": "767.98px"},
+      {"name": "compact-profile", "value": "420px"}
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Warm taupe action for the main task on a screen.",
+      "html": "<button class=\"ds-btn-primary\">Guardar cambios</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 6px 12px; border: 0; border-radius: 5px; background: var(--taupe, #786b55); color: #fff; font: 600 .875rem 'DM Sans', Arial, sans-serif; cursor: pointer; transition: background-color .15s ease-in-out; } .ds-btn-primary:hover { background: #776a56; } .ds-btn-primary:focus-visible { outline: 3px solid #8a6940; outline-offset: 3px; } .ds-btn-primary:active { background: #665941; }"
+    },
+    {
+      "name": "Sand Action Button",
+      "kind": "button",
+      "refersTo": "button-sand",
+      "description": "Darker warm action used for book-form submission.",
+      "html": "<button class=\"ds-btn-sand\">Guardar libro</button>",
+      "css": ".ds-btn-sand { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 6px 12px; border: 0; border-radius: 5px; background: #665941; color: #fff; font: 600 .875rem 'DM Sans', Arial, sans-serif; cursor: pointer; transition: background-color .15s ease-in-out; } .ds-btn-sand:hover { background: #514530; } .ds-btn-sand:focus-visible { outline: 3px solid #8a6940; outline-offset: 3px; } .ds-btn-sand:active { background: #514530; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Compact field with a warm border and visible focus treatment.",
+      "html": "<label class=\"ds-field-wrap\"><span class=\"ds-field-label\">Buscar libro</span><input class=\"ds-field\" type=\"text\" placeholder=\"Título o autor\"></label>",
+      "css": ".ds-field-wrap { display: grid; gap: 6px; color: var(--ink, #241f1a); font: 400 .9rem 'DM Sans', Arial, sans-serif; } .ds-field { width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid #c9c0b2; border-radius: 6px; background: #fff; color: #303943; font: inherit; } .ds-field::placeholder { color: #626b72; opacity: 1; } .ds-field:focus-visible { border-color: var(--taupe, #786b55); outline: 3px solid #8a6940; outline-offset: 3px; box-shadow: 0 0 0 .2rem rgba(120, 107, 85, .2); }"
+    },
+    {
+      "name": "Active Navigation Item",
+      "kind": "nav",
+      "refersTo": "nav-active",
+      "description": "Selected destination in the administrative or catalog navigation.",
+      "html": "<a class=\"ds-nav-active\" href=\"#\">Libros</a>",
+      "css": ".ds-nav-active { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 12px; border-radius: 8px; background: #665941; color: #fff; font: 600 1rem 'DM Sans', Arial, sans-serif; text-decoration: none; } .ds-nav-active:hover { background: #514530; color: #fff; } .ds-nav-active:focus-visible { outline: 3px solid #8a6940; outline-offset: 3px; }"
+    },
+    {
+      "name": "Data Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "White data surface elevated above the warm page background.",
+      "html": "<article class=\"ds-card\"><h3 class=\"ds-card-title\">Libros registrados</h3><p class=\"ds-card-copy\">Resumen del catálogo</p></article>",
+      "css": ".ds-card { padding: 24px; border: 1px solid var(--line, #ded8ce); border-radius: 8px; background: #fff; color: var(--ink, #241f1a); box-shadow: 0 8px 24px rgba(47, 39, 28, .06); } .ds-card-title { margin: 0 0 8px; font: 700 1.2rem/1.35 'Playfair Display', Georgia, serif; } .ds-card-copy { margin: 0; color: var(--muted, #58636d); font: 400 .9rem/1.5 'DM Sans', Arial, sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El archivo editorial cálido",
+    "overview": "Bibliot. combina la lectura editorial con las tareas prácticas de una biblioteca. La tipografía serif de los encabezados aporta carácter de publicación; la sans serif mantiene legibles las búsquedas, los formularios y las tablas. La paleta cálida y los componentes contenidos conectan las vistas públicas y administrativas sin hacerlas parecer la misma superficie.\n\nLa composición alterna una navegación de catálogo con portadas de libros y una estructura administrativa con barra lateral, tablas y tarjetas de datos. Las sombras se reservan para dar separación perceptible a las tarjetas; los campos y controles mantienen bordes sencillos. En pantallas estrechas, las barras laterales pasan a navegación horizontal y los formularios y paneles se apilan.",
+    "keyCharacteristics": [
+      "Editorial y cálido, con la tipografía de lectura reservada para encabezados.",
+      "Equilibrio entre descubrimiento de libros y operación administrativa.",
+      "Fondos de papel, tinta oscura y acentos topo apagados.",
+      "Tarjetas elevadas con sombras suaves y controles de forma compacta."
+    ],
+    "rules": [
+      {"name": "The Paper-and-Ink Rule", "body": "Mantén los fondos y el texto en los tonos de papel y tinta; reserva el acento topo para acciones y navegación activa.", "section": "colors"},
+      {"name": "The Two-Font Rule", "body": "Usa la serif para identidad y jerarquía editorial; conserva la sans serif para controles, tablas y lectura operativa.", "section": "typography"},
+      {"name": "The Card-Only Elevation Rule", "body": "Reserva las sombras de elevación para tarjetas y paneles; no conviertas cada campo o sección en una superficie flotante.", "section": "elevation"}
+    ],
+    "dos": [
+      "Do mantener la serif para la marca y los encabezados editoriales, y la sans serif para lectura funcional y controles.",
+      "Do usar los tonos de papel y tinta como base, el topo como acento y la pizarra para información secundaria.",
+      "Do mantener las tarjetas visualmente separadas con sombra suave, sin elevar los campos.",
+      "Do conservar el foco visible y adaptar navegación y rejillas al ancho móvil."
+    ],
+    "donts": [
+      "Don't introducir colores de acento nuevos sin una función de estado o una decisión de marca.",
+      "Don't aplicar sombras de tarjeta a cada control o contenedor.",
+      "Don't usar la tipografía serif en tablas, etiquetas o párrafos largos.",
+      "Don't ocultar el contorno de foco para conservar una apariencia más limpia."
+    ]
+  }
+}

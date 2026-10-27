@@ -14,7 +14,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle,groups" />
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search,notifications,account_circle,admin_panel_settings,groups,menu_book,query_stats,settings,logout,download,filter_list,delete,person_add" />
 </head>
 
 <body class="admin-body">
@@ -22,101 +22,256 @@
         <aside class="admin-sidebar">
             <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
             <nav class="admin-nav" aria-label="Navegación principal">
-                <a th:href="@{/roles}"><span class="nav-icon">▱</span>Roles</a>
-                <a class="active" th:href="@{/usuarios}" aria-current="page"><span class="nav-icon"><span
-                            class="material-symbols-outlined">groups</span></span>Usuarios</a>
-                <a th:href="@{/libros}"><span class="nav-icon">▤</span>Libros</a>
-                <a th:href="@{/dashboard}"><span class="nav-icon">◷</span>Reportes</a>
-                <a th:href="@{/configuracion}"><span class="nav-icon">⚙</span>Ajustes</a>
+                <a th:href="@{/roles}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>Roles</a>
+                <a class="active" th:href="@{/usuarios}" aria-current="page"><span class="nav-icon material-symbols-outlined" aria-hidden="true">groups</span>Usuarios</a>
+                <a th:href="@{/libros}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">menu_book</span>Libros</a>
+                <a th:href="@{/dashboard}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">query_stats</span>Reportes</a>
+                <a th:href="@{/configuracion}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">settings</span>Ajustes</a>
             </nav>
-            <a class="signout-link" th:href="@{/login}">↪ <span>Cerrar sesión</span></a>
+            <a class="signout-link" th:href="@{/login}"><span class="material-symbols-outlined" aria-hidden="true">logout</span><span>Cerrar sesión</span></a>
         </aside>
+
         <main class="admin-main">
             <header class="admin-topbar">
-                <form class="admin-search" role="search" th:action="@{/usuarios}" method="get"><span
-                        aria-hidden="true">⌕</span><input type="search" name="q" placeholder="Buscar"
-                        aria-label="Buscar"></form>
-                <div class="topbar-actions"><button class="round-action" type="button" aria-label="Notificaciones"><span
-                            class="material-symbols-outlined">notifications</span></button><button
-                        class="round-action user-action" type="button" aria-label="Perfil"><span
-                            class="material-symbols-outlined">account_circle</span></button></div>
+                <form class="admin-search" id="users-search-form" role="search" th:action="@{/usuarios}" method="get">
+                    <label class="visually-hidden" for="users-search">Buscar usuarios</label>
+                    <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                    <input id="users-search" type="search" name="q" placeholder="Buscar usuarios" autocomplete="off">
+                </form>
+                <div class="topbar-actions">
+                    <button class="round-action" type="button" aria-label="Notificaciones">
+                        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+                    </button>
+                    <button class="round-action user-action" type="button" aria-label="Perfil">
+                        <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
+                    </button>
+                </div>
             </header>
-            <section class="users-content">
-                <div class="users-heading-row">
-                    <div>
-                        <h1 class="page-heading mb-1">Usuarios <span class="users-total">ⓘ <b id="user-count">0</b></span></h1>
-                    </div>
-                    <div class="users-actions"><button class="btn btn-outline-secondary btn-sm" type="button" disabled>⇩
-                            Exportar</button><a class="btn btn-brand btn-sm" th:href="@{/usuarios/nuevo}">＋ Nuevo usuario</a>
+
+            <section class="users-content" aria-labelledby="users-title">
+                <div class="users-heading-row mb-3">
+                    <h1 class="page-heading mb-0" id="users-title">
+                        Usuarios
+                        <span class="users-total"><b id="user-count">0</b><span class="visually-hidden"> usuarios registrados</span></span>
+                    </h1>
+                    <div class="users-actions">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled title="La exportación todavía no está disponible">
+                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">download</span>
+                            Exportar
+                        </button>
+                        <a class="btn btn-brand btn-sm" th:href="@{/usuarios/nuevo}">
+                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">person_add</span>
+                            Nuevo usuario
+                        </a>
                     </div>
                 </div>
-                <div class="alert alert-info" id="users-message" role="status">Listado de muestra. Exportación, filtros y cambio de vista todavía no están conectados.</div>
-                <div class="user-tabs"><a class="selected" th:href="@{/usuarios}">Todos</a><a th:href="@{/roles}">Roles</a></div>
-                <div class="user-toolbar">
-                    <form class="user-search" th:action="@{/usuarios}" method="get"><span
-                            aria-hidden="true">⌕</span><input type="search" name="usuario" placeholder="Buscar usuario"
-                            aria-label="Buscar usuario"></form>
-                    <div class="table-tools"><button class="btn btn-outline-secondary btn-sm" type="button" disabled>☷
-                            <span>Filtrar</span></button><button class="view-toggle active" type="button"
-                            aria-label="Vista de lista" disabled>☷</button><button class="view-toggle" type="button" disabled
-                            aria-label="Vista de tarjetas">▦</button></div>
+
+                <div class="alert alert-info py-2 small mb-3" id="users-message" role="status" aria-live="polite">Cargando usuarios…</div>
+
+                <nav class="nav nav-underline gap-3 border-bottom mb-3" aria-label="Secciones de administración">
+                    <a class="nav-link px-1 active fw-semibold" th:href="@{/usuarios}" aria-current="page">Todos</a>
+                    <a class="nav-link px-1 text-secondary" th:href="@{/roles}">Roles</a>
+                </nav>
+
+                <div class="user-toolbar border rounded-top-3 bg-white">
+                    <span class="small text-secondary">Listado de usuarios</span>
+                    <div class="table-tools">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled title="Los filtros avanzados todavía no están disponibles">
+                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">filter_list</span>
+                            Filtrar
+                        </button>
+                    </div>
                 </div>
-                <div class="table-responsive users-table-wrap">
-                    <table class="table users-table align-middle mb-0">
+
+                <div class="table-responsive users-table-wrap border rounded-bottom-3 shadow-sm">
+                    <table class="table users-table table-hover align-middle mb-0">
+                        <caption class="visually-hidden">Usuarios registrados en la biblioteca</caption>
                         <thead>
                             <tr>
-                                <th class="check-col"><input type="checkbox" aria-label="Seleccionar todos"></th>
-                                <th>Nombre</th>
-                                <th>Empleado ID</th>
-                                <th>Rol <span class="text-muted">ⓘ</span></th>
-                                <th>Estado</th>
-                                <th></th>
+                                <th class="check-col" scope="col"><input type="checkbox" aria-label="Seleccionar todos los usuarios"></th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">ID de usuario</th>
+                                <th scope="col">Rol</th>
+                                <th scope="col">Estado</th>
+                                <th class="text-end" scope="col"><span class="visually-hidden">Acciones</span></th>
                             </tr>
                         </thead>
                         <tbody id="users-table-body"></tbody>
                     </table>
-                    <nav class="users-pagination" aria-label="Paginación"><button class="page-btn" type="button" disabled>←
-                            <span>Anteriores</span></button>
-                        <div class="page-numbers"><button class="current" type="button" disabled>1</button><button
-                                type="button" disabled>2</button><button type="button" disabled>3</button><span>…</span><button
-                                type="button" disabled>8</button><button type="button" disabled>9</button><button
-                                type="button" disabled>10</button></div><button class="page-btn"
-                            type="button" disabled><span>Siguiente</span> →</button>
-                    </nav>
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-top px-3 py-2 small text-secondary">
+                        <span id="users-summary" role="status" aria-live="polite">Cargando usuarios…</span>
+                        <span>La paginación todavía no está disponible.</span>
+                    </div>
                 </div>
             </section>
         </main>
     </div>
-<script th:inline="javascript">
-const usersApi = /*[[@{/api/admin/usuarios}]]*/ "/api/admin/usuarios";
-const body = document.getElementById("users-table-body");
-const notice = document.getElementById("users-message");
-const count = document.getElementById("user-count");
-let allUsers = [];
-function renderUsers(query = "") {
- const q = query.trim().toLowerCase();
- const matches = allUsers.filter(user => `${user.nombres} ${user.apellidos} ${user.email} ${user.rol || ""} ${user.idUsuario}`.toLowerCase().includes(q));
- body.replaceChildren(); count.textContent = allUsers.length;
- matches.forEach((user, index) => {
-  const row = document.createElement("tr");
-  const checkCell = document.createElement("td"); const check = document.createElement("input"); check.type = "checkbox"; check.setAttribute("aria-label", `Seleccionar ${user.nombres} ${user.apellidos}`); checkCell.append(check);
-  const nameCell = document.createElement("td"); const link = document.createElement("a"); link.className = "user-cell user-detail-link"; link.href = `/usuarios/detalle?id=${encodeURIComponent(user.idUsuario)}`;
-  const avatar = document.createElement("span"); avatar.className = `user-avatar ${["avatar-purple", "avatar-coral", "avatar-photo", "avatar-peach", "avatar-green"][index % 5]}`; avatar.textContent = `${user.nombres?.[0] || ""}${user.apellidos?.[0] || ""}`.toUpperCase();
-  const details = document.createElement("span"); const name = document.createElement("b"); name.textContent = `${user.nombres} ${user.apellidos}`; const email = document.createElement("small"); email.textContent = user.email || ""; details.append(name, email); link.append(avatar, details); nameCell.append(link);
-  const idCell = document.createElement("td"); const id = document.createElement("span"); id.className = "employee-id"; id.textContent = `#${user.idUsuario}`; idCell.append(id);
-  const role = document.createElement("td"); role.textContent = user.rol || "Sin rol";
-  const stateCell = document.createElement("td"); const state = document.createElement("span"); state.className = `user-state ${user.activo ? "state-on" : "state-off"}`; state.textContent = user.activo ? "● Activo" : "● Inactivo"; stateCell.append(state);
-  const actions = document.createElement("td"); const remove = document.createElement("button"); remove.className = "row-menu"; remove.type = "button"; remove.textContent = "⋮"; remove.setAttribute("aria-label", `Eliminar ${user.nombres} ${user.apellidos}`); remove.addEventListener("click", async () => { if (!confirm(`¿Eliminar a ${user.nombres} ${user.apellidos}?`)) return; const response = await fetch(`${usersApi}/${user.idUsuario}`, { method: "DELETE" }); if (response.ok) loadUsers(); else showError(`No se pudo eliminar. Error HTTP ${response.status}`); }); actions.append(remove);
-  row.append(checkCell, nameCell, idCell, role, stateCell, actions); body.append(row);
- });
- if (!matches.length) { const row = document.createElement("tr"); const cell = document.createElement("td"); cell.colSpan = 6; cell.className = "text-center py-4 text-secondary"; cell.textContent = "No hay usuarios que coincidan con la búsqueda."; row.append(cell); body.append(row); }
-}
-function showError(text) { notice.hidden = false; notice.className = "alert alert-danger"; notice.textContent = text; }
-async function loadUsers() { notice.hidden = false; notice.textContent = "Cargando usuarios..."; try { const response = await fetch(usersApi, { headers: { Accept: "application/json" } }); if (!response.ok) throw new Error(`Error HTTP ${response.status}`); allUsers = await response.json(); notice.hidden = true; renderUsers(); } catch (error) { showError(`No se pudieron cargar los usuarios. ${error.message}`); } }
-document.querySelectorAll(".admin-search, .user-search").forEach(form => { const input = form.querySelector('input[type="search"]'); if (!input) return; form.addEventListener("submit", event => event.preventDefault()); input.addEventListener("input", () => renderUsers(input.value)); });
-const allCheck = document.querySelector('.users-table thead input[type="checkbox"]'); if (allCheck) allCheck.addEventListener("change", event => body.querySelectorAll('input[type="checkbox"]').forEach(check => check.checked = event.target.checked));
-loadUsers();
-</script>
+
+    <script th:inline="javascript">
+        const usersApi = /*[[@{/api/admin/usuarios}]]*/ "/api/admin/usuarios";
+        const body = document.getElementById("users-table-body");
+        const notice = document.getElementById("users-message");
+        const count = document.getElementById("user-count");
+        const summary = document.getElementById("users-summary");
+        const searchForm = document.getElementById("users-search-form");
+        const searchInput = document.getElementById("users-search");
+        const allCheck = document.querySelector('.users-table thead input[type="checkbox"]');
+        let allUsers = [];
+
+        function normalizarBusqueda(texto) {
+            return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase();
+        }
+
+        function renderUsers(query = "") {
+            const q = normalizarBusqueda(query.trim());
+            const matches = allUsers.filter(user => normalizarBusqueda(
+                `${user.nombres || ""} ${user.apellidos || ""} ${user.email || ""} ${user.rol || ""} ${user.idUsuario || ""}`
+            ).includes(q));
+
+            body.replaceChildren();
+            count.textContent = allUsers.length;
+            summary.textContent = q
+                ? `Mostrando ${matches.length} de ${allUsers.length} usuarios.`
+                : `${allUsers.length} usuarios registrados.`;
+            if (allCheck) allCheck.checked = false;
+
+            if (matches.length === 0) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+                cell.colSpan = 6;
+                cell.className = "text-center text-secondary py-5";
+                cell.textContent = q ? "No hay usuarios que coincidan con la búsqueda." : "Aún no hay usuarios registrados.";
+                row.append(cell);
+                body.append(row);
+                return;
+            }
+
+            matches.forEach((user, index) => {
+                const row = document.createElement("tr");
+                const checkCell = document.createElement("td");
+                const check = document.createElement("input");
+                check.type = "checkbox";
+                check.setAttribute("aria-label", `Seleccionar a ${user.nombres} ${user.apellidos}`);
+                checkCell.append(check);
+
+                const nameCell = document.createElement("td");
+                const link = document.createElement("a");
+                link.className = "user-cell user-detail-link text-decoration-none";
+                link.href = `/usuarios/detalle?id=${encodeURIComponent(user.idUsuario)}`;
+                const avatar = document.createElement("span");
+                avatar.className = `user-avatar ${["avatar-purple", "avatar-coral", "avatar-photo", "avatar-peach", "avatar-green"][index % 5]}`;
+                avatar.setAttribute("aria-hidden", "true");
+                avatar.textContent = `${user.nombres?.[0] || ""}${user.apellidos?.[0] || ""}`.toUpperCase();
+                const details = document.createElement("span");
+                const name = document.createElement("b");
+                name.textContent = `${user.nombres || ""} ${user.apellidos || ""}`.trim();
+                const email = document.createElement("small");
+                email.textContent = user.email || "Sin correo registrado";
+                details.append(name, email);
+                link.append(avatar, details);
+                nameCell.append(link);
+
+                const idCell = document.createElement("td");
+                const id = document.createElement("span");
+                id.className = "employee-id";
+                id.textContent = `#${user.idUsuario}`;
+                idCell.append(id);
+
+                const role = document.createElement("td");
+                role.textContent = user.rol || "Sin rol";
+
+                const stateCell = document.createElement("td");
+                const state = document.createElement("span");
+                state.className = `user-state badge rounded-pill ${user.activo ? "text-bg-success" : "text-bg-secondary"}`;
+                state.textContent = user.activo ? "Activo" : "Inactivo";
+                stateCell.append(state);
+
+                const actions = document.createElement("td");
+                actions.className = "text-end";
+                const remove = document.createElement("button");
+                remove.className = "btn btn-sm btn-outline-danger";
+                remove.type = "button";
+                remove.innerHTML = '<span class="material-symbols-outlined align-middle" aria-hidden="true">delete</span><span class="visually-hidden">Eliminar</span>';
+                remove.setAttribute("aria-label", `Eliminar a ${user.nombres} ${user.apellidos}`);
+                remove.addEventListener("click", () => eliminarUsuario(user, remove));
+
+                actions.append(remove);
+                row.append(checkCell, nameCell, idCell, role, stateCell, actions);
+                body.append(row);
+            });
+        }
+
+        async function mensajeErrorApi(response) {
+            const text = await response.text();
+            if (!text) return `Error HTTP ${response.status}.`;
+            try {
+                const detail = JSON.parse(text);
+                return detail.message || detail.detail || detail.error || text;
+            } catch (_) {
+                return text.trim().startsWith("<")
+                    ? `Error HTTP ${response.status}. Revisa el estado del servicio e inténtalo de nuevo.`
+                    : text;
+            }
+        }
+
+        function showError(text) {
+            notice.hidden = false;
+            notice.className = "alert alert-danger py-2 small mb-3";
+            notice.textContent = text;
+        }
+
+        async function loadUsers() {
+            notice.hidden = false;
+            notice.className = "alert alert-info py-2 small mb-3";
+            notice.textContent = "Cargando usuarios…";
+            summary.textContent = "Cargando usuarios…";
+            try {
+                const response = await fetch(usersApi, { headers: { Accept: "application/json" } });
+                if (!response.ok) throw new Error(await mensajeErrorApi(response));
+                allUsers = await response.json();
+                notice.hidden = true;
+                renderUsers(searchInput.value);
+                return true;
+            } catch (error) {
+                showError(`No se pudieron cargar los usuarios. ${error.message}`);
+                summary.textContent = "No se pudo cargar el listado.";
+                return false;
+            }
+        }
+
+        async function eliminarUsuario(user, button) {
+            const name = `${user.nombres} ${user.apellidos}`.trim();
+            if (!window.confirm(`¿Eliminar a ${name}?`)) return;
+
+            button.disabled = true;
+            button.setAttribute("aria-busy", "true");
+            button.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span class="visually-hidden">Eliminando</span>';
+            try {
+                const response = await fetch(`${usersApi}/${encodeURIComponent(user.idUsuario)}`, { method: "DELETE" });
+                if (!response.ok) throw new Error(await mensajeErrorApi(response));
+                allUsers = allUsers.filter(item => String(item.idUsuario) !== String(user.idUsuario));
+                renderUsers(searchInput.value);
+                notice.className = "alert alert-success py-2 small mb-3";
+                notice.textContent = `Se eliminó el usuario ${name}.`;
+                notice.hidden = false;
+            } catch (error) {
+                showError(`No se pudo eliminar a ${name}. ${error.message}`);
+                if (button.isConnected) {
+                    button.disabled = false;
+                    button.removeAttribute("aria-busy");
+                    button.innerHTML = '<span class="material-symbols-outlined align-middle" aria-hidden="true">delete</span><span class="visually-hidden">Eliminar</span>';
+                }
+            }
+        }
+
+        searchForm.addEventListener("submit", event => event.preventDefault());
+        searchInput.addEventListener("input", () => renderUsers(searchInput.value));
+        if (allCheck) allCheck.addEventListener("change", event => {
+            body.querySelectorAll('input[type="checkbox"]').forEach(check => check.checked = event.target.checked);
+        });
+
+        loadUsers();
+    </script>
 </body>
 
 </html>

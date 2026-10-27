@@ -14,187 +14,268 @@
         rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle,groups" />
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search,notifications,account_circle,admin_panel_settings,groups,menu_book,query_stats,settings,logout,add,download,filter_list,delete" />
 </head>
 
 <body class="admin-body">
     <div class="admin-layout">
-        <aside class="admin-sidebar"><a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
+        <aside class="admin-sidebar">
+            <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
             <nav class="admin-nav" aria-label="Navegación principal">
-                <a th:href="@{/roles}"><span class="nav-icon">▱</span>Roles</a>
-                <a th:href="@{/usuarios}"><span class="nav-icon"><span class="material-symbols-outlined">groups</span></span>Usuarios</a>
-                <a class="active" th:href="@{/libros}" aria-current="page"><span class="nav-icon">▤</span>Libros</a>
-                <a th:href="@{/dashboard}"><span class="nav-icon">◷</span>Reportes</a>
-                <a th:href="@{/configuracion}"><span class="nav-icon">⚙</span>Ajustes</a>
+                <a th:href="@{/roles}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>Roles</a>
+                <a th:href="@{/usuarios}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">groups</span>Usuarios</a>
+                <a class="active" th:href="@{/libros}" aria-current="page"><span class="nav-icon material-symbols-outlined" aria-hidden="true">menu_book</span>Libros</a>
+                <a th:href="@{/dashboard}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">query_stats</span>Reportes</a>
+                <a th:href="@{/configuracion}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">settings</span>Ajustes</a>
             </nav>
-                <a class="signout-link" th:href="@{/login}">↪ <span>Cerrar sesión</span></a>
+            <a class="signout-link" th:href="@{/login}"><span class="material-symbols-outlined" aria-hidden="true">logout</span><span>Cerrar sesión</span></a>
         </aside>
+
         <main class="admin-main">
             <header class="admin-topbar">
-                <form class="admin-search api-book-search" role="search" th:action="@{/libros}" method="get"><span
-                        aria-hidden="true">⌕</span><input type="search" name="q" placeholder="Buscar"
-                        aria-label="Buscar"></form>
-                <div class="topbar-actions"><button class="round-action" type="button" aria-label="Notificaciones"><span
-                            class="material-symbols-outlined">notifications</span></button><button
-                        class="round-action user-action" type="button" aria-label="Perfil"><span
-                            class="material-symbols-outlined">account_circle</span></button></div>
+                <form class="admin-search api-book-search" id="book-search-form" role="search" th:action="@{/libros}" method="get">
+                    <label class="visually-hidden" for="book-search">Buscar libros</label>
+                    <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                    <input id="book-search" type="search" name="q" placeholder="Buscar libros" autocomplete="off">
+                </form>
+                <div class="topbar-actions">
+                    <button class="round-action" type="button" aria-label="Notificaciones">
+                        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+                    </button>
+                    <button class="round-action user-action" type="button" aria-label="Perfil">
+                        <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
+                    </button>
+                </div>
             </header>
-            <section class="users-content">
-                <div class="users-heading-row">
-                    <h1 class="page-heading mb-1">Libros <span class="users-total">ⓘ <b id="book-count">0</b></span></h1>
-                    <div class="users-actions"><button class="btn btn-outline-secondary btn-sm" type="button" disabled>⇩
-                            Exportar</button><a class="btn btn-brand btn-sm" th:href="@{/libros/nuevo}">＋ Agregar
-                            libro</a></div>
+
+            <section class="users-content" aria-labelledby="books-title">
+                <div class="users-heading-row flex-wrap gap-3 mb-3">
+                    <h1 class="page-heading mb-0" id="books-title">
+                        Libros
+                        <span class="users-total"><b id="book-count">0</b><span class="visually-hidden"> libros en el listado</span></span>
+                    </h1>
+                    <div class="users-actions flex-wrap">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled title="La exportación todavía no está disponible">
+                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">download</span>
+                            Exportar
+                        </button>
+                        <a class="btn btn-brand btn-sm" th:href="@{/libros/nuevo}">
+                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">add</span>
+                            Agregar libro
+                        </a>
+                    </div>
                 </div>
-                <div class="alert alert-info" id="books-message" role="status">Cargando libros…</div>
-                <div class="user-tabs"><a class="selected" th:href="@{/libros}">Todos</a><span class="text-secondary px-3 py-2" aria-disabled="true">Categorías</span>
+
+                <div class="alert alert-info py-2 small mb-3" id="books-message" role="status" aria-live="polite">Cargando libros…</div>
+
+                <nav class="nav nav-underline gap-3 border-bottom mb-3" aria-label="Secciones de libros">
+                    <a class="nav-link px-1 active fw-semibold" th:href="@{/libros}" aria-current="page">Todos</a>
+                    <span class="nav-link px-1 disabled" aria-disabled="true">Categorías</span>
+                </nav>
+
+                <div class="user-toolbar border rounded-top-3 bg-white">
+                    <span class="small text-secondary">Catálogo de libros</span>
+                    <div class="table-tools">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled title="Los filtros avanzados todavía no están disponibles">
+                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">filter_list</span>
+                            Filtrar
+                        </button>
+                    </div>
                 </div>
-                <div class="user-toolbar">
-                    <form class="user-search api-book-search" th:action="@{/libros}" method="get"><span
-                            aria-hidden="true">⌕</span><input type="search" name="libro" placeholder="Buscar libro"
-                            aria-label="Buscar libro"></form>
-                    <div class="table-tools"><button class="btn btn-outline-secondary btn-sm" type="button" disabled>☷
-                            <span>Filtrar</span></button><button class="view-toggle active" type="button"
-                            aria-label="Vista de lista" disabled>☷</button><button class="view-toggle" type="button" disabled
-                            aria-label="Vista de tarjetas">▦</button></div>
-                </div>
-                <div class="table-responsive users-table-wrap">
-                    <table class="table users-table books-table align-middle mb-0">
+
+                <div class="table-responsive users-table-wrap border rounded-bottom-3 shadow-sm">
+                    <table class="table users-table books-table table-hover align-middle mb-0">
+                        <caption class="visually-hidden">Libros registrados en el catálogo</caption>
                         <thead>
                             <tr>
-                                <th class="check-col"><input type="checkbox" aria-label="Seleccionar todos"></th>
-                                <th>Nombre</th>
-                                <th>Libro ID</th>
-                                <th>Formato ⓘ</th>
-                                <th>Categoría ⓘ</th>
-                                <th>Estado</th>
-                                <th></th>
+                                <th class="check-col" scope="col"><input type="checkbox" aria-label="Seleccionar todos los libros"></th>
+                                <th scope="col">Título y autoría</th>
+                                <th scope="col">ID del libro</th>
+                                <th scope="col">Formato</th>
+                                <th scope="col">Categorías</th>
+                                <th scope="col">Estado</th>
+                                <th class="text-end" scope="col"><span class="visually-hidden">Acciones</span></th>
                             </tr>
                         </thead>
                         <tbody id="books-table-body"></tbody>
                     </table>
-                    <nav class="users-pagination" aria-label="Paginación"><button class="page-btn" type="button" disabled>←
-                            <span>Anteriores</span></button>
-                        <div class="page-numbers"><button class="current" type="button" disabled>1</button><button
-                                type="button" disabled>2</button><button type="button" disabled>3</button><span>…</span><button
-                                type="button" disabled>8</button><button type="button" disabled>9</button><button
-                                type="button" disabled>10</button></div><button class="page-btn"
-                            type="button" disabled><span>Siguiente</span> →</button>
-                    </nav>
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-top px-3 py-2 small text-secondary">
+                        <span id="books-summary" role="status" aria-live="polite">Cargando libros…</span>
+                        <span>La paginación todavía no está disponible.</span>
+                    </div>
                 </div>
             </section>
         </main>
     </div>
-    <script th:inline="javascript">
-        const apiLibrosUrl = /*[[@{/api/admin/libros}]]*/ '/api/admin/libros';
-        const cuerpoLibros = document.getElementById('books-table-body');
-        const mensajeLibros = document.getElementById('books-message');
-        const totalLibros = document.getElementById('book-count');
 
-        function crearCelda(texto, clase) {
-            const celda = document.createElement('td');
+    <script th:inline="javascript">
+        const apiLibrosUrl = /*[[@{/api/admin/libros}]]*/ "/api/admin/libros";
+        const cuerpoLibros = document.getElementById("books-table-body");
+        const mensajeLibros = document.getElementById("books-message");
+        const totalLibros = document.getElementById("book-count");
+        const resumenLibros = document.getElementById("books-summary");
+        const formularioBusqueda = document.getElementById("book-search-form");
+        const campoBusqueda = document.getElementById("book-search");
+        const seleccionarTodos = document.querySelector(".books-table thead input[type='checkbox']");
+        let busquedaActual = "";
+
+        function crearCelda(texto, clase = "") {
+            const celda = document.createElement("td");
             if (clase) celda.className = clase;
             celda.textContent = texto;
             return celda;
         }
 
-        function dibujarLibros(libros) {
+        function mensaje(texto, tipo = "info") {
+            mensajeLibros.hidden = false;
+            mensajeLibros.className = `alert alert-${tipo} py-2 small mb-3`;
+            mensajeLibros.textContent = texto;
+        }
+
+        function mostrarEstadoTabla(texto, cargando = false) {
+            cuerpoLibros.replaceChildren();
+            const fila = document.createElement("tr");
+            const celda = crearCelda("", "text-center text-secondary py-5");
+            celda.colSpan = 7;
+            if (cargando) {
+                const spinner = document.createElement("span");
+                spinner.className = "spinner-border spinner-border-sm me-2";
+                spinner.setAttribute("aria-hidden", "true");
+                celda.append(spinner);
+            }
+            celda.append(document.createTextNode(texto));
+            fila.append(celda);
+            cuerpoLibros.append(fila);
+        }
+
+        function dibujarLibros(libros, termino = "") {
             cuerpoLibros.replaceChildren();
             totalLibros.textContent = libros.length;
+            resumenLibros.textContent = `${libros.length} ${libros.length === 1 ? "libro" : "libros"} en el listado.`;
+
+            if (seleccionarTodos) seleccionarTodos.checked = false;
             if (libros.length === 0) {
-                const fila = document.createElement('tr');
-                const celda = crearCelda('No se encontraron libros.', 'text-center py-4');
-                celda.colSpan = 7;
-                fila.append(celda);
-                cuerpoLibros.append(fila);
+                mostrarEstadoTabla(termino
+                    ? "No hay libros que coincidan con la búsqueda."
+                    : "Aún no hay libros registrados en el catálogo.");
                 return;
             }
 
             libros.forEach(libro => {
-                const fila = document.createElement('tr');
-                const seleccion = document.createElement('td');
-                const casilla = document.createElement('input');
-                casilla.type = 'checkbox';
-                casilla.setAttribute('aria-label', `Seleccionar ${libro.titulo}`);
-                seleccion.append(casilla);
-                fila.append(seleccion);
+                const fila = document.createElement("tr");
+                const celdaSeleccion = document.createElement("td");
+                const casilla = document.createElement("input");
+                casilla.type = "checkbox";
+                casilla.setAttribute("aria-label", `Seleccionar ${libro.titulo || "libro sin título"}`);
+                celdaSeleccion.append(casilla);
+                fila.append(celdaSeleccion);
 
-                const nombre = document.createElement('td');
-                const contenedor = document.createElement('div');
-                contenedor.className = 'book-title-cell';
-                const titulo = document.createElement('b');
-                titulo.textContent = libro.titulo || 'Sin título';
-                const subtitulo = document.createElement('small');
-                subtitulo.textContent = (libro.autores || []).join(', ') || (libro.isbn ? `ISBN ${libro.isbn}` : '');
-                const enlace = document.createElement('a');
-                enlace.className = 'link-dark text-decoration-none d-flex flex-column';
-                enlace.href = `/libros/editar?id=${encodeURIComponent(libro.idLibro)}`;
-                enlace.append(titulo, subtitulo);
-                contenedor.append(enlace);
-                nombre.append(contenedor);
-                fila.append(nombre);
+                const celdaTitulo = document.createElement("td");
+                const enlaceTitulo = document.createElement("a");
+                enlaceTitulo.className = "book-title-cell link-dark text-decoration-none d-flex flex-column";
+                enlaceTitulo.href = `/libros/editar?id=${encodeURIComponent(libro.idLibro)}`;
+                const titulo = document.createElement("b");
+                titulo.textContent = libro.titulo || "Sin título";
+                const detalle = document.createElement("small");
+                detalle.textContent = (libro.autores || []).join(", ") || (libro.isbn ? `ISBN ${libro.isbn}` : "Autoría no disponible");
+                enlaceTitulo.append(titulo, detalle);
+                celdaTitulo.append(enlaceTitulo);
+                fila.append(celdaTitulo);
 
-                fila.append(crearCelda(`#${libro.idLibro}`, 'employee-id'));
-                fila.append(crearCelda(libro.formato || 'Sin ejemplares'));
-                fila.append(crearCelda((libro.categorias || []).join(', ') || '—'));
-                const estado = document.createElement('td');
-                const etiqueta = document.createElement('span');
-                const disponible = libro.estado === 'Disponible';
-                etiqueta.className = `user-state ${disponible ? 'state-on' : 'state-off'}`;
-                etiqueta.textContent = `● ${libro.estado || 'Sin estado'}`;
-                estado.append(etiqueta);
-                fila.append(estado);
-                const acciones = document.createElement('td');
-                const boton = document.createElement('button');
-                boton.className = 'row-menu';
-                boton.type = 'button';
-                boton.setAttribute('aria-label', 'Opciones del libro');
-                boton.textContent = '⋮';
-                boton.addEventListener('click', () => {
-                    if (window.confirm(`¿Eliminar “${libro.titulo}”?`)) eliminarLibro(libro.idLibro);
-                });
-                acciones.append(boton);
-                fila.append(acciones);
+                fila.append(crearCelda(`#${libro.idLibro}`, "employee-id"));
+                fila.append(crearCelda(libro.formato || "Sin ejemplares"));
+                fila.append(crearCelda((libro.categorias || []).join(", ") || "Sin categoría"));
+
+                const celdaEstado = document.createElement("td");
+                const estado = document.createElement("span");
+                const disponible = libro.estado === "Disponible";
+                estado.className = `badge rounded-pill ${disponible ? "text-bg-success" : "text-bg-secondary"}`;
+                estado.textContent = libro.estado || "Sin estado";
+                celdaEstado.append(estado);
+                fila.append(celdaEstado);
+
+                const celdaAcciones = document.createElement("td");
+                celdaAcciones.className = "text-end";
+                const eliminar = document.createElement("button");
+                eliminar.className = "btn btn-sm btn-outline-danger";
+                eliminar.type = "button";
+                eliminar.innerHTML = '<span class="material-symbols-outlined align-middle" aria-hidden="true">delete</span><span class="visually-hidden">Eliminar</span>';
+                eliminar.setAttribute("aria-label", `Eliminar ${libro.titulo || "libro sin título"}`);
+                eliminar.addEventListener("click", () => eliminarLibro(libro, eliminar));
+                celdaAcciones.append(eliminar);
+                fila.append(celdaAcciones);
+
                 cuerpoLibros.append(fila);
             });
         }
 
-        async function eliminarLibro(id) {
+        async function mensajeErrorApi(respuesta) {
+            const texto = await respuesta.text();
+            if (!texto) return `Error HTTP ${respuesta.status}.`;
             try {
-                const response = await fetch(`${apiLibrosUrl}/${encodeURIComponent(id)}`, { method: 'DELETE' });
-                if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
-                cargarLibros();
-            } catch (error) {
-                mensajeLibros.hidden = false;
-                mensajeLibros.textContent = `No se pudo eliminar el libro: ${error.message}`;
+                const detalle = JSON.parse(texto);
+                return detalle.message || detalle.detail || detalle.error || texto;
+            } catch (_) {
+                return texto.trim().startsWith("<")
+                    ? `Error HTTP ${respuesta.status}. Comprueba el estado del servicio e inténtalo de nuevo.`
+                    : texto;
             }
         }
 
-        async function cargarLibros(q = '') {
-            mensajeLibros.textContent = 'Cargando libros…';
+        async function cargarLibros(q = "") {
+            busquedaActual = q.trim();
+            mensaje("Cargando libros…");
+            resumenLibros.textContent = "Cargando libros…";
+            mostrarEstadoTabla("Cargando el catálogo…", true);
+            if (seleccionarTodos) seleccionarTodos.checked = false;
+
             try {
                 const url = new URL(apiLibrosUrl, window.location.origin);
-                if (q.trim()) url.searchParams.set('q', q.trim());
-                const respuesta = await fetch(url, { headers: { Accept: 'application/json' } });
-                if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
+                if (busquedaActual) url.searchParams.set("q", busquedaActual);
+                const respuesta = await fetch(url, { headers: { Accept: "application/json" } });
+                if (!respuesta.ok) throw new Error(await mensajeErrorApi(respuesta));
                 const libros = await respuesta.json();
-                dibujarLibros(libros);
+                dibujarLibros(libros, busquedaActual);
                 mensajeLibros.hidden = true;
+                return true;
             } catch (error) {
-                mensajeLibros.hidden = false;
-                mensajeLibros.textContent = 'No se pudo cargar el catálogo. Comprueba la conexión con el servidor.';
+                mensaje(`No se pudo cargar el catálogo. ${error.message}`, "danger");
+                resumenLibros.textContent = "No se pudo cargar el catálogo.";
+                mostrarEstadoTabla("Comprueba la conexión con el servidor e inténtalo de nuevo.");
+                return false;
             }
         }
 
-        document.querySelectorAll('.api-book-search').forEach(formulario => {
-            formulario.addEventListener('submit', evento => {
-                evento.preventDefault();
-                cargarLibros(formulario.querySelector('input[type="search"]').value);
-            });
+        async function eliminarLibro(libro, boton) {
+            if (!window.confirm(`¿Eliminar “${libro.titulo}”?`)) return;
+            boton.disabled = true;
+            boton.setAttribute("aria-busy", "true");
+            boton.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span class="visually-hidden">Eliminando</span>';
+
+            try {
+                const respuesta = await fetch(`${apiLibrosUrl}/${encodeURIComponent(libro.idLibro)}`, { method: "DELETE" });
+                if (!respuesta.ok) throw new Error(await mensajeErrorApi(respuesta));
+                if (await cargarLibros(busquedaActual)) mensaje(`Se eliminó “${libro.titulo}”.`, "success");
+            } catch (error) {
+                mensaje(`No se pudo eliminar “${libro.titulo}”. ${error.message}`, "danger");
+                if (boton.isConnected) {
+                    boton.disabled = false;
+                    boton.removeAttribute("aria-busy");
+                    boton.innerHTML = '<span class="material-symbols-outlined align-middle" aria-hidden="true">delete</span><span class="visually-hidden">Eliminar</span>';
+                }
+            }
+        }
+
+        formularioBusqueda.addEventListener("submit", evento => {
+            evento.preventDefault();
+            cargarLibros(campoBusqueda.value);
         });
-        const busquedaInicial = new URLSearchParams(window.location.search).get('q') || '';
-        document.querySelectorAll('.api-book-search input[type="search"]').forEach(input => input.value = busquedaInicial);
-        cargarLibros(busquedaInicial);
+        campoBusqueda.value = new URLSearchParams(window.location.search).get("q") || "";
+        if (seleccionarTodos) seleccionarTodos.addEventListener("change", evento => {
+            cuerpoLibros.querySelectorAll('input[type="checkbox"]').forEach(casilla => casilla.checked = evento.target.checked);
+        });
+
+        cargarLibros(campoBusqueda.value);
     </script>
 </body>
 

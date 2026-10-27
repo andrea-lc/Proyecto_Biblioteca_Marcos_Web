@@ -1,66 +1,309 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <base th:href="@{/}">
     <title>Roles | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search,notifications,account_circle,admin_panel_settings,groups,menu_book,query_stats,settings,logout" />
 </head>
-<body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/dashboard}">Bibliot.</a><nav class="nav"><a class="nav-link text-dark" th:href="@{/usuarios}">Usuarios</a><a class="nav-link text-dark" th:href="@{/configuracion}">Configuración</a></nav></div></header>
-<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-xl-9"><p class="text-secondary mb-1">Administración</p><h1 class="h2 mb-4">Roles y permisos</h1>
-    <div class="alert alert-info" id="roles-message" role="status">Cargando roles…</div>
-    <div class="card border-0 shadow-sm mb-4"><div class="card-body p-4"><h2 class="h5" id="role-form-title">Crear rol</h2>
-        <form id="role-form"><input id="role-id" type="hidden"><div class="row g-3 align-items-end"><div class="col"><label class="form-label" for="role-name">Nombre del rol</label><input class="form-control" id="role-name" maxlength="50" required></div><div class="col-auto d-flex gap-2"><button class="btn btn-secondary" id="role-save" type="submit">Crear</button><button class="btn btn-outline-secondary" id="role-cancel" type="button" hidden>Cancelar edición</button></div></div></form>
-    </div></div>
-    <div class="card border-0 shadow-sm mb-4"><div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>ID</th><th>Nombre</th><th class="text-end">Acciones</th></tr></thead><tbody id="roles-body"></tbody></table></div></div>
-    <div class="alert alert-warning" role="note">La entidad actual solo registra nombres de roles. La asignación de permisos queda pendiente de la definición institucional.</div>
-</div></div></main>
-<script th:inline="javascript">
-    const apiRolesUrl = /*[[@{/api/admin/roles}]]*/ '/api/admin/roles';
-    const formRole = document.getElementById('role-form');
-    const roleId = document.getElementById('role-id');
-    const roleName = document.getElementById('role-name');
-    const rolesBody = document.getElementById('roles-body');
-    const rolesMessage = document.getElementById('roles-message');
-    const saveButton = document.getElementById('role-save');
-    const cancelButton = document.getElementById('role-cancel');
-    function mensaje(texto, tipo = 'info') { rolesMessage.hidden = false; rolesMessage.className = `alert alert-${tipo}`; rolesMessage.textContent = texto; }
-    function limpiarFormulario() { formRole.reset(); roleId.value = ''; document.getElementById('role-form-title').textContent = 'Crear rol'; saveButton.textContent = 'Crear'; cancelButton.hidden = true; }
-    async function cargarRoles() {
-        mensaje('Cargando roles…');
-        try {
-            const response = await fetch(apiRolesUrl, { headers: { Accept: 'application/json' } });
-            if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
-            const roles = await response.json();
+
+<body class="admin-body">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
+            <nav class="admin-nav" aria-label="Navegación principal">
+                <a class="active" th:href="@{/roles}" aria-current="page"><span class="nav-icon material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>Roles</a>
+                <a th:href="@{/usuarios}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">groups</span>Usuarios</a>
+                <a th:href="@{/libros}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">menu_book</span>Libros</a>
+                <a th:href="@{/dashboard}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">query_stats</span>Reportes</a>
+                <a th:href="@{/configuracion}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">settings</span>Ajustes</a>
+            </nav>
+            <a class="signout-link" th:href="@{/login}"><span class="material-symbols-outlined" aria-hidden="true">logout</span><span>Cerrar sesión</span></a>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <form class="admin-search" id="role-search-form" role="search">
+                    <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                    <input id="role-search" type="search" placeholder="Buscar rol" aria-label="Buscar rol">
+                </form>
+                <div class="topbar-actions">
+                    <button class="round-action" type="button" aria-label="Notificaciones">
+                        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+                    </button>
+                    <button class="round-action user-action" type="button" aria-label="Perfil">
+                        <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
+                    </button>
+                </div>
+            </header>
+
+            <section class="users-content">
+                <div class="users-heading-row mb-3">
+                    <h1 class="page-heading mb-1">Roles y permisos <span class="users-total"><b id="role-count">0</b></span></h1>
+                    <div class="users-actions">
+                        <button class="btn btn-brand btn-sm" id="role-new" type="button">
+                            <span class="material-symbols-outlined align-middle" aria-hidden="true"></span>
+                            Nuevo rol
+                        </button>
+                    </div>
+                </div>
+
+                <div class="alert alert-info py-2 small mb-3" id="roles-message" role="status" aria-live="polite">Cargando roles…</div>
+
+                <section class="card border rounded-3 shadow-sm mb-4" aria-labelledby="role-form-title">
+                    <div class="card-body p-3 p-md-4">
+                        <h2 class="form-section-title mb-3" id="role-form-title">Crear rol</h2>
+                        <form id="role-form" novalidate>
+                            <input id="role-id" type="hidden">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-12 col-md">
+                                    <label class="form-label small fw-semibold" for="role-name">Nombre del rol <span class="text-danger">*</span></label>
+                                    <input class="form-control" id="role-name" type="text" maxlength="50" required autocomplete="off" aria-describedby="role-name-help">
+                                    <div class="form-text" id="role-name-help">Máximo 50 caracteres.</div>
+                                    <div class="invalid-feedback">Escribe un nombre para el rol.</div>
+                                </div>
+                                <div class="col-12 col-md-auto d-flex flex-wrap gap-2">
+                                    <button class="btn btn-sand" id="role-save" type="submit">
+                                        <span class="spinner-border spinner-border-sm me-2" id="role-save-spinner" aria-hidden="true" hidden></span>
+                                        <span id="role-save-label">Crear rol</span>
+                                    </button>
+                                    <button class="btn btn-outline-secondary" id="role-cancel" type="button" hidden>Cancelar edición</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <div class="table-responsive users-table-wrap border rounded-3 shadow-sm">
+                    <table class="table users-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Nombre del rol</th>
+                                <th class="text-end" scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roles-body"></tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-warning mt-3 mb-0" role="note">
+                    La entidad actual solo registra nombres de roles. La asignación de permisos queda pendiente de la definición institucional.
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script th:inline="javascript">
+        const apiRolesUrl = /*[[@{/api/admin/roles}]]*/ '/api/admin/roles';
+        const formRole = document.getElementById('role-form');
+        const roleId = document.getElementById('role-id');
+        const roleName = document.getElementById('role-name');
+        const rolesBody = document.getElementById('roles-body');
+        const rolesMessage = document.getElementById('roles-message');
+        const totalRoles = document.getElementById('role-count');
+        const roleSearchForm = document.getElementById('role-search-form');
+        const roleSearch = document.getElementById('role-search');
+        const newRoleButton = document.getElementById('role-new');
+        const saveButton = document.getElementById('role-save');
+        const saveLabel = document.getElementById('role-save-label');
+        const saveSpinner = document.getElementById('role-save-spinner');
+        const cancelButton = document.getElementById('role-cancel');
+        const roleFormTitle = document.getElementById('role-form-title');
+        let roles = [];
+
+        function mensaje(texto, tipo = 'info') {
+            rolesMessage.hidden = false;
+            rolesMessage.className = `alert alert-${tipo} py-2 small mb-3`;
+            rolesMessage.textContent = texto;
+        }
+
+        function limpiarFormulario() {
+            formRole.reset();
+            formRole.classList.remove('was-validated');
+            roleId.value = '';
+            roleName.setCustomValidity('');
+            roleFormTitle.textContent = 'Crear rol';
+            saveLabel.textContent = 'Crear rol';
+            cancelButton.hidden = true;
+        }
+
+        function crearCelda(texto, clase = '') {
+            const celda = document.createElement('td');
+            if (clase) celda.className = clase;
+            celda.textContent = texto;
+            return celda;
+        }
+
+        function dibujarRoles() {
+            const termino = roleSearch.value.trim().toLocaleLowerCase();
+            const filtrados = roles.filter(rol => `${rol.idRol} ${rol.nombre}`.toLocaleLowerCase().includes(termino));
             rolesBody.replaceChildren();
-            roles.forEach(rol => {
-                const row = document.createElement('tr');
-                const idCell = document.createElement('td'); idCell.textContent = rol.idRol;
-                const nameCell = document.createElement('td'); nameCell.textContent = rol.nombre;
-                const actions = document.createElement('td'); actions.className = 'text-end';
-                const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'btn btn-sm btn-outline-secondary me-2'; edit.textContent = 'Editar';
-                edit.addEventListener('click', () => { roleId.value = rol.idRol; roleName.value = rol.nombre; document.getElementById('role-form-title').textContent = 'Editar rol'; saveButton.textContent = 'Guardar cambios'; cancelButton.hidden = false; roleName.focus(); });
-                const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'btn btn-sm btn-outline-danger'; remove.textContent = 'Eliminar';
-                remove.addEventListener('click', async () => { if (!window.confirm(`¿Eliminar el rol “${rol.nombre}”?`)) return; try { const result = await fetch(`${apiRolesUrl}/${rol.idRol}`, { method: 'DELETE' }); if (!result.ok) throw new Error(`Error HTTP ${result.status}`); await cargarRoles(); } catch (error) { mensaje(`No se pudo eliminar el rol. ${error.message}`, 'danger'); } });
-                actions.append(edit, remove); row.append(idCell, nameCell, actions); rolesBody.append(row);
+            totalRoles.textContent = filtrados.length;
+
+            if (filtrados.length === 0) {
+                const fila = document.createElement('tr');
+                const celda = crearCelda(
+                    termino ? 'No se encontraron roles que coincidan con la búsqueda.' : 'Aún no hay roles registrados.',
+                    'text-center text-secondary py-4'
+                );
+                celda.colSpan = 3;
+                fila.append(celda);
+                rolesBody.append(fila);
+                return;
+            }
+
+            filtrados.forEach(rol => {
+                const fila = document.createElement('tr');
+                fila.append(crearCelda(`#${rol.idRol}`, 'employee-id'));
+                fila.append(crearCelda(rol.nombre));
+
+                const acciones = document.createElement('td');
+                acciones.className = 'text-end';
+                const botones = document.createElement('div');
+                botones.className = 'd-inline-flex flex-wrap justify-content-end gap-2';
+
+                const editar = document.createElement('button');
+                editar.type = 'button';
+                editar.className = 'btn btn-sm btn-outline-secondary';
+                editar.textContent = 'Editar';
+                editar.setAttribute('aria-label', `Editar rol ${rol.nombre}`);
+                editar.addEventListener('click', () => {
+                    roleId.value = rol.idRol;
+                    roleName.value = rol.nombre;
+                    roleName.setCustomValidity('');
+                    formRole.classList.remove('was-validated');
+                    roleFormTitle.textContent = 'Editar rol';
+                    saveLabel.textContent = 'Guardar cambios';
+                    cancelButton.hidden = false;
+                    formRole.scrollIntoView({ block: 'center' });
+                    roleName.focus();
+                });
+
+                const eliminar = document.createElement('button');
+                eliminar.type = 'button';
+                eliminar.className = 'btn btn-sm btn-outline-danger';
+                eliminar.textContent = 'Eliminar';
+                eliminar.setAttribute('aria-label', `Eliminar rol ${rol.nombre}`);
+                eliminar.addEventListener('click', () => eliminarRol(rol, eliminar));
+
+                botones.append(editar, eliminar);
+                acciones.append(botones);
+                fila.append(acciones);
+                rolesBody.append(fila);
             });
-            rolesMessage.hidden = true;
-        } catch (error) { mensaje(`No se pudieron cargar los roles. ${error.message}`, 'danger'); }
-    }
-    formRole.addEventListener('submit', async event => {
-        event.preventDefault();
-        const id = roleId.value;
-        try {
-            const response = await fetch(id ? `${apiRolesUrl}/${id}` : apiRolesUrl, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ idRol: id ? Number(id) : null, nombre: roleName.value.trim() }) });
-            if (!response.ok) throw new Error((await response.text()) || `Error HTTP ${response.status}`);
-            limpiarFormulario(); await cargarRoles();
-        } catch (error) { mensaje(`No se pudo guardar el rol. ${error.message}`, 'danger'); }
-    });
-    cancelButton.addEventListener('click', limpiarFormulario);
-    cargarRoles();
-</script>
+        }
+
+        async function mensajeErrorApi(respuesta) {
+            const texto = await respuesta.text();
+            if (!texto) return `Error HTTP ${respuesta.status}.`;
+            try {
+                const detalle = JSON.parse(texto);
+                return detalle.message || detalle.detail || detalle.error || texto;
+            } catch (_) {
+                return texto.trim().startsWith('<')
+                    ? `Error HTTP ${respuesta.status}. Revisa los datos e inténtalo nuevamente.`
+                    : texto;
+            }
+        }
+
+        async function cargarRoles() {
+            mensaje('Cargando roles…');
+            try {
+                const response = await fetch(apiRolesUrl, { headers: { Accept: 'application/json' } });
+                if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+                roles = await response.json();
+                dibujarRoles();
+                rolesMessage.hidden = true;
+                return true;
+            } catch (error) {
+                mensaje(`No se pudieron cargar los roles. ${error.message}`, 'danger');
+                return false;
+            }
+        }
+
+        async function eliminarRol(rol, boton) {
+            if (!window.confirm(`¿Eliminar el rol “${rol.nombre}”?`)) return;
+            boton.disabled = true;
+            boton.textContent = 'Eliminando…';
+            try {
+                const response = await fetch(`${apiRolesUrl}/${encodeURIComponent(rol.idRol)}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error(await mensajeErrorApi(response));
+                if (await cargarRoles()) mensaje(`Rol “${rol.nombre}” eliminado.`, 'success');
+            } catch (error) {
+                mensaje(`No se pudo eliminar el rol. ${error.message}`, 'danger');
+                if (boton.isConnected) {
+                    boton.disabled = false;
+                    boton.textContent = 'Eliminar';
+                }
+            }
+        }
+
+        roleName.addEventListener('input', () => roleName.setCustomValidity(''));
+        roleSearchForm.addEventListener('submit', event => event.preventDefault());
+        newRoleButton.addEventListener('click', () => {
+            limpiarFormulario();
+            formRole.scrollIntoView({ block: 'center' });
+            roleName.focus();
+        });
+        roleSearch.addEventListener('input', dibujarRoles);
+
+        formRole.addEventListener('submit', async event => {
+            event.preventDefault();
+            roleName.setCustomValidity(roleName.value.trim() ? '' : 'Escribe un nombre para el rol.');
+            formRole.classList.add('was-validated');
+            if (!formRole.checkValidity()) {
+                formRole.reportValidity();
+                return;
+            }
+
+            const id = roleId.value;
+            const estabaEditando = Boolean(id);
+            saveButton.disabled = true;
+            cancelButton.disabled = true;
+            newRoleButton.disabled = true;
+            roleName.disabled = true;
+            saveButton.setAttribute('aria-busy', 'true');
+            saveSpinner.hidden = false;
+            saveLabel.textContent = 'Guardando…';
+            mensaje('Guardando rol…');
+
+            try {
+                const response = await fetch(id ? `${apiRolesUrl}/${encodeURIComponent(id)}` : apiRolesUrl, {
+                    method: id ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify({ idRol: id ? Number(id) : null, nombre: roleName.value.trim() })
+                });
+                if (!response.ok) throw new Error(await mensajeErrorApi(response));
+
+                limpiarFormulario();
+                if (await cargarRoles()) mensaje(estabaEditando ? 'Rol actualizado.' : 'Rol creado.', 'success');
+            } catch (error) {
+                mensaje(`No se pudo guardar el rol. ${error.message}`, 'danger');
+            } finally {
+                saveButton.disabled = false;
+                cancelButton.disabled = false;
+                newRoleButton.disabled = false;
+                roleName.disabled = false;
+                saveButton.removeAttribute('aria-busy');
+                saveSpinner.hidden = true;
+                saveLabel.textContent = roleId.value ? 'Guardar cambios' : 'Crear rol';
+            }
+        });
+
+        cancelButton.addEventListener('click', limpiarFormulario);
+        cargarRoles();
+    </script>
 </body>
+
 </html>
