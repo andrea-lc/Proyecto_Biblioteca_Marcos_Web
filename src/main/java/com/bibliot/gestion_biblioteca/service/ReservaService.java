@@ -29,6 +29,29 @@ public class ReservaService {
     }
 
     @Transactional
+    public Reserva actualizar(Integer id, Reserva datosActualizados) {
+        Reserva existente = buscarPorId(id);
+
+        if (datosActualizados.getFechaReserva() != null) {
+            existente.setFechaReserva(datosActualizados.getFechaReserva());
+        }
+        if (datosActualizados.getFechaExpiracion() != null) {
+            existente.setFechaExpiracion(datosActualizados.getFechaExpiracion());
+        }
+        if (datosActualizados.getEstado() != null) {
+            existente.setEstado(datosActualizados.getEstado());
+        }
+        if (datosActualizados.getUsuario() != null) {
+            existente.setUsuario(datosActualizados.getUsuario());
+        }
+        if (datosActualizados.getLibro() != null) {
+            existente.setLibro(datosActualizados.getLibro());
+        }
+
+        return reservaRepository.save(existente);
+    }
+
+    @Transactional
     public void eliminar(Integer id) {
         Reserva reserva = buscarPorId(id);
         reservaRepository.delete(reserva);

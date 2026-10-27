@@ -29,6 +29,26 @@ public class SancionService {
     }
 
     @Transactional
+    public Sancion actualizar(Integer id, Sancion datosActualizados) {
+        Sancion existente = buscarPorId(id);
+
+        if (datosActualizados.getMotivo() != null) {
+            existente.setMotivo(datosActualizados.getMotivo());
+        }
+        if (datosActualizados.getFechaInicio() != null) {
+            existente.setFechaInicio(datosActualizados.getFechaInicio());
+        }
+        if (datosActualizados.getFechaFin() != null) {
+            existente.setFechaFin(datosActualizados.getFechaFin());
+        }
+        if (datosActualizados.getEstado() != null) {
+            existente.setEstado(datosActualizados.getEstado());
+        }
+
+        return sancionRepository.save(existente);
+    }
+
+    @Transactional
     public void eliminar(Integer id) {
         Sancion sancion = buscarPorId(id);
         sancionRepository.delete(sancion);

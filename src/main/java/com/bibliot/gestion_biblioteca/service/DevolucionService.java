@@ -28,6 +28,18 @@ public class DevolucionService {
     }
 
     @Transactional
+    public Devolucion actualizar(Integer id, Devolucion datosActualizados) {
+        Devolucion existente = buscarPorId(id);
+        if (datosActualizados.getFechaDevolucion() != null) {
+            existente.setFechaDevolucion(datosActualizados.getFechaDevolucion());
+        }
+        if (datosActualizados.getObservacion() != null) {
+            existente.setObservacion(datosActualizados.getObservacion());
+        }
+        return devolucionRepository.save(existente);
+    }
+
+    @Transactional
     public void eliminar(Integer id) {
         Devolucion devolucion = buscarPorId(id);
         devolucionRepository.delete(devolucion);

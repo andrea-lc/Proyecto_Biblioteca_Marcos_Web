@@ -23,6 +23,8 @@ public interface LibroRepository extends JpaRepository<Libro, Integer> {
 
     List<Libro> findByIsbn(String isbn);
 
+    @Query("SELECT l FROM Libro l JOIN FETCH l.editorial")
+    List<Libro> findAllConEditorial();
     /*
      * Búsqueda full-text delegada a MySQL (Requiere índice FULLTEXT en la BD)
      * 

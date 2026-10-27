@@ -9,7 +9,6 @@ import com.bibliot.gestion_biblioteca.entities.Autor;
 import com.bibliot.gestion_biblioteca.repository.AutorRepository;
 import jakarta.transaction.Transactional;
 
-
 @Service
 public class AutorService {
     @Autowired
@@ -33,6 +32,24 @@ public class AutorService {
     public void eliminar(Integer id) {
         Autor autor = buscarPorId(id);
         autorRepository.delete(autor);
+    }
+
+    @Transactional
+    public Autor actualizar(Integer id, Autor datosActualizados) {
+        Autor existente = buscarPorId(id);
+        if (datosActualizados.getNombres() != null) {
+            existente.setNombres(datosActualizados.getNombres());
+        }
+        if (datosActualizados.getApellidos() != null) {
+            existente.setApellidos(datosActualizados.getApellidos());
+        }
+        if (datosActualizados.getNacionalidad() != null) {
+            existente.setNacionalidad(datosActualizados.getNacionalidad());
+        }
+        if (datosActualizados.getBiografia() != null) {
+            existente.setBiografia(datosActualizados.getBiografia());
+        }
+        return autorRepository.save(existente);
     }
 
     public List<Autor> buscarPorNombre(String nombre) {

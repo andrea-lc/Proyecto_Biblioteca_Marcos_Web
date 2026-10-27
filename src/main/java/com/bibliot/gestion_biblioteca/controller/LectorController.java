@@ -27,23 +27,22 @@ public class LectorController {
     @Autowired
     private ReservaService  reservaService;
     // Ver perfil
-    @GetMapping("/perfil/{idUsuario}")
-    public ResponseEntity<Usuario> verMiPerfil(@PathVariable Integer idUsuario) {
-        return ResponseEntity.ok(usuarioService.buscarPorId(idUsuario));
+    @GetMapping("/perfil/{id}")
+    public ResponseEntity<Usuario> verMiPerfil(@PathVariable Integer id) {
+        return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
     // Actualizar perfil
-    @PutMapping("/perfil/{idUsuario}")
-    public ResponseEntity<Usuario> actualizarMiPerfil(@PathVariable Integer idUsuario,
-            @RequestBody Usuario usuarioDetalles) {
-        usuarioDetalles.setIdUsuario(idUsuario); // Asegura que no modifique a otro
-        return ResponseEntity.ok(usuarioService.actualizarUsuario(usuarioDetalles));
+    @PutMapping("/perfil/{id}")
+    public ResponseEntity<Usuario> actualizarMiPerfil(@PathVariable Integer id,
+            @RequestBody Usuario detalles) {
+        return ResponseEntity.ok(usuarioService.actualizar(id, detalles));
     }
 
     // Ver préstamos activos
-    @GetMapping("/mis-prestamos/{idUsuario}")
-    public ResponseEntity<Prestamo> verMisPrestamos(@PathVariable Integer idUsuario) {
-        return ResponseEntity.ok(prestamoService.buscarPorId(idUsuario));
+    @GetMapping("/mis-prestamos/{id}")
+    public ResponseEntity<Prestamo> verMisPrestamos(@PathVariable Integer id) {
+        return ResponseEntity.ok(prestamoService.buscarPorId(id));
     }
 
     // Solicitar un nuevo préstamo
@@ -52,9 +51,9 @@ public class LectorController {
         return ResponseEntity.ok(prestamoService.guardar(nuevoPrestamo));
     }
 
-    @GetMapping("/mis-reservas/{idUsuario}")
-    public ResponseEntity<List<Reserva>> verMisReservas(@PathVariable Integer idUsuario) {
-        return ResponseEntity.ok(reservaService.buscarPorUsuario(idUsuario));
+    @GetMapping("/mis-reservas/{id}")
+    public ResponseEntity<List<Reserva>> verMisReservas(@PathVariable Integer id) {
+        return ResponseEntity.ok(reservaService.buscarPorUsuario(id));
     }
 
     @PostMapping("/reservar-libro")

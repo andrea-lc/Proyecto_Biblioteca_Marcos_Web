@@ -7,12 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.bibliot.gestion_biblioteca.entities.Editorial;
 import com.bibliot.gestion_biblioteca.repository.EditorialRepository;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.transaction.Transactional;
 
-
-@Service    
+@Service
 public class EditorialService {
     @Autowired
     private EditorialRepository editorialRepository;
@@ -29,6 +26,23 @@ public class EditorialService {
     @Transactional
     public Editorial guardar(Editorial editorial) {
         return editorialRepository.save(editorial);
+    }
+
+    @Transactional
+    public Editorial actualizar(Integer id, Editorial datosActualizados) {
+        Editorial existente = buscarPorId(id);
+
+        if (datosActualizados.getNombre() != null) {
+            existente.setNombre(datosActualizados.getNombre());
+        }
+        if (datosActualizados.getPais() != null) {
+            existente.setPais(datosActualizados.getPais());
+        }
+        if (datosActualizados.getSitioWeb() != null) {
+            existente.setSitioWeb(datosActualizados.getSitioWeb());
+        }
+
+        return editorialRepository.save(existente);
     }
 
     @Transactional

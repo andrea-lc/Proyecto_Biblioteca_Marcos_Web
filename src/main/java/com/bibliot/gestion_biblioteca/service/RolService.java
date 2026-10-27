@@ -41,6 +41,17 @@ public class RolService {
     }
 
     @Transactional
+    public Rol actualizar(Integer id, Rol datosActualizados) {
+        Rol existente = buscarPorId(id);
+
+        if (datosActualizados.getNombre() != null) {
+            existente.setNombre(datosActualizados.getNombre());
+        }
+
+        return rolRepository.save(existente);
+    }
+
+    @Transactional
     public void eliminar(Integer id) {
         Rol rol = buscarPorId(id);
         rolRepository.delete(rol);

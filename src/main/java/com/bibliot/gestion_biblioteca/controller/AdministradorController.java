@@ -1,6 +1,5 @@
 package com.bibliot.gestion_biblioteca.controller;
 
-
 import com.bibliot.gestion_biblioteca.entities.*;
 import com.bibliot.gestion_biblioteca.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +28,7 @@ public class AdministradorController {
     @Autowired
     private EjemplarService ejemplarService;
 
-
-    //Gestion de usuarios
+    // Gestion de usuarios
     @GetMapping("/usuarios")
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         return ResponseEntity.ok(usuarioService.listarTodos());
@@ -48,8 +46,7 @@ public class AdministradorController {
 
     @PutMapping("/usuarios/{id}")
     public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Integer id, @RequestBody Usuario detalles) {
-        detalles.setIdUsuario(id);
-        return ResponseEntity.ok(usuarioService.actualizarUsuario(detalles));
+        return ResponseEntity.ok(usuarioService.actualizar(id, detalles));
     }
 
     @DeleteMapping("/usuarios/{id}")
@@ -86,8 +83,7 @@ public class AdministradorController {
 
     @PutMapping("/roles/{id}")
     public ResponseEntity<Rol> actualizarRol(@PathVariable Integer id, @RequestBody Rol detalles) {
-        detalles.setIdRol(id);
-        return ResponseEntity.ok(rolService.guardar(detalles));
+        return ResponseEntity.ok(rolService.actualizar(id, detalles));
     }
 
     @DeleteMapping("/roles/{id}")
@@ -119,8 +115,7 @@ public class AdministradorController {
 
     @PutMapping("/libros/{id}")
     public ResponseEntity<Libro> actualizarLibro(@PathVariable Integer id, @RequestBody Libro detalles) {
-        detalles.setIdLibro(id);
-        return ResponseEntity.ok(libroService.guardar(detalles));
+        return ResponseEntity.ok(libroService.actualizar(id, detalles));
     }
 
     @DeleteMapping("/libros/{id}")
@@ -134,7 +129,6 @@ public class AdministradorController {
         return ResponseEntity.ok(libroService.buscarPorTitulo(titulo));
     }
 
-    
     @GetMapping("/libros/editorial/{idEditorial}")
     public ResponseEntity<List<Libro>> buscarPorEditorial(@PathVariable Integer idEditorial) {
         return ResponseEntity.ok(libroService.buscarPorEditorial(idEditorial));
@@ -157,9 +151,11 @@ public class AdministradorController {
     }
 
     @PutMapping("/libros-digitales/{id}")
-    public ResponseEntity<LibroDigital> actualizarLibroDigital(@PathVariable Integer id, @RequestBody LibroDigital detalles) {
-        detalles.setIdLibroDigital(id);
-        return ResponseEntity.ok(libroDigitalService.guardar(detalles));
+    public ResponseEntity<LibroDigital> actualizarLibroDigital(@PathVariable Integer id,
+            @RequestBody LibroDigital detalles) {
+
+        return ResponseEntity.ok(libroDigitalService.actualizar(id,detalles ));
+
     }
 
     @DeleteMapping("/libros-digitales/{id}")
@@ -191,8 +187,7 @@ public class AdministradorController {
 
     @PutMapping("/autores/{id}")
     public ResponseEntity<Autor> actualizarAutor(@PathVariable Integer id, @RequestBody Autor detalles) {
-        detalles.setIdAutor(id); // Asegúrate de que tu entidad Autor tenga setIdAutor
-        return ResponseEntity.ok(autorService.guardar(detalles));
+        return ResponseEntity.ok(autorService.actualizar(id, detalles));
     }
 
     @DeleteMapping("/autores/{id}")
@@ -224,8 +219,7 @@ public class AdministradorController {
 
     @PutMapping("/editoriales/{id}")
     public ResponseEntity<Editorial> actualizarEditorial(@PathVariable Integer id, @RequestBody Editorial detalles) {
-        detalles.setIdEditorial(id);
-        return ResponseEntity.ok(editorialService.guardar(detalles));
+        return ResponseEntity.ok(editorialService.actualizar(id, detalles));
     }
 
     @DeleteMapping("/editoriales/{id}")
@@ -252,8 +246,8 @@ public class AdministradorController {
 
     @PutMapping("/categorias/{id}")
     public ResponseEntity<Categoria> actualizarCategoria(@PathVariable Integer id, @RequestBody Categoria detalles) {
-        detalles.setIdCategoria(id);
-        return ResponseEntity.ok(categoriaService.guardar(detalles));
+
+        return ResponseEntity.ok(categoriaService.actualizar(id, detalles));
     }
 
     @DeleteMapping("/categorias/{id}")
@@ -262,7 +256,7 @@ public class AdministradorController {
         return ResponseEntity.ok().body("Categoría eliminada correctamente");
     }
 
-    //Gestion de ejemplares
+    // Gestion de ejemplares
     @GetMapping("/ejemplares")
     public ResponseEntity<List<Ejemplar>> listarEjemplares() {
         return ResponseEntity.ok(ejemplarService.listarTodos());
@@ -281,7 +275,7 @@ public class AdministradorController {
     @PutMapping("/ejemplares/{id}")
     public ResponseEntity<Ejemplar> actualizarEjemplar(@PathVariable Integer id, @RequestBody Ejemplar detalles) {
         detalles.setIdEjemplar(id);
-        return ResponseEntity.ok(ejemplarService.guardar(detalles));
+        return ResponseEntity.ok(ejemplarService.actualizar(id, detalles));
     }
 
     @DeleteMapping("/ejemplares/{id}")

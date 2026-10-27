@@ -30,6 +30,18 @@ public class CategoriaService {
     }
 
     @Transactional
+    public Categoria actualizar(Integer id, Categoria datosActualizados) {
+        Categoria existente = buscarPorId(id);
+        if (datosActualizados.getNombre() != null) {
+            existente.setNombre(datosActualizados.getNombre());
+        }
+        if (datosActualizados.getDescripcion() != null) {
+            existente.setDescripcion(datosActualizados.getDescripcion());
+        }
+        return categoriaRepository.save(existente);
+    }
+
+    @Transactional
     public void eliminar(Integer id) {
         Categoria categoria = buscarPorId(id);
         categoriaRepository.delete(categoria);

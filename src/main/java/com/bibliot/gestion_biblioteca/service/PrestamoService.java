@@ -29,6 +29,29 @@ public class PrestamoService {
     }
 
     @Transactional
+    public Prestamo actualizar(Integer id, Prestamo datosActualizados) {
+        Prestamo existente = buscarPorId(id);
+
+        if (datosActualizados.getFechaPrestamo() != null) {
+            existente.setFechaPrestamo(datosActualizados.getFechaPrestamo());
+        }
+        if (datosActualizados.getFechaVencimiento() != null) {
+            existente.setFechaVencimiento(datosActualizados.getFechaVencimiento());
+        }
+        if (datosActualizados.getEstado() != null) {
+            existente.setEstado(datosActualizados.getEstado());
+        }
+        if (datosActualizados.getUsuario() != null) {
+            existente.setUsuario(datosActualizados.getUsuario());
+        }
+        if (datosActualizados.getEjemplar() != null) {
+            existente.setEjemplar(datosActualizados.getEjemplar());
+        }
+
+        return prestamoRepository.save(existente);
+    }
+
+    @Transactional
     public void eliminar(Integer id) {
         Prestamo prestamo = buscarPorId(id);
         prestamoRepository.delete(prestamo);

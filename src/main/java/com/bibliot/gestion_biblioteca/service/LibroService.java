@@ -16,7 +16,7 @@ public class LibroService {
     private LibroRepository libroRepository;
 
     public List<Libro> listarTodos() {
-        return libroRepository.findAll();
+        return libroRepository.findAllConEditorial();
     }
 
     public Libro buscarPorId(Integer id) {
@@ -35,6 +35,38 @@ public class LibroService {
             }
         }
         return libroRepository.save(libro);
+    }
+
+    @Transactional
+    public Libro actualizar(Integer id, Libro datosActualizados) {
+        Libro existente = buscarPorId(id);
+
+        if (datosActualizados.getTitulo() != null) {
+            existente.setTitulo(datosActualizados.getTitulo());
+        }
+        if (datosActualizados.getPaginas() != null) {
+            existente.setPaginas(datosActualizados.getPaginas());
+        }
+        if (datosActualizados.getDescripcion() != null) {
+            existente.setDescripcion(datosActualizados.getDescripcion());
+        }
+        if (datosActualizados.getContenidoTexto() != null) {
+            existente.setContenidoTexto(datosActualizados.getContenidoTexto());
+        }
+        if (datosActualizados.getFechaPublicacion() != null) {
+            existente.setFechaPublicacion(datosActualizados.getFechaPublicacion());
+        }
+        if (datosActualizados.getIsbn() != null) {
+            existente.setIsbn(datosActualizados.getIsbn());
+        }
+        if (datosActualizados.getEstado() != null) {
+            existente.setEstado(datosActualizados.getEstado());
+        }
+        if (datosActualizados.getEditorial() != null) {
+            existente.setEditorial(datosActualizados.getEditorial());
+        }
+
+        return libroRepository.save(existente);
     }
 
     @Transactional

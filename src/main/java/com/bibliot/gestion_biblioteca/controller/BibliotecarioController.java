@@ -45,8 +45,7 @@ public class BibliotecarioController {
 
     @PutMapping("/usuarios/{id}")
     public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Integer id, @RequestBody Usuario detalles) {
-        detalles.setIdUsuario(id);
-        return ResponseEntity.ok(usuarioService.actualizarUsuario(detalles));
+        return ResponseEntity.ok(usuarioService.actualizar(id, detalles));
     }
 
     @DeleteMapping("/usuarios/{id}")
@@ -110,8 +109,7 @@ public class BibliotecarioController {
 
     @PutMapping("/prestamos/{id}")
     public ResponseEntity<Prestamo> actualizarPrestamo(@PathVariable Integer id, @RequestBody Prestamo detalles) {
-        detalles.setIdPrestamo(id);
-        return ResponseEntity.ok(prestamoService.guardar(detalles));
+        return ResponseEntity.ok(prestamoService.actualizar(id, detalles));
     }
 
     @DeleteMapping("/prestamos/{id}")
@@ -183,6 +181,6 @@ public class BibliotecarioController {
     @PutMapping("/sanciones/{id}")
     public ResponseEntity<Sancion> actualizarSancion(@PathVariable Integer id, @RequestBody Sancion detalles) {
         detalles.setIdSancion(id);
-        return ResponseEntity.ok(sancionService.guardar(detalles));
+        return ResponseEntity.ok(sancionService.actualizar(id, detalles));
     }
 }

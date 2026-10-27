@@ -18,6 +18,8 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.PastOrPresent;
 import org.hibernate.validator.constraints.ISBN;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDate;
 
 @Entity
@@ -25,6 +27,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
 public class Libro {
 
     @Id
