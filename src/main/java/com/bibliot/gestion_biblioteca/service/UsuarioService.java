@@ -52,26 +52,24 @@ public class UsuarioService {
         if (datosActualizados.getApellidos() != null) {
             existente.setApellidos(datosActualizados.getApellidos());
         }
-        if (datosActualizados.getDni() != null) {
-            existente.setDni(datosActualizados.getDni());
+
+        // Actualizar campos
+        existente.setNombres(usuario.getNombres());
+        existente.setApellidos(usuario.getApellidos());
+        existente.setEmail(usuario.getEmail());
+        existente.setDni(usuario.getDni());
+        existente.setTelefono(usuario.getTelefono());
+        existente.setDireccion(usuario.getDireccion());
+        if (usuario.getRol() != null) {
+            existente.setRol(usuario.getRol());
         }
-        if (datosActualizados.getEmail() != null) {
-            existente.setEmail(datosActualizados.getEmail());
+        if (usuario.getActivo() != null) {
+            existente.setActivo(usuario.getActivo());
         }
-        if (datosActualizados.getTelefono() != null) {
-            existente.setTelefono(datosActualizados.getTelefono());
-        }
-        if (datosActualizados.getDireccion() != null) {
-            existente.setDireccion(datosActualizados.getDireccion());
-        }
-        if (datosActualizados.getPassword() != null && !datosActualizados.getPassword().isEmpty()) {
-            existente.setPassword(passwordEncoder.encode(datosActualizados.getPassword()));
-        }
-        if (datosActualizados.getRol() != null) {
-            existente.setRol(datosActualizados.getRol());
-        }
-        if (datosActualizados.getActivo() != null) {
-            existente.setActivo(datosActualizados.getActivo());
+
+        // Actualizar contraseña solo si se proporcionó una nueva
+        if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
+            existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
         return usuarioRepository.save(existente);
     }

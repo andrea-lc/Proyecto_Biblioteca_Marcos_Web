@@ -10,6 +10,46 @@
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
 <body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/dashboard}">Bibliot.</a><a class="nav-link text-dark" th:href="@{/usuarios}">Volver a usuarios</a></div></header>
-<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-lg-8"><p class="text-secondary mb-1">Administración</p><h1 class="h2 mb-4">Nuevo usuario</h1><div class="alert alert-info" role="status">El alta de usuarios todavía no está conectada; el formulario es una maqueta.</div><form th:action="@{/usuarios/nuevo}" method="post" class="card border-0 shadow-sm"><div class="card-body p-4"><div class="row g-3"><div class="col-md-6"><label for="firstName" class="form-label">Nombres</label><input class="form-control" id="firstName" name="nombres" autocomplete="given-name" required></div><div class="col-md-6"><label for="lastName" class="form-label">Apellidos</label><input class="form-control" id="lastName" name="apellidos" autocomplete="family-name" required></div><div class="col-12"><label for="email" class="form-label">Correo electrónico</label><input class="form-control" id="email" name="correo" type="email" autocomplete="email" required></div><div class="col-md-6"><label for="role" class="form-label">Rol</label><select id="role" name="rol" class="form-select"><option value="" selected>Seleccionar rol</option><option>Lector</option><option>Personal de biblioteca</option></select></div><div class="col-md-6"><label for="state" class="form-label">Estado</label><select id="state" name="estado" class="form-select"><option>Activo</option><option>Inactivo</option></select></div></div></div><div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 p-4"><a class="btn btn-outline-secondary" th:href="@{/usuarios}">Cancelar</a><button class="btn btn-secondary" type="button" disabled>Crear usuario</button></div></form></div></div></main>
+<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-lg-8"><p class="text-secondary mb-1">Administración</p><h1 class="h2 mb-4">Nuevo usuario</h1><div class="alert alert-info" id="user-message" role="status" hidden></div>
+    <form id="user-form" class="card border-0 shadow-sm"><div class="card-body p-4"><div class="row g-3">
+        <div class="col-md-6"><label for="firstName" class="form-label">Nombres</label><input class="form-control" id="firstName" name="nombres" maxlength="100" autocomplete="given-name" required></div>
+        <div class="col-md-6"><label for="lastName" class="form-label">Apellidos</label><input class="form-control" id="lastName" name="apellidos" maxlength="100" autocomplete="family-name" required></div>
+        <div class="col-md-6"><label for="dni" class="form-label">DNI</label><input class="form-control" id="dni" name="dni" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" required></div>
+        <div class="col-md-6"><label for="email" class="form-label">Correo electrónico</label><input class="form-control" id="email" name="email" type="email" maxlength="150" autocomplete="email" required></div>
+        <div class="col-md-6"><label for="phone" class="form-label">Teléfono</label><input class="form-control" id="phone" name="telefono" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" required></div>
+        <div class="col-md-6"><label for="role" class="form-label">Rol</label><select id="role" name="idRol" class="form-select" required><option value="">Cargando roles…</option></select></div>
+        <div class="col-12"><label for="address" class="form-label">Dirección</label><input class="form-control" id="address" name="direccion" maxlength="200"></div>
+        <div class="col-md-6"><label for="password" class="form-label">Contraseña inicial</label><input class="form-control" id="password" name="password" type="password" minlength="8" maxlength="255" autocomplete="new-password" required></div>
+        <div class="col-md-6"><label for="state" class="form-label">Estado</label><select id="state" name="activo" class="form-select"><option value="true" selected>Activo</option><option value="false">Inactivo</option></select></div>
+    </div></div><div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 p-4"><a class="btn btn-outline-secondary" th:href="@{/usuarios}">Cancelar</a><button class="btn btn-secondary" type="submit">Crear usuario</button></div></form>
+</div></div></main>
+<script th:inline="javascript">
+    const apiUsersUrl = /*[[@{/api/admin/usuarios}]]*/ '/api/admin/usuarios';
+    const apiRolesUrl = /*[[@{/api/admin/roles}]]*/ '/api/admin/roles';
+    const form = document.getElementById('user-form');
+    const message = document.getElementById('user-message');
+    const roleSelect = document.getElementById('role');
+    function showMessage(text, type = 'info') { message.hidden = false; message.className = `alert alert-${type}`; message.textContent = text; }
+    async function loadRoles() {
+        try {
+            const response = await fetch(apiRolesUrl, { headers: { Accept: 'application/json' } });
+            if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+            const roles = await response.json(); roleSelect.replaceChildren(new Option('Seleccionar rol', ''));
+            roles.forEach(role => roleSelect.add(new Option(role.nombre, role.idRol)));
+            if (!roles.length) showMessage('Primero debes crear un rol para asignarlo al usuario.', 'warning');
+        } catch (error) { roleSelect.replaceChildren(new Option('No se pudieron cargar roles', '')); showMessage(`No se pudieron cargar los roles. ${error.message}`, 'danger'); }
+    }
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const data = new FormData(form);
+        const payload = { nombres: data.get('nombres').trim(), apellidos: data.get('apellidos').trim(), dni: data.get('dni').trim(), email: data.get('email').trim(), telefono: data.get('telefono').trim(), direccion: data.get('direccion').trim() || null, idRol: Number(data.get('idRol')), password: data.get('password'), activo: data.get('activo') === 'true' };
+        try {
+            const response = await fetch(apiUsersUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) throw new Error((await response.text()) || `Error HTTP ${response.status}`);
+            window.location.assign(/*[[@{/usuarios}]]*/ '/usuarios');
+        } catch (error) { showMessage(`No se pudo crear el usuario. ${error.message}`, 'danger'); }
+    });
+    loadRoles();
+</script>
 </body>
 </html>

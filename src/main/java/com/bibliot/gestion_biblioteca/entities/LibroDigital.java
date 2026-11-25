@@ -15,6 +15,7 @@ import lombok.Setter;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.PastOrPresent;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDateTime;
@@ -54,5 +55,6 @@ public class LibroDigital {
     private Boolean disponible;
 
     @Column(name = "fecha_registro")
+    @PastOrPresent(message = "La fecha de registro no puede ser futura")
     private LocalDateTime fechaRegistro;
 }

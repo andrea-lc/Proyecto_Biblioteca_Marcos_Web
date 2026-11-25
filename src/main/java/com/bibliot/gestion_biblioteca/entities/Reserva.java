@@ -46,6 +46,7 @@ public class Reserva {
 
     @Column(name = "fecha_reserva", nullable = false)
     @NotNull(message = "La fecha de reserva es obligatoria")
+    @jakarta.validation.constraints.PastOrPresent(message = "La fecha de reserva no puede ser futura")
     private LocalDateTime fechaReserva;
 
     @Column(name = "fecha_expiracion", nullable = false)

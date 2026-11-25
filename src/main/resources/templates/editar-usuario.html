@@ -1,15 +1,56 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-    <base th:href="@{/}">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><base th:href="@{/}">
     <title>Editar usuario | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
-<body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/dashboard}">Bibliot.</a><a class="nav-link text-dark" th:href="@{/usuarios/detalle}">Volver al perfil</a></div></header>
-<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-lg-8"><p class="text-secondary mb-1">Usuarios / Emeto Mamani</p><h1 class="h2 mb-4">Editar usuario</h1><div class="alert alert-info" role="status">Los cambios no se guardarán: la edición todavía no está conectada.</div><form th:action="@{/usuarios/editar}" method="post" class="card border-0 shadow-sm"><div class="card-body p-4"><div class="row g-3"><div class="col-md-6"><label for="displayName" class="form-label">Nombre para mostrar</label><input class="form-control" id="displayName" name="nombreVisible" value="Emeto Mamani" required></div><div class="col-md-6"><label for="fullName" class="form-label">Nombre completo</label><input class="form-control" id="fullName" name="nombreCompleto" value="Emeto Winner Montes" required></div><div class="col-12"><label for="email" class="form-label">Correo electrónico</label><input class="form-control" id="email" name="correo" type="email" value="lector@ejemplo.com" required></div><div class="col-md-6"><label for="role" class="form-label">Rol</label><select class="form-select" id="role" name="rol"><option>Lector</option><option>Personal de biblioteca</option></select></div><div class="col-md-6"><label for="state" class="form-label">Estado</label><select class="form-select" id="state" name="estado"><option>Activo</option><option>Inactivo</option></select></div></div></div><div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 p-4"><a class="btn btn-outline-secondary" th:href="@{/usuarios/detalle}">Cancelar</a><button class="btn btn-secondary" type="button" disabled>Guardar cambios</button></div></form></div></div></main>
+<body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/dashboard}">Bibliot.</a><a class="nav-link text-dark" th:href="@{/usuarios}">Volver a usuarios</a></div></header>
+<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-lg-8"><p class="text-secondary mb-1">Usuarios / <span id="user-breadcrumb">Cargando…</span></p><h1 class="h2 mb-4">Editar usuario</h1><div class="alert alert-info" id="edit-user-message" role="status">Cargando usuario…</div>
+    <form id="edit-user-form" class="card border-0 shadow-sm" hidden><div class="card-body p-4"><div class="row g-3">
+        <div class="col-md-6"><label for="firstName" class="form-label">Nombres</label><input class="form-control" id="firstName" name="nombres" maxlength="100" required></div>
+        <div class="col-md-6"><label for="lastName" class="form-label">Apellidos</label><input class="form-control" id="lastName" name="apellidos" maxlength="100" required></div>
+        <div class="col-md-6"><label for="dni" class="form-label">DNI</label><input class="form-control" id="dni" name="dni" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" required></div>
+        <div class="col-md-6"><label for="email" class="form-label">Correo electrónico</label><input class="form-control" id="email" name="email" type="email" maxlength="150" required></div>
+        <div class="col-md-6"><label for="phone" class="form-label">Teléfono</label><input class="form-control" id="phone" name="telefono" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" required></div>
+        <div class="col-md-6"><label for="role" class="form-label">Rol</label><select class="form-select" id="role" name="idRol" required></select></div>
+        <div class="col-md-6"><label for="address" class="form-label">Dirección</label><input class="form-control" id="address" name="direccion" maxlength="200"></div>
+        <div class="col-md-6"><label for="password" class="form-label">Nueva contraseña (opcional)</label><input class="form-control" id="password" name="password" type="password" minlength="8" maxlength="255" autocomplete="new-password"></div>
+        <div class="col-md-6"><label for="state" class="form-label">Estado</label><select class="form-select" id="state" name="activo"><option value="true">Activo</option><option value="false">Inactivo</option></select></div>
+    </div></div><div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 p-4"><a class="btn btn-outline-secondary" th:href="@{/usuarios}">Cancelar</a><button class="btn btn-secondary" type="submit">Guardar cambios</button></div></form>
+</div></div></main>
+<script th:inline="javascript">
+    const apiUsersUrl = /*[[@{/api/admin/usuarios}]]*/ '/api/admin/usuarios';
+    const apiRolesUrl = /*[[@{/api/admin/roles}]]*/ '/api/admin/roles';
+    const userId = new URLSearchParams(window.location.search).get('id');
+    const form = document.getElementById('edit-user-form');
+    const message = document.getElementById('edit-user-message');
+    const roleSelect = document.getElementById('role');
+    function showMessage(text, type = 'info') { message.hidden = false; message.className = `alert alert-${type}`; message.textContent = text; }
+    async function loadUser() {
+        if (!userId) { showMessage('Falta el identificador del usuario.', 'danger'); return; }
+        try {
+            const [userResponse, rolesResponse] = await Promise.all([fetch(`${apiUsersUrl}/${encodeURIComponent(userId)}`), fetch(apiRolesUrl)]);
+            if (!userResponse.ok || !rolesResponse.ok) throw new Error('No se pudieron cargar el usuario y los roles.');
+            const [user, roles] = await Promise.all([userResponse.json(), rolesResponse.json()]);
+            roles.forEach(role => roleSelect.add(new Option(role.nombre, role.idRol)));
+            for (const field of ['nombres', 'apellidos', 'dni', 'email', 'telefono', 'direccion']) form.elements.namedItem(field).value = user[field] ?? '';
+            roleSelect.value = user.idRol ?? '';
+            form.elements.namedItem('activo').value = String(Boolean(user.activo));
+            document.getElementById('user-breadcrumb').textContent = `${user.nombres} ${user.apellidos}`;
+            form.hidden = false; message.hidden = true;
+        } catch (error) { showMessage(`No se pudo cargar el usuario. ${error.message}`, 'danger'); }
+    }
+    form.addEventListener('submit', async event => {
+        event.preventDefault(); const data = new FormData(form);
+        const payload = { nombres: data.get('nombres').trim(), apellidos: data.get('apellidos').trim(), dni: data.get('dni').trim(), email: data.get('email').trim(), telefono: data.get('telefono').trim(), direccion: data.get('direccion').trim() || null, idRol: Number(data.get('idRol')), password: data.get('password') || null, activo: data.get('activo') === 'true' };
+        try { const response = await fetch(`${apiUsersUrl}/${encodeURIComponent(userId)}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) }); if (!response.ok) throw new Error((await response.text()) || `Error HTTP ${response.status}`); window.location.assign(/*[[@{/usuarios}]]*/ '/usuarios'); }
+        catch (error) { showMessage(`No se pudieron guardar los cambios. ${error.message}`, 'danger'); }
+    });
+    loadUser();
+</script>
 </body>
 </html>

@@ -25,6 +25,11 @@ public class LibroDigitalService {
                 .orElseThrow(() -> new RuntimeException("Libro digital no encontrado con ID: " + id));
     }
 
+    public LibroDigital buscarPorLibro(Integer idLibro) {
+        return libroDigitalRepository.findByLibroIdLibro(idLibro)
+                .orElseThrow(() -> new RuntimeException("Libro digital no encontrado para el libro: " + idLibro));
+    }
+
     @Transactional
     public LibroDigital guardar(LibroDigital libroDigital) {
         return libroDigitalRepository.save(libroDigital);

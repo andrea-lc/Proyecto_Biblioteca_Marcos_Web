@@ -10,6 +10,122 @@
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
 <body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/dashboard}">Bibliot.</a><a class="nav-link text-dark" th:href="@{/libros}">Volver a libros</a></div></header>
-<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-lg-9"><p class="text-secondary mb-1">Catálogo / La Odisea</p><h1 class="h2 mb-4">Editar libro</h1><div class="alert alert-info" role="status">Los cambios no se guardarán: la edición todavía no está conectada.</div><form th:action="@{/libros/editar}" method="post" class="card border-0 shadow-sm"><div class="card-body p-4"><div class="row g-3"><div class="col-12"><label for="title" class="form-label">Título</label><input class="form-control" id="title" name="titulo" value="La Odisea" required></div><div class="col-md-6"><label for="author" class="form-label">Autor</label><input class="form-control" id="author" name="autor" value="Homero"></div><div class="col-md-6"><label for="category" class="form-label">Categoría</label><select class="form-select" id="category" name="categoria"><option>Literatura clásica</option><option>Infantil y juvenil</option><option>Historia</option></select></div><div class="col-md-4"><label for="format" class="form-label">Formato</label><select class="form-select" id="format" name="formato"><option>Físico</option><option>Digital</option></select></div><div class="col-md-4"><label for="copies" class="form-label">Ejemplares</label><input class="form-control" id="copies" name="ejemplares" type="number" min="0" value="4"></div><div class="col-md-4"><label for="status" class="form-label">Disponibilidad</label><select class="form-select" id="status" name="estado"><option>Disponible</option><option>No disponible</option></select></div><div class="col-12"><label for="description" class="form-label">Descripción</label><textarea class="form-control" id="description" name="descripcion" rows="4">Una obra clásica de la literatura griega.</textarea></div></div></div><div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 p-4"><a class="btn btn-outline-secondary" th:href="@{/libros}">Cancelar</a><button class="btn btn-secondary" type="button" disabled>Guardar cambios</button></div></form></div></div></main>
+<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-lg-9">
+    <p class="text-secondary mb-1">Catálogo / <span id="book-breadcrumb">Libro</span></p>
+    <h1 class="h2 mb-4">Editar libro</h1>
+    <div class="alert alert-info" id="edit-message" role="status">Cargando libro…</div>
+    <form id="edit-book-form" class="card border-0 shadow-sm" hidden>
+        <div class="card-body p-4"><div class="row g-3">
+            <div class="col-12"><label for="title" class="form-label">Título</label><input class="form-control" id="title" name="titulo" maxlength="255" required></div>
+            <div class="col-md-6"><label for="isbn" class="form-label">ISBN</label><input class="form-control" id="isbn" name="isbn"></div>
+            <div class="col-md-6"><label for="pages" class="form-label">Páginas</label><input class="form-control" id="pages" name="paginas" type="number" min="1"></div>
+            <div class="col-md-6"><label for="publication" class="form-label">Fecha de publicación</label><input class="form-control" id="publication" name="fechaPublicacion" type="date"></div>
+            <div class="col-md-6"><label for="status" class="form-label">Estado</label><select class="form-select" id="status" name="estado"><option value="">Sin estado</option><option value="Disponible">Disponible</option><option value="No disponible">No disponible</option></select></div>
+            <div class="col-md-6"><label for="publisher" class="form-label">Editorial</label><select class="form-select" id="publisher" name="idEditorial"><option value="">Sin editorial</option></select></div>
+            <div class="col-md-6"><label for="authors" class="form-label">Autores</label><select class="form-select" id="authors" name="autorIds" multiple></select></div>
+            <div class="col-md-6"><label for="categories" class="form-label">Categorías</label><select class="form-select" id="categories" name="categoriaIds" multiple></select></div>
+            <div class="col-12"><label for="description" class="form-label">Descripción</label><textarea class="form-control" id="description" name="descripcion" rows="4"></textarea></div>
+            <div class="col-12"><label for="contentText" class="form-label">Contenido de lectura</label><textarea class="form-control" id="contentText" name="contenidoTexto" rows="6"></textarea></div>
+        </div></div>
+        <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 p-4"><a class="btn btn-outline-secondary" th:href="@{/libros}">Cancelar</a><button class="btn btn-secondary" type="submit">Guardar cambios</button></div>
+    </form>
+</div></div></main>
+<script th:inline="javascript">
+    const apiLibrosUrl = /*[[@{/api/admin/libros}]]*/ '/api/admin/libros';
+    const listaLibrosUrl = /*[[@{/libros}]]*/ '/libros';
+    const idLibro = new URLSearchParams(window.location.search).get('id');
+    const formulario = document.getElementById('edit-book-form');
+    const mensaje = document.getElementById('edit-message');
+    const apiAutoresUrl = /*[[@{/api/admin/autores}]]*/ '/api/admin/autores';
+    const apiCategoriasUrl = /*[[@{/api/admin/categorias}]]*/ '/api/admin/categorias';
+    const apiEditorialesUrl = /*[[@{/api/admin/editoriales}]]*/ '/api/admin/editoriales';
+    const apiLibroAutoresUrl = /*[[@{/api/admin/libros-autores/libro}]]*/ '/api/admin/libros-autores/libro';
+    const apiLibroCategoriasUrl = /*[[@{/api/admin/libros-categorias/libro}]]*/ '/api/admin/libros-categorias/libro';
+
+    async function cargarOpciones() {
+        const respuestas = await Promise.all([fetch(apiEditorialesUrl), fetch(apiAutoresUrl), fetch(apiCategoriasUrl)]);
+        if (!respuestas.every(r => r.ok)) throw new Error('No se pudieron cargar editoriales, autores o categorías.');
+        const [editoriales, autores, categorias] = await Promise.all(respuestas.map(r => r.json()));
+        editoriales.forEach(x => document.getElementById('publisher').add(new Option(x.nombre, x.idEditorial)));
+        autores.forEach(x => document.getElementById('authors').add(new Option(`${x.nombres} ${x.apellidos}`, x.idAutor)));
+        categorias.forEach(x => document.getElementById('categories').add(new Option(x.nombre, x.idCategoria)));
+    }
+
+    function asignarCampo(nombre, valor) {
+        formulario.elements.namedItem(nombre).value = valor ?? '';
+    }
+
+    async function cargarLibro() {
+        if (!idLibro) {
+            mensaje.className = 'alert alert-danger';
+            mensaje.textContent = 'Falta el identificador del libro en la URL.';
+            return;
+        }
+        try {
+            await cargarOpciones();
+            const respuesta = await fetch(`${apiLibrosUrl}/${encodeURIComponent(idLibro)}`, { headers: { Accept: 'application/json' } });
+            if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
+            const libro = await respuesta.json();
+            asignarCampo('titulo', libro.titulo);
+            asignarCampo('isbn', libro.isbn);
+            asignarCampo('paginas', libro.paginas);
+            asignarCampo('fechaPublicacion', libro.fechaPublicacion);
+            asignarCampo('estado', libro.estado);
+            asignarCampo('idEditorial', libro.idEditorial);
+            asignarCampo('descripcion', libro.descripcion);
+            asignarCampo('contenidoTexto', libro.contenidoTexto);
+            const enlaces = await Promise.all([
+                fetch(`${apiLibroAutoresUrl}/${encodeURIComponent(idLibro)}`),
+                fetch(`${apiLibroCategoriasUrl}/${encodeURIComponent(idLibro)}`)
+            ]);
+            if (!enlaces.every(r => r.ok)) throw new Error('No se pudieron cargar las relaciones de autores y categorías.');
+            const [autoresVinculados, categoriasVinculadas] = await Promise.all(enlaces.map(r => r.json()));
+            autoresVinculados.forEach(x => { const option = [...formulario.elements.namedItem('autorIds').options].find(o => Number(o.value) === x.idAutor); if (option) option.selected = true; });
+            categoriasVinculadas.forEach(x => { const option = [...formulario.elements.namedItem('categoriaIds').options].find(o => Number(o.value) === x.idCategoria); if (option) option.selected = true; });
+            document.getElementById('book-breadcrumb').textContent = libro.titulo;
+            formulario.hidden = false;
+            mensaje.hidden = true;
+        } catch (error) {
+            mensaje.className = 'alert alert-danger';
+            mensaje.textContent = `No se pudo cargar el libro. ${error.message}`;
+        }
+    }
+
+    formulario.addEventListener('submit', async evento => {
+        evento.preventDefault();
+        const datos = new FormData(formulario);
+        const idEditorial = datos.get('idEditorial');
+        const paginas = datos.get('paginas');
+        const payload = {
+            titulo: datos.get('titulo').trim(),
+            isbn: datos.get('isbn').trim() || null,
+            paginas: paginas ? Number(paginas) : null,
+            fechaPublicacion: datos.get('fechaPublicacion') || null,
+            estado: datos.get('estado') || null,
+            descripcion: datos.get('descripcion').trim() || null,
+            contenidoTexto: datos.get('contenidoTexto').trim() || null,
+            idEditorial: idEditorial ? Number(idEditorial) : null,
+            autorIds: [...formulario.elements.namedItem('autorIds').selectedOptions].map(o => Number(o.value)),
+            categoriaIds: [...formulario.elements.namedItem('categoriaIds').selectedOptions].map(o => Number(o.value))
+        };
+        mensaje.hidden = false;
+        mensaje.className = 'alert alert-info';
+        mensaje.textContent = 'Guardando cambios…';
+        try {
+            const respuesta = await fetch(`${apiLibrosUrl}/${encodeURIComponent(idLibro)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!respuesta.ok) throw new Error((await respuesta.text()) || `Error HTTP ${respuesta.status}`);
+            window.location.assign(listaLibrosUrl);
+        } catch (error) {
+            mensaje.className = 'alert alert-danger';
+            mensaje.textContent = `No se pudieron guardar los cambios. ${error.message}`;
+        }
+    });
+
+    cargarLibro();
+</script>
 </body>
 </html>
