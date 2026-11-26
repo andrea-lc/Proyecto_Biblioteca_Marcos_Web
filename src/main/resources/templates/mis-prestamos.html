@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <base th:href="@{/}">
+    <script th:replace="~{auth :: auth}"></script>
     <title>Mis préstamos | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,9 +14,64 @@
 <header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/index}">Bibliot.</a><nav class="nav"><a class="nav-link text-dark" th:href="@{/explorar}">Explorar</a><a class="nav-link text-dark" th:href="@{/perfil}">Mi cuenta</a></nav></div></header>
 <main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-xl-10">
     <div class="mb-4"><p class="text-secondary mb-1">Tu actividad</p><h1 class="h2 mb-0">Mis préstamos y reservas</h1></div>
-    <div class="alert alert-info" role="status">El historial de préstamos y reservas todavía no está conectado.</div>
-    <section class="card border-0 shadow-sm mb-4"><div class="card-body p-4"><h2 class="h5 mb-2">Préstamos</h2><p class="text-secondary mb-0">Cuando la biblioteca conecte este servicio, aquí aparecerán tus préstamos y sus fechas.</p></div></section>
-    <section class="card border-0 shadow-sm"><div class="card-body p-4"><h2 class="h5 mb-2">Reservas</h2><p class="text-secondary mb-0">Aquí podrás consultar tus solicitudes cuando el servicio esté disponible.</p></div></section>
+    <div class="alert alert-danger d-none" id="error" role="alert"></div>
+    <section class="card border-0 shadow-sm mb-4"><div class="card-body p-4">
+        <h2 class="h5 mb-3">Préstamos</h2>
+        <div class="table-responsive"><table class="table align-middle mb-0">
+            <thead><tr><th>Libro</th><th>Prestado</th><th>Vence</th><th>Estado</th></tr></thead>
+            <tbody id="prestamos"><tr><td colspan="4" class="text-secondary">Cargando…</td></tr></tbody>
+        </table></div>
+    </div></section>
+    <section class="card border-0 shadow-sm"><div class="card-body p-4">
+        <h2 class="h5 mb-3">Reservas</h2>
+        <div class="table-responsive"><table class="table align-middle mb-0">
+            <thead><tr><th>Libro</th><th>Reservado</th><th>Expira</th><th>Estado</th></tr></thead>
+            <tbody id="reservas"><tr><td colspan="4" class="text-secondary">Cargando…</td></tr></tbody>
+        </table></div>
+    </div></section>
 </div></div></main>
+
+<script th:inline="javascript">
+    (function () {
+        const prestamosUrl = /*[[@{/api/lector/me/prestamos}]]*/ '/api/lector/me/prestamos';
+        const reservasUrl = /*[[@{/api/lector/me/reservas}]]*/ '/api/lector/me/reservas';
+        const fmt = (d) => d ? new Date(d).toLocaleDateString('es-PE') : '—';
+
+        function render(tbodyId, rows, vacio, f1, f2) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.replaceChildren();
+            if (!rows.length) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 4; td.className = 'text-secondary'; td.textContent = vacio;
+                tr.append(td); tbody.append(tr); return;
+            }
+            rows.forEach((x) => {
+                const tr = document.createElement('tr');
+                [x.tituloLibro || 'Libro sin título', fmt(x[f1]), fmt(x[f2])].forEach((t) => {
+                    const td = document.createElement('td'); td.textContent = t; tr.append(td);
+                });
+                const tdE = document.createElement('td');
+                const b = document.createElement('span');
+                b.className = 'badge text-bg-secondary'; b.textContent = x.estado || '—';
+                tdE.append(b); tr.append(tdE); tbody.append(tr);
+            });
+        }
+
+        (async () => {
+            try {
+                const opts = { headers: { Accept: 'application/json' } };
+                const [p, r] = await Promise.all([fetch(prestamosUrl, opts), fetch(reservasUrl, opts)]);
+                if (!p.ok || !r.ok) throw new Error('HTTP ' + p.status + '/' + r.status);
+                render('prestamos', await p.json(), 'Aún no tienes préstamos.', 'fechaPrestamo', 'fechaVencimiento');
+                render('reservas', await r.json(), 'Aún no tienes reservas.', 'fechaReserva', 'fechaExpiracion');
+            } catch (e) {
+                const box = document.getElementById('error');
+                box.textContent = 'No se pudo cargar tu historial (' + e.message + ').';
+                box.classList.remove('d-none');
+            }
+        })();
+    })();
+</script>
 </body>
 </html>

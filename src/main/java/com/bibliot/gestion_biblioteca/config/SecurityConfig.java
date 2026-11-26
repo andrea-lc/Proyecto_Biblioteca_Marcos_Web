@@ -36,6 +36,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/catalogo/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/bibliotecario/**").hasAnyRole("ADMIN", "BIBLIOTECARIO")
+                        .requestMatchers("/api/lector/mis-prestamos/**", "/api/lector/mis-reservas/**")
+                        .hasAnyRole("ADMIN", "BIBLIOTECARIO")
                         .requestMatchers("/api/lector/**").hasAnyRole("ADMIN", "BIBLIOTECARIO", "LECTOR")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()

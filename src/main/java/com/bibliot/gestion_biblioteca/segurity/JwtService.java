@@ -11,17 +11,18 @@ public class JwtService {
 
     private final String SECRET = "12345678912345678912345678912345"; // mínimo 32 caracteres
 
-    public String generateToken(String username, String rol) {
+    public String generateToken(String username, String rol, Integer uid, String nombre) {
         return Jwts.builder()
                 .subject(username)
-                .claim("rol", rol)                       // claim personalizado
+                .claim("rol", rol)
+                .claim("uid", uid)
+                .claim("nombre", nombre)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()), Jwts.SIG.HS256)
                 .compact();
     }
 
-    // Verifica la firma y la expiración; si algo falla lanza JwtException
     public Claims extractClaims(String token) {
         return Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(SECRET.getBytes()))

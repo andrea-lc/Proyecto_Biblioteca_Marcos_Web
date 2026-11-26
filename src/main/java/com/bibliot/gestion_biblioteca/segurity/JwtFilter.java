@@ -32,11 +32,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (header != null && header.startsWith("Bearer ")) {
             try {
-                String token = header.substring(7);              // quita "Bearer "
+                String token = header.substring(7);
                 Claims claims = jwtService.extractClaims(token); // valida firma y expiración
 
                 String username = claims.getSubject();
                 String rol = claims.get("rol", String.class);
+                if ("ADMINISTRADOR".equals(rol)) rol = "ADMIN";
+                if (rol == null) rol = "";
 
                 // Spring espera el prefijo ROLE_ para que hasRole("ADMIN") funcione
                 var auth = new UsernamePasswordAuthenticationToken(

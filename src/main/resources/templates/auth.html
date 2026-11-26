@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Fragmento de autenticación</title></head>
+<body>
+<script th:fragment="auth" th:inline="none">
+    (function () {
+        'use strict';
+
+        var TOKEN_KEY = 'bibliot.token';
+
+        // Context path (sale del <base th:href="@{/}"> de cada plantilla)
+        var baseEl = document.querySelector('base[href]');
+        var ctx = '';
+        try {
+            ctx = new URL(baseEl ? baseEl.href : '/', location.href).pathname.replace(/\/+$/, '');
+        } catch (e) {
+            ctx = '';
+        }
+
+        // ---- Token ----
+        function getToken() {
+            try {
+                return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function setToken(token, remember) {
+            clearToken();
+            try {
+                (remember ? localStorage : sessionStorage).setItem(TOKEN_KEY, token);
+            } catch (e) {
+            }
+        }
+
+        function clearToken() {
+            try {
+                localStorage.removeItem(TOKEN_KEY);
+            } catch (e) {
+            }
+            try {
+                sessionStorage.removeItem(TOKEN_KEY);
+            } catch (e) {
+            }
+        }
+
+        // Lee el payload del JWT (no valida la firma: eso lo hace el backend)
+        function decode(token) {
+            try {
+                var part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+                while (part.length % 4) part += '=';
+                var bytes = Uint8Array.from(atob(part), function (c) {
+                    return c.charCodeAt(0);
+                });
+                return JSON.parse(new TextDecoder('utf-8').decode(bytes));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // { email, rol, uid, nombre, exp } o null si no hay sesión válida
+        function user() {
+            var token = getToken();
+            if (!token) return null;
+            var p = decode(token);
+            if (!p || (p.exp && p.exp * 1000 <= Date.now())) {
+                clearToken();
+                return null;
+            }
+            return {
+                email: p.sub, rol: String(p.rol || '').toUpperCase(), uid: p.uid || null,
+                nombre: p.nombre || p.sub, exp: p.exp
+            };
+        }
+
+        function hasRole(roles) {
+            var u = user();
+            if (!u) return false;
+            if (!roles || !roles.length || roles.indexOf('*') >= 0) return true;
+            return roles.indexOf(u.rol) >= 0;
+        }
+
+        function homeFor(rol) {
+            return (rol === 'ADMIN' || rol === 'BIBLIOTECARIO') ? ctx + '/dashboard' : ctx + '/index';
+        }
+
+        function logout() {
+            clearToken();
+            location.replace(ctx + '/login');
+        }
+
+        // ---- Reglas de acceso por página ('*' = cualquier usuario con sesión) ----
+        var RULES = [
+            {path: '/dashboard', roles: ['ADMIN', 'BIBLIOTECARIO']},
+            {path: '/usuarios', roles: ['ADMIN'], prefix: true},
+            {path: '/libros', roles: ['ADMIN'], prefix: true},
+            {path: '/roles', roles: ['ADMIN']},
+            {path: '/configuracion', roles: ['ADMIN']},
+            {path: '/perfil', roles: ['*']},
+            {path: '/mis-prestamos', roles: ['*']},
+            {path: '/notificaciones', roles: ['*']},
+            {path: '/lector-digital', roles: ['*']},
+            {path: '/confirmacion-reserva', roles: ['*']}
+        ];
+
+        function currentRoute() {
+            var p = location.pathname;
+            if (ctx && p.indexOf(ctx) === 0) p = p.slice(ctx.length);
+            p = p.replace(/\/+$/, '').toLowerCase();
+            return p || '/';
+        }
+
+        function ruleForPage() {
+            var route = currentRoute();
+            for (var i = 0; i < RULES.length; i++) {
+                var r = RULES[i];
+                if (route === r.path || (r.prefix && route.indexOf(r.path + '/') === 0)) return r;
+            }
+            return null;
+        }
+
+        function goLogin() {
+            location.replace(ctx + '/login?next=' + encodeURIComponent(location.pathname + location.search));
+        }
+
+        function guardPage() {
+            var rule = ruleForPage();
+            if (!rule) return;
+            if (!user()) {
+                goLogin();
+                return;
+            }
+            if (!hasRole(rule.roles)) location.replace(ctx + '/acceso-denegado');
+        }
+
+        // ---- fetch con Authorization automático (la pieza clave) ----
+        var nativeFetch = window.fetch.bind(window);
+        window.fetch = function (input, init) {
+            var isApi = false;
+            try {
+                var target = new URL(typeof input === 'string' ? input : input.url, location.href);
+                isApi = target.origin === location.origin && target.pathname.indexOf(ctx + '/api/') === 0;
+            } catch (e) {
+            }
+
+            var token = isApi ? getToken() : null;
+            if (token) {
+                init = init || {};
+                var headers = new Headers(init.headers || (typeof input !== 'string' && input.headers) || undefined);
+                if (!headers.has('Authorization')) headers.set('Authorization', 'Bearer ' + token);
+                init.headers = headers;
+            }
+
+            return nativeFetch(input, init).then(function (res) {
+                if (isApi) {
+                    if (res.status === 401) {
+                        if (token) clearToken();
+                        if (ruleForPage()) goLogin();
+                    } else if (res.status === 403 && ruleForPage()) {
+                        location.replace(ctx + '/acceso-denegado');
+                    }
+                }
+                return res;
+            });
+        };
+
+        // ---- Mostrar / ocultar elementos según sesión y rol ----
+        var style = document.createElement('style');
+        style.textContent =
+            'html.auth-pending [data-auth-show],html.auth-pending [data-roles]{display:none!important}' +
+            '[data-auth-hidden]{display:none!important}';
+        document.head.appendChild(style);
+        document.documentElement.classList.add('auth-pending');
+
+        function applyUi() {
+            var u = user();
+            document.querySelectorAll('[data-auth-show]').forEach(function (el) {
+                var show = el.getAttribute('data-auth-show') === 'user' ? !!u : !u;
+                el.toggleAttribute('data-auth-hidden', !show);
+            });
+            document.querySelectorAll('[data-roles]').forEach(function (el) {
+                var roles = el.getAttribute('data-roles').split(',').map(function (r) {
+                    return r.trim().toUpperCase();
+                });
+                el.toggleAttribute('data-auth-hidden', !(u && roles.indexOf(u.rol) >= 0));
+            });
+            document.querySelectorAll('[data-user-name]').forEach(function (el) {
+                el.textContent = u ? u.nombre : '';
+            });
+            document.querySelectorAll('[data-logout], .signout-link').forEach(function (el) {
+                el.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    logout();
+                });
+            });
+            document.documentElement.classList.remove('auth-pending');
+        }
+
+        guardPage();
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyUi);
+        else applyUi();
+
+        window.Auth = {
+            getToken: getToken, setToken: setToken, clear: clearToken,
+            user: user, hasRole: hasRole, homeFor: homeFor, logout: logout, ctx: ctx
+        };
+    })();
+</script>
+</body>
+</html>
