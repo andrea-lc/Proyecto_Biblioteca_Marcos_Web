@@ -46,8 +46,10 @@
                     <div>
                         <h1 class="page-heading mb-1">Usuarios <span class="users-total">ⓘ <b>20</b></span></h1>
                     </div>
-                    <div class="users-actions"><button class="btn btn-outline-secondary btn-sm" type="button" disabled>⇩
-                            Exportar</button><a class="btn btn-brand btn-sm" th:href="@{/usuarios/nuevo}">＋ Nuevo usuario</a>
+                    <div class="users-actions">
+                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/reportes/usuarios/pdf}">⇩ PDF</a>
+                        <a class="btn btn-outline-success btn-sm" th:href="@{/reportes/usuarios/excel}">⇩ Excel</a>
+                        <a class="btn btn-brand btn-sm" th:href="@{/usuarios/nuevo}">＋ Nuevo usuario</a>
                     </div>
                 </div>
                 <div class="alert alert-info" role="status">Listado de muestra. Exportación, filtros y cambio de vista todavía no están conectados.</div>

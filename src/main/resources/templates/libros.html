@@ -42,9 +42,10 @@
             <section class="users-content">
                 <div class="users-heading-row">
                     <h1 class="page-heading mb-1">Libros <span class="users-total">ⓘ <b>50</b></span></h1>
-                    <div class="users-actions"><button class="btn btn-outline-secondary btn-sm" type="button" disabled>⇩
-                            Exportar</button><a class="btn btn-brand btn-sm" th:href="@{/libros/nuevo}">＋ Agregar
-                            libro</a></div>
+                    <div class="users-actions">
+                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/reportes/libros/pdf}">⇩ PDF</a>
+                        <a class="btn btn-outline-success btn-sm" th:href="@{/reportes/libros/excel}">⇩ Excel</a>
+                        <a class="btn btn-brand btn-sm" th:href="@{/libros/nuevo}">＋ Agregar libro</a></div>
                 </div>
                 <div class="alert alert-info" role="status">Catálogo de muestra. Exportación, filtros y cambio de vista todavía no están conectados.</div>
                 <div class="user-tabs"><a class="selected" th:href="@{/libros}">Todos</a><span class="text-secondary px-3 py-2" aria-disabled="true">Categorías</span>
