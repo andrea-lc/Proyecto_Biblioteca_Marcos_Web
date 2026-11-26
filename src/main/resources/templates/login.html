@@ -29,7 +29,7 @@
                 </header>
                 <h2 class="h5 mb-1">Iniciar sesión</h2>
                 <p class="text-secondary small mb-4">Ingresa con tu cuenta para acceder a tu perfil y seguir disfrutando de tus libros favoritos.</p>
-                <div class="alert alert-info py-2 small" role="status" th:if="${formMessage}" th:text="${formMessage}"></div>
+                <div class="alert py-2 small" role="status" th:if="${formMessage}" th:class="'alert alert-' + ${formMessageType ?: 'info'} + ' py-2 small'" th:text="${formMessage}"></div>
                 <form th:action="@{/login}" method="post">
                     <div class="input-group mb-3">
                         <span class="input-group-text bg-transparent border-end-0" aria-hidden="true"><i class="bi bi-person"></i></span>

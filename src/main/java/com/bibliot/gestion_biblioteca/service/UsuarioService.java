@@ -43,14 +43,22 @@ public class UsuarioService {
     }
 
     @Transactional
-    public Usuario actualizar(Integer id, Usuario datosActualizados) {
-        Usuario existente = buscarPorId(id);
+    public Usuario actualizarUsuario(Usuario usuario) {
+        // Primero buscamos el existente
+        Usuario existente = buscarPorId(usuario.getIdUsuario());
 
-        if (datosActualizados.getNombres() != null) {
-            existente.setNombres(datosActualizados.getNombres());
+        // Validar email solo si cambió
+        if (!existente.getEmail().equals(usuario.getEmail())) {
+            if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+                throw new RuntimeException("El email ya está registrado por otro usuario");
+            }
         }
-        if (datosActualizados.getApellidos() != null) {
-            existente.setApellidos(datosActualizados.getApellidos());
+
+        // Validar DNI solo si cambió
+        if (!existente.getDni().equals(usuario.getDni())) {
+            if (usuarioRepository.findByDni(usuario.getDni()).isPresent()) {
+                throw new RuntimeException("El DNI ya está registrado por otro usuario");
+            }
         }
 
         // Actualizar campos
@@ -80,9 +88,14 @@ public class UsuarioService {
         usuarioRepository.delete(usuario);
     }
 
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Usuario buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email)
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
+        if (usuario.getRol() != null) {
+            usuario.getRol().getNombre();
+        }
+        return usuario;
     }
 
     public Usuario buscarPorDni(String dni) {

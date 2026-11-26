@@ -30,6 +30,18 @@
     const message = document.getElementById('edit-user-message');
     const roleSelect = document.getElementById('role');
     function showMessage(text, type = 'info') { message.hidden = false; message.className = `alert alert-${type}`; message.textContent = text; }
+    async function mensajeError(response) {
+        const texto = await response.text();
+        if (!texto) return `Error HTTP ${response.status}.`;
+        try {
+            const detalle = JSON.parse(texto);
+            if (Array.isArray(detalle.errors)) {
+                const errores = detalle.errors.map(e => typeof e === 'string' ? e : e.defaultMessage || e.message).filter(Boolean);
+                if (errores.length) return errores.join(' ');
+            }
+            return detalle.message || detalle.detail || detalle.error || texto;
+        } catch (_) { return texto; }
+    }
     async function loadUser() {
         if (!userId) { showMessage('Falta el identificador del usuario.', 'danger'); return; }
         try {
@@ -47,7 +59,7 @@
     form.addEventListener('submit', async event => {
         event.preventDefault(); const data = new FormData(form);
         const payload = { nombres: data.get('nombres').trim(), apellidos: data.get('apellidos').trim(), dni: data.get('dni').trim(), email: data.get('email').trim(), telefono: data.get('telefono').trim(), direccion: data.get('direccion').trim() || null, idRol: Number(data.get('idRol')), password: data.get('password') || null, activo: data.get('activo') === 'true' };
-        try { const response = await fetch(`${apiUsersUrl}/${encodeURIComponent(userId)}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) }); if (!response.ok) throw new Error((await response.text()) || `Error HTTP ${response.status}`); window.location.assign(/*[[@{/usuarios}]]*/ '/usuarios'); }
+        try { const response = await fetch(`${apiUsersUrl}/${encodeURIComponent(userId)}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) }); if (!response.ok) throw new Error(await mensajeError(response)); window.location.assign(/*[[@{/usuarios}]]*/ '/usuarios'); }
         catch (error) { showMessage(`No se pudieron guardar los cambios. ${error.message}`, 'danger'); }
     });
     loadUser();
