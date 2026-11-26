@@ -24,10 +24,10 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    // "Administrador" (BD) -> "ADMIN" (lo que esperan el frontend y Spring Security)
     public static String normalizarRol(String nombre) {
-        String r = nombre == null ? "" : nombre.trim().toUpperCase();
-        return r.equals("ADMINISTRADOR") ? "ADMIN" : r;
+        return nombre == null
+                ? ""
+                : nombre.trim().toUpperCase(java.util.Locale.ROOT);
     }
 
     // Devuelve el token si las credenciales son correctas, o null si no

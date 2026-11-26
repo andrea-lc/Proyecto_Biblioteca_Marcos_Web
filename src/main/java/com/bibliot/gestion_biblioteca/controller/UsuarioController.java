@@ -68,17 +68,4 @@ public class UsuarioController {
         service.eliminar(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/lector/perfil/{idUsuario}")
-    public Response perfil(@PathVariable Integer idUsuario) {
-        return Response.desde(service.buscarPorId(idUsuario));
-    }
-
-    @PutMapping("/lector/perfil/{idUsuario}")
-    public Response actualizarPerfil(@PathVariable Integer idUsuario, @Valid @RequestBody Request dto) {
-        Usuario usuario = dto.toEntity();
-        usuario.setIdUsuario(idUsuario);
-        usuario.setRol(roles.buscarPorId(dto.idRol()));
-        return Response.desde(service.actualizarUsuario(usuario));
-    }
 }

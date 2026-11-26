@@ -84,7 +84,13 @@
         }
 
         function homeFor(rol) {
-            return (rol === 'ADMIN' || rol === 'BIBLIOTECARIO') ? ctx + '/dashboard' : ctx + '/index';
+            rol = String(rol || '').trim().toUpperCase();
+            return (
+                rol === 'ADMINISTRADOR' ||
+                rol === 'BIBLIOTECARIO'
+            )
+                ? ctx + '/dashboard'
+                : ctx + '/index';
         }
 
         function logout() {
@@ -94,11 +100,13 @@
 
         // ---- Reglas de acceso por página ('*' = cualquier usuario con sesión) ----
         var RULES = [
-            {path: '/dashboard', roles: ['ADMIN', 'BIBLIOTECARIO']},
-            {path: '/usuarios', roles: ['ADMIN'], prefix: true},
-            {path: '/libros', roles: ['ADMIN'], prefix: true},
-            {path: '/roles', roles: ['ADMIN']},
-            {path: '/configuracion', roles: ['ADMIN']},
+            {path: '/dashboard', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO']},
+
+            {path: '/usuarios', roles: ['ADMINISTRADOR'], prefix: true},
+            {path: '/libros', roles: ['ADMINISTRADOR'], prefix: true},
+            {path: '/roles', roles: ['ADMINISTRADOR']},
+            {path: '/configuracion', roles: ['ADMINISTRADOR']},
+
             {path: '/perfil', roles: ['*']},
             {path: '/mis-prestamos', roles: ['*']},
             {path: '/notificaciones', roles: ['*']},
@@ -137,20 +145,43 @@
         }
 
         // ---- fetch con Authorization automático (la pieza clave) ----
+
+// ---- fetch con Authorization automático ----
         var nativeFetch = window.fetch.bind(window);
+
         window.fetch = function (input, init) {
             var isApi = false;
+
             try {
-                var target = new URL(typeof input === 'string' ? input : input.url, location.href);
-                isApi = target.origin === location.origin && target.pathname.indexOf(ctx + '/api/') === 0;
+                var inputUrl = typeof input === 'string'
+                    ? input
+                    : (input instanceof URL ? input.href : input.url);
+
+                var target = new URL(inputUrl, window.location.href);
+
+                isApi = target.origin === window.location.origin
+                    && target.pathname.indexOf(ctx + '/api/') === 0;
+
             } catch (e) {
+                console.error('Error identificando la petición:', e);
             }
 
             var token = isApi ? getToken() : null;
+
             if (token) {
                 init = init || {};
-                var headers = new Headers(init.headers || (typeof input !== 'string' && input.headers) || undefined);
-                if (!headers.has('Authorization')) headers.set('Authorization', 'Bearer ' + token);
+
+                var headers = new Headers(
+                    init.headers ||
+                    (typeof input !== 'string' && !(input instanceof URL)
+                        ? input.headers
+                        : undefined)
+                );
+
+                if (!headers.has('Authorization')) {
+                    headers.set('Authorization', 'Bearer ' + token);
+                }
+
                 init.headers = headers;
             }
 
@@ -160,9 +191,10 @@
                         if (token) clearToken();
                         if (ruleForPage()) goLogin();
                     } else if (res.status === 403 && ruleForPage()) {
-                        location.replace(ctx + '/acceso-denegado');
+                        window.location.replace(ctx + '/acceso-denegado');
                     }
                 }
+
                 return res;
             });
         };
