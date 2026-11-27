@@ -65,23 +65,22 @@
                             Nuevo usuario
                         </a>
                     </div>
-                </div>
-
-                <div class="alert alert-info py-2 small mb-3" id="users-message" role="status" aria-live="polite">Cargando usuarios…</div>
-
-                <nav class="nav nav-underline gap-3 border-bottom mb-3" aria-label="Secciones de administración">
-                    <a class="nav-link px-1 active fw-semibold" th:href="@{/usuarios}" aria-current="page">Todos</a>
-                    <a class="nav-link px-1 text-secondary" th:href="@{/roles}">Roles</a>
-                </nav>
-
-                <div class="user-toolbar border rounded-top-3 bg-white">
-                    <span class="small text-secondary">Listado de usuarios</span>
-                    <div class="table-tools">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled title="Los filtros avanzados todavía no están disponibles">
-                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">filter_list</span>
-                            Filtrar
-                        </button>
+                    <div class="users-actions">
+                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/reportes/usuarios/pdf}">⇩ PDF</a>
+                        <a class="btn btn-outline-success btn-sm" th:href="@{/reportes/usuarios/excel}">⇩ Excel</a>
+                        <a class="btn btn-brand btn-sm" th:href="@{/usuarios/nuevo}">＋ Nuevo usuario</a>
                     </div>
+                </div>
+                <div class="alert alert-info" role="status">Listado de muestra. Exportación, filtros y cambio de vista todavía no están conectados.</div>
+                <div class="user-tabs"><a class="selected" th:href="@{/usuarios}">Todos</a><a th:href="@{/roles}">Roles</a></div>
+                <div class="user-toolbar">
+                    <form class="user-search" th:action="@{/usuarios}" method="get"><span
+                            aria-hidden="true">⌕</span><input type="search" name="usuario" placeholder="Buscar usuario"
+                            aria-label="Buscar usuario"></form>
+                    <div class="table-tools"><button class="btn btn-outline-secondary btn-sm" type="button" disabled>☷
+                            <span>Filtrar</span></button><button class="view-toggle active" type="button"
+                            aria-label="Vista de lista" disabled>☷</button><button class="view-toggle" type="button" disabled
+                            aria-label="Vista de tarjetas">▦</button></div>
                 </div>
 
                 <div class="table-responsive users-table-wrap border rounded-bottom-3 shadow-sm">

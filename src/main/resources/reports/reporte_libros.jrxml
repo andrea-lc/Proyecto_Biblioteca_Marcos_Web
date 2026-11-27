@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="reporte_libros"
+              pageWidth="595" pageHeight="842" columnWidth="535"
+              leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30"
+              whenNoDataType="AllSectionsNoDetail">
+
+    <parameter name="fechaGeneracion" class="java.lang.String"/>
+    <parameter name="totalLibros" class="java.lang.Integer"/>
+
+    <field name="idLibro" class="java.lang.Integer"/>
+    <field name="titulo" class="java.lang.String"/>
+    <field name="isbn" class="java.lang.String"/>
+    <field name="editorial" class="java.lang.String"/>
+    <field name="paginas" class="java.lang.String"/>
+    <field name="fechaPublicacion" class="java.lang.String"/>
+    <field name="estado" class="java.lang.String"/>
+
+    <title>
+        <band height="72">
+            <rectangle>
+                <reportElement x="0" y="0" width="535" height="52" backcolor="#F5F0E6"/>
+                <graphicElement>
+                    <pen lineWidth="0.0"/>
+                </graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="12" y="6" width="220" height="24" forecolor="#3E352F"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="18" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Bibliot.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="12" y="30" width="280" height="16" forecolor="#6B5E53"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="10"/>
+                </textElement>
+                <text><![CDATA[Reporte del Catálogo General de Libros]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="320" y="10" width="203" height="14" forecolor="#6B5E53"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Generado: " + $P{fechaGeneracion}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="320" y="28" width="203" height="16" forecolor="#3E352F"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Total de libros: " + $P{totalLibros}]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="0" y="60" width="535" height="1" forecolor="#D9D2C5"/>
+            </line>
+        </band>
+    </title>
+
+    <columnHeader>
+        <band height="26">
+            <staticText>
+                <reportElement mode="Opaque" x="0" y="0" width="35" height="24" forecolor="#FFFFFF" backcolor="#6B5E53"/>
+                <box leftPadding="4" rightPadding="4"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement mode="Opaque" x="35" y="0" width="175" height="24" forecolor="#FFFFFF" backcolor="#6B5E53"/>
+                <box leftPadding="4" rightPadding="4"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Título]]></text>
+            </staticText>
+            <staticText>
+                <reportElement mode="Opaque" x="210" y="0" width="95" height="24" forecolor="#FFFFFF" backcolor="#6B5E53"/>
+                <box leftPadding="4" rightPadding="4"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[ISBN]]></text>
+            </staticText>
+            <staticText>
+                <reportElement mode="Opaque" x="305" y="0" width="95" height="24" forecolor="#FFFFFF" backcolor="#6B5E53"/>
+                <box leftPadding="4" rightPadding="4"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Editorial]]></text>
+            </staticText>
+            <staticText>
+                <reportElement mode="Opaque" x="400" y="0" width="38" height="24" forecolor="#FFFFFF" backcolor="#6B5E53"/>
+                <box leftPadding="4" rightPadding="4"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Págs.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement mode="Opaque" x="438" y="0" width="52" height="24" forecolor="#FFFFFF" backcolor="#6B5E53"/>
+                <box leftPadding="4" rightPadding="4"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Pub.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement mode="Opaque" x="490" y="0" width="45" height="24" forecolor="#FFFFFF" backcolor="#6B5E53"/>
+                <box leftPadding="4" rightPadding="4"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Estado]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="22" splitType="Stretch">
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="35" height="20"/>
+                <box leftPadding="4" rightPadding="4" topPadding="3" bottomPadding="3">
+                    <bottomPen lineWidth="0.5" lineColor="#E0D8CC"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{idLibro}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement stretchType="ElementGroupHeight" x="35" y="0" width="175" height="20"/>
+                <box leftPadding="4" rightPadding="4" topPadding="3" bottomPadding="3">
+                    <bottomPen lineWidth="0.5" lineColor="#E0D8CC"/>
+                </box>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{titulo}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement stretchType="ElementGroupHeight" x="210" y="0" width="95" height="20"/>
+                <box leftPadding="4" rightPadding="4" topPadding="3" bottomPadding="3">
+                    <bottomPen lineWidth="0.5" lineColor="#E0D8CC"/>
+                </box>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{isbn}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement stretchType="ElementGroupHeight" x="305" y="0" width="95" height="20"/>
+                <box leftPadding="4" rightPadding="4" topPadding="3" bottomPadding="3">
+                    <bottomPen lineWidth="0.5" lineColor="#E0D8CC"/>
+                </box>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{editorial}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement stretchType="ElementGroupHeight" x="400" y="0" width="38" height="20"/>
+                <box leftPadding="4" rightPadding="4" topPadding="3" bottomPadding="3">
+                    <bottomPen lineWidth="0.5" lineColor="#E0D8CC"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{paginas}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement stretchType="ElementGroupHeight" x="438" y="0" width="52" height="20"/>
+                <box leftPadding="4" rightPadding="4" topPadding="3" bottomPadding="3">
+                    <bottomPen lineWidth="0.5" lineColor="#E0D8CC"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{fechaPublicacion}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement stretchType="ElementGroupHeight" x="490" y="0" width="45" height="20"/>
+                <box leftPadding="4" rightPadding="4" topPadding="3" bottomPadding="3">
+                    <bottomPen lineWidth="0.5" lineColor="#E0D8CC"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <pageFooter>
+        <band height="24">
+            <staticText>
+                <reportElement x="0" y="6" width="380" height="14" forecolor="#7A7067"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <text><![CDATA[BIBLIOT - Centro de Recursos Bibliográficos y Digitales | Arequipa]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="435" y="6" width="100" height="14" forecolor="#7A7067"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+</jasperReport>

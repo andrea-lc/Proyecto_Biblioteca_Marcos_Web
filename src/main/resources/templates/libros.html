@@ -48,22 +48,16 @@
                     </a>
                 </div>
             </header>
-
-            <section class="users-content" aria-labelledby="books-title">
-                <div class="users-heading-row flex-wrap gap-3 mb-3">
-                    <h1 class="page-heading mb-0" id="books-title">
-                        Libros
-                        <span class="users-total"><b id="book-count">0</b><span class="visually-hidden"> libros en el listado</span></span>
-                    </h1>
-                    <div class="users-actions flex-wrap">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled title="La exportación todavía no está disponible">
-                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">download</span>
-                            Exportar
-                        </button>
-                        <a class="btn btn-brand btn-sm" data-roles="ADMINISTRADOR" th:href="@{/libros/nuevo}">                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">add</span>
-                            Agregar libro
-                        </a>
-                    </div>
+            <section class="users-content">
+                <div class="users-heading-row">
+                    <h1 class="page-heading mb-1">Libros <span class="users-total">ⓘ <b>50</b></span></h1>
+                    <div class="users-actions">
+                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/reportes/libros/pdf}">⇩ PDF</a>
+                        <a class="btn btn-outline-success btn-sm" th:href="@{/reportes/libros/excel}">⇩ Excel</a>
+                        <a class="btn btn-brand btn-sm" th:href="@{/libros/nuevo}">＋ Agregar libro</a></div>
+                </div>
+                <div class="alert alert-info" role="status">Catálogo de muestra. Exportación, filtros y cambio de vista todavía no están conectados.</div>
+                <div class="user-tabs"><a class="selected" th:href="@{/libros}">Todos</a><span class="text-secondary px-3 py-2" aria-disabled="true">Categorías</span>
                 </div>
 
                 <div class="alert alert-info py-2 small mb-3" id="books-message" role="status" aria-live="polite">Cargando libros…</div>
