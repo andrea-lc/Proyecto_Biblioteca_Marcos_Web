@@ -47,22 +47,17 @@
                     </button>
                 </div>
             </header>
-
-            <section class="users-content" aria-labelledby="users-title">
-                <div class="users-heading-row mb-3">
-                    <h1 class="page-heading mb-0" id="users-title">
-                        Usuarios
-                        <span class="users-total"><b id="user-count">0</b><span class="visually-hidden"> usuarios registrados</span></span>
-                    </h1>
+            
+            <section class="users-content">
+                <div class="users-heading-row">
+                    <div>
+                        <h1 class="page-heading mb-1">Usuarios <span class="users-total">ⓘ <b>20</b></span></h1>
+                    </div>
                     <div class="users-actions">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled title="La exportación todavía no está disponible">
-                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">download</span>
-                            Exportar
-                        </button>
-                        <a class="btn btn-brand btn-sm" th:href="@{/usuarios/nuevo}">
-                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">person_add</span>
-                            Nuevo usuario
-                        </a>
+                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/reportes/usuarios/pdf}">⇩ PDF</a>
+                        <a class="btn btn-outline-success btn-sm" th:href="@{/reportes/usuarios/excel}">⇩ Excel</a>
+                        <a class="btn btn-brand btn-sm" th:href="@{/usuarios/nuevo}">＋ Nuevo usuario</a>
+
                     </div>
                 </div>
 
