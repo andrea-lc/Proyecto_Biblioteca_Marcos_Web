@@ -89,9 +89,14 @@ public class UsuarioService{
         usuarioRepository.delete(usuario);
     }
 
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Usuario buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email)
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
+        if (usuario.getRol() != null) {
+            usuario.getRol().getNombre();
+        }
+        return usuario;
     }
     
     public Usuario buscarPorDni(String dni) {

@@ -47,7 +47,7 @@
                     <small id="categories-help" class="text-secondary">Puedes elegir más de una.</small>
                 </div>
                 <div class="book-field"><label>Archivo PDF</label><div class="file-pick text-secondary">La API actual no guarda archivos</div></div>
-                <div class="book-field field-wide"><label for="description">Descripción</label><textarea id="description" name="descripcion" class="form-control description-field" placeholder="Sinopsis del libro"></textarea></div>
+                <div class="book-field field-wide"><label for="description">Descripción</label><textarea id="description" name="descripcion" class="form-control description-field" maxlength="5000" placeholder="Sinopsis del libro"></textarea></div>
                 <div class="book-field field-wide"><label for="contentText">Contenido de lectura</label><textarea id="contentText" name="contenidoTexto" class="form-control description-field" rows="6" placeholder="Texto digital del libro (opcional)"></textarea></div>
             </div>
         </section>
@@ -171,6 +171,7 @@
     const apiCategoriasUrl = /*[[@{/api/admin/categorias}]]*/ '/api/admin/categorias';
     const formularioLibro = document.getElementById('book-form');
     const mensajeFormulario = document.getElementById('form-message');
+    document.getElementById('publication').max = new Date().toISOString().slice(0, 10);
 
     async function mensajeErrorApi(respuesta) {
         const texto = await respuesta.text();
@@ -350,7 +351,7 @@
                 headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!respuesta.ok) throw new Error((await respuesta.text()) || `Error HTTP ${respuesta.status}`);
+            if (!respuesta.ok) throw new Error(await mensajeErrorApi(respuesta));
             window.location.assign(listaLibrosUrl);
         } catch (error) {
             mensajeFormulario.className = 'alert alert-danger py-2 small mt-3';

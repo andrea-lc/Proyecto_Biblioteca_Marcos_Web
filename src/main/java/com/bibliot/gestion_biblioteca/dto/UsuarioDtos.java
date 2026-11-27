@@ -20,7 +20,7 @@ public final class UsuarioDtos {
             @NotBlank @Email @Size(max = 150) String email,
             @NotBlank @Pattern(regexp = "^[0-9]{9}$") String telefono,
             @Size(max = 200) String direccion, @NotNull @Positive Integer idRol,
-            @Size(max = 255) String password, @PastOrPresent LocalDateTime fechaRegistro,
+            @Size(min = 8, max = 255) String password, @PastOrPresent LocalDateTime fechaRegistro,
             Boolean activo) {
         public Usuario toEntity() {
             Usuario x = new Usuario(); x.setIdUsuario(idUsuario); x.setNombres(nombres);

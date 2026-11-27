@@ -25,7 +25,7 @@
             <div class="col-md-6"><label for="publisher" class="form-label">Editorial</label><select class="form-select" id="publisher" name="idEditorial"><option value="">Sin editorial</option></select></div>
             <div class="col-md-6"><label for="authors" class="form-label">Autores</label><select class="form-select" id="authors" name="autorIds" multiple></select></div>
             <div class="col-md-6"><label for="categories" class="form-label">Categorías</label><select class="form-select" id="categories" name="categoriaIds" multiple></select></div>
-            <div class="col-12"><label for="description" class="form-label">Descripción</label><textarea class="form-control" id="description" name="descripcion" rows="4"></textarea></div>
+            <div class="col-12"><label for="description" class="form-label">Descripción</label><textarea class="form-control" id="description" name="descripcion" rows="4" maxlength="5000"></textarea></div>
             <div class="col-12"><label for="contentText" class="form-label">Contenido de lectura</label><textarea class="form-control" id="contentText" name="contenidoTexto" rows="6"></textarea></div>
         </div></div>
         <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 p-4"><a class="btn btn-outline-secondary" th:href="@{/libros}">Cancelar</a><button class="btn btn-secondary" type="submit">Guardar cambios</button></div>
@@ -42,6 +42,26 @@
     const apiEditorialesUrl = /*[[@{/api/admin/editoriales}]]*/ '/api/admin/editoriales';
     const apiLibroAutoresUrl = /*[[@{/api/admin/libros-autores/libro}]]*/ '/api/admin/libros-autores/libro';
     const apiLibroCategoriasUrl = /*[[@{/api/admin/libros-categorias/libro}]]*/ '/api/admin/libros-categorias/libro';
+    document.getElementById('publication').max = new Date().toISOString().slice(0, 10);
+
+    async function mensajeErrorApi(respuesta) {
+        const texto = await respuesta.text();
+        if (!texto) return `Error HTTP ${respuesta.status}.`;
+        try {
+            const detalle = JSON.parse(texto);
+            const mensaje = detalle.message || detalle.detail || detalle.error;
+            if (mensaje) return mensaje;
+            if (Array.isArray(detalle.errors)) {
+                const errores = detalle.errors
+                    .map(error => typeof error === 'string' ? error : error.defaultMessage || error.message)
+                    .filter(Boolean);
+                if (errores.length) return errores.join(' ');
+            }
+        } catch (_) {
+            if (texto.trim().startsWith('<')) return `Error HTTP ${respuesta.status}. Revisa los datos e inténtalo nuevamente.`;
+        }
+        return texto;
+    }
 
     async function cargarOpciones() {
         const respuestas = await Promise.all([fetch(apiEditorialesUrl), fetch(apiAutoresUrl), fetch(apiCategoriasUrl)]);
@@ -118,7 +138,7 @@
                 headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!respuesta.ok) throw new Error((await respuesta.text()) || `Error HTTP ${respuesta.status}`);
+            if (!respuesta.ok) throw new Error(await mensajeErrorApi(respuesta));
             window.location.assign(listaLibrosUrl);
         } catch (error) {
             mensaje.className = 'alert alert-danger';

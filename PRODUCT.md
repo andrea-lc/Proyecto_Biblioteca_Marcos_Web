@@ -26,7 +26,7 @@ Bibliot. is a Spanish-language web application for discovering books and managin
 
 - Readers can browse featured books, search and filter the catalog, and view separate physical and digital book details.
 - The application has REST CRUD endpoints for books, users, roles, authors, categories, publishers, copies, loans, reservations, returns, and sanctions. Book and user management and role management have connected views; other workflows remain partial, static, or without dedicated views.
-- Login and registration are not connected to authentication. Administrative and personal data routes are not protected by role-based authorization.
+- Login validates credentials against stored users with BCrypt and redirects to the dashboard; registration creates a user record in MySQL with a default "Lector" role. Administrative and personal data routes are not protected by role-based authorization.
 - Physical and digital book details are distinct flows. Cover image upload and secure digital file delivery are not implemented.
 - Reservation, loan, return, and sanction policies have not been defined by the institution. Do not invent these rules or imply that disabled actions are available.
 - The project uses Spring Boot, Thymeleaf, Java 21 as the declared target, REST controllers, and MySQL.
