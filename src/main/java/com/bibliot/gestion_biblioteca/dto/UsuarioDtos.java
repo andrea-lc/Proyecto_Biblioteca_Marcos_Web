@@ -16,9 +16,9 @@ public final class UsuarioDtos {
 
     public record Request(Integer idUsuario, @NotBlank @Size(max = 100) String nombres,
             @NotBlank @Size(max = 100) String apellidos,
-            @NotBlank @Pattern(regexp = "^[0-9]{8}$") String dni,
+            @NotBlank @Pattern(regexp = "^[0-9]{8}$", message = "El DNI debe tener exactamente 8 dígitos (un DNI válido).") String dni,
             @NotBlank @Email @Size(max = 150) String email,
-            @NotBlank @Pattern(regexp = "^[0-9]{9}$") String telefono,
+            @NotBlank @Pattern(regexp = "^[0-9]{9}$", message = "El teléfono debe tener exactamente 9 dígitos.") String telefono,
             @Size(max = 200) String direccion, @NotNull @Positive Integer idRol,
             @Size(min = 8, max = 255) String password, @PastOrPresent LocalDateTime fechaRegistro,
             Boolean activo) {

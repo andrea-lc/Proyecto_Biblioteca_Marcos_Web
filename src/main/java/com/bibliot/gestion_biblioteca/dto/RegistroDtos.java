@@ -13,4 +13,5 @@ public class RegistroDtos {
     private String direccion;
     private String password;
     private String confirmarPassword;
+    private String aceptaTerminos;
 }

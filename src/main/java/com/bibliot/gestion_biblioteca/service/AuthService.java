@@ -83,6 +83,9 @@ public class AuthService {
         if (!password.equals(r.getConfirmarPassword())) {
             throw new IllegalArgumentException("Las contraseñas no coinciden.");
         }
+        if (r.getAceptaTerminos() == null) {
+            throw new IllegalArgumentException("Debes aceptar los términos y condiciones.");
+        }
 
         String direccion = r.getDireccion() == null ? null : r.getDireccion().trim();
         if (nombres.length() > 100 || apellidos.length() > 100 || correo.length() > 150
@@ -91,7 +94,11 @@ public class AuthService {
         }
 
         Rol lector = rolRepository.findByNombre("Lector")
-                .orElseThrow(() -> new IllegalStateException("No existe el rol Lector"));
+                .orElseGet(() -> {
+                    Rol nuevo = new Rol();
+                    nuevo.setNombre("Lector");
+                    return rolRepository.save(nuevo);
+                });
 
         Usuario u = new Usuario();
         u.setNombres(nombres);
