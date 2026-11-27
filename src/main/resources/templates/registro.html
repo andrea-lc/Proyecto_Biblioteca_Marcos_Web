@@ -7,13 +7,13 @@
     <script th:replace="~{auth :: auth}"></script>
     <title>Crear cuenta | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=badge,call,location_on,lock,mail,person">
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
-<body class="auth-page">
+<body class="auth-page ed-auth-page">
 <main class="container-fluid p-0">
     <div class="row g-0 auth-shell">
         <section class="col-md-6 photo-panel auth-register-photo" aria-label="Estantería de libros">
@@ -23,29 +23,63 @@
             </div>
         </section>
         <section class="col-md-6 form-panel">
-            <div class="auth-card">
+            <div class="auth-card ed-auth-card ed-auth-card--wide ed-enter">
                 <header class="text-center mb-3">
                     <div class="brand">Bibliot.</div>
                     <div class="tagline">Lee · Explora · Descubre</div>
                 </header>
-                <h2 class="h5 mb-1">Crear cuenta</h2>
-                <p class="text-secondary small mb-3">Completa tus datos para comenzar.</p>
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-1">
+                    <h2 class="ed-auth-title mb-0">Crear cuenta</h2>
+                    <span class="ed-badge ed-badge--info">Cuenta de lector</span>
+                </div>
+                <p class="ed-auth-subtitle">Regístrate como lector para explorar el catálogo y gestionar tus reservas.</p>
                 <div class="alert py-2 small" role="status" th:if="${formMessage}" th:class="'alert alert-' + ${formMessageType ?: 'info'} + ' py-2 small'" th:text="${formMessage}"></div>
-                <form th:action="@{/registro}" method="post">
-                    <div class="input-group mb-2"><span class="input-group-text bg-transparent" aria-hidden="true"><i class="bi bi-person"></i></span><input class="form-control" type="text" name="nombres" maxlength="100" autocomplete="name" placeholder="Nombres y apellidos" aria-label="Nombres y apellidos" required></div>
-                    <div class="input-group mb-2"><span class="input-group-text bg-transparent" aria-hidden="true"><i class="bi bi-card-text"></i></span><input class="form-control" type="text" name="dni" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" placeholder="DNI" aria-label="DNI" required></div>
-                    <div class="input-group mb-2"><span class="input-group-text bg-transparent" aria-hidden="true"><i class="bi bi-envelope"></i></span><input class="form-control" type="email" name="correo" maxlength="150" autocomplete="email" placeholder="Correo electrónico" aria-label="Correo electrónico" required></div>
-                    <div class="input-group mb-2"><span class="input-group-text bg-transparent" aria-hidden="true"><i class="bi bi-telephone"></i></span><input class="form-control" type="tel" name="telefono" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" autocomplete="tel" placeholder="Teléfono" aria-label="Teléfono" required></div>
-                    <div class="input-group mb-2"><span class="input-group-text bg-transparent" aria-hidden="true"><i class="bi bi-geo-alt"></i></span><input class="form-control" type="text" name="direccion" maxlength="200" autocomplete="street-address" placeholder="Dirección" aria-label="Dirección"></div>
-                    <div class="input-group mb-2"><span class="input-group-text bg-transparent" aria-hidden="true"><i class="bi bi-lock"></i></span><input class="form-control" type="password" name="password" minlength="8" maxlength="255" autocomplete="new-password" placeholder="Contraseña" aria-label="Contraseña" required></div>
-                    <div class="input-group mb-2"><span class="input-group-text bg-transparent" aria-hidden="true"><i class="bi bi-lock-fill"></i></span><input class="form-control" type="password" name="confirmarPassword" autocomplete="new-password" placeholder="Confirmar contraseña" aria-label="Confirmar contraseña" required></div>
-                    <div class="form-check small mb-2"><input class="form-check-input" type="checkbox" id="terms" required><label class="form-check-label" for="terms">Acepto los <a th:href="@{/terminos}" class="link-primary">Términos y condiciones</a></label></div>
-                    <button class="btn btn-brand w-100" type="submit">Registrarme</button>
+                <form id="register-form" th:action="@{/registro}" method="post">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="reg-nombres">Nombres y apellidos</label>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">person</span></span><input class="form-control" id="reg-nombres" type="text" name="nombres" maxlength="100" autocomplete="name" placeholder="Nombres y apellidos" required></div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <label class="form-label" for="reg-dni">DNI</label>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">badge</span></span><input class="form-control" id="reg-dni" type="text" name="dni" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" placeholder="8 dígitos" required></div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <label class="form-label" for="reg-telefono">Teléfono</label>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">call</span></span><input class="form-control" id="reg-telefono" type="tel" name="telefono" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" autocomplete="tel" placeholder="9 dígitos" required></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="reg-correo">Correo electrónico</label>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">mail</span></span><input class="form-control" id="reg-correo" type="email" name="correo" maxlength="150" autocomplete="email" placeholder="tu@correo.com" required></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="reg-direccion">Dirección <span class="text-secondary fw-normal">(opcional)</span></label>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">location_on</span></span><input class="form-control" id="reg-direccion" type="text" name="direccion" maxlength="200" autocomplete="street-address" placeholder="Tu dirección"></div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <label class="form-label" for="reg-password">Contraseña</label>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">lock</span></span><input class="form-control" id="reg-password" type="password" name="password" minlength="8" maxlength="255" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required></div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <label class="form-label" for="reg-confirm">Confirmar contraseña</label>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">lock</span></span><input class="form-control" id="reg-confirm" type="password" name="confirmarPassword" autocomplete="new-password" placeholder="Repite la contraseña" required></div>
+                        </div>
+                    </div>
+                    <div class="form-check small my-3"><input class="form-check-input" type="checkbox" id="terms" required><label class="form-check-label" for="terms">Acepto los <a th:href="@{/terminos}">Términos y condiciones</a></label></div>
+                    <button class="btn btn-brand w-100" id="register-submit" type="submit">Registrarme</button>
                 </form>
-                <p class="text-center small mt-2 mb-0">¿Ya tienes una cuenta? <a th:href="@{/login}" class="link-primary ms-1">Inicia sesión</a></p>
+                <p class="text-center small mt-3 mb-0">¿Ya tienes una cuenta? <a th:href="@{/login}" class="ms-1">Inicia sesión</a></p>
             </div>
         </section>
     </div>
 </main>
+<script>
+    document.getElementById('register-form')?.addEventListener('submit', function () {
+        if (this.checkValidity()) {
+            const btn = document.getElementById('register-submit');
+            if (btn) { btn.setAttribute('aria-busy', 'true'); btn.disabled = true; btn.textContent = 'Registrando…'; }
+        }
+    });
+</script>
 </body>
 </html>

@@ -6,14 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import org.hibernate.validator.constraints.URL;
+import com.bibliot.gestion_biblioteca.validation.ArchivoUrlValida;
 import java.time.LocalDateTime;
 
 public final class LibroDigitalDtos {
     private LibroDigitalDtos() {}
 
     public record Request(Integer idLibroDigital, @NotNull @Positive Integer idLibro,
-            @Size(max = 255) @URL String archivoUrl, @Size(max = 30) String formato,
+            @Size(max = 255) @ArchivoUrlValida String archivoUrl, @Size(max = 30) String formato,
             @Positive Long tamanoArchivo, @NotNull Boolean disponible,
             @PastOrPresent LocalDateTime fechaRegistro) {
         public LibroDigital toEntity() {

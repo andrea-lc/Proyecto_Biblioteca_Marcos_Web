@@ -15,22 +15,12 @@
         rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search,notifications,account_circle,admin_panel_settings,groups,menu_book,query_stats,settings,logout,download,filter_list,delete,person_add" />
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_circle,admin_panel_settings,business,delete,download,edit_note,filter_list,groups,home,logout,menu_book,notifications,person_add,query_stats,search,settings,swap_horiz" />
 </head>
 
 <body class="admin-body">
     <div class="admin-layout">
-        <aside class="admin-sidebar">
-            <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
-            <nav class="admin-nav" aria-label="Navegación principal">
-                <a data-roles="ADMINISTRADOR" th:href="@{/roles}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>Roles</a>
-                <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" class="active" th:href="@{/usuarios}" aria-current="page"><span class="nav-icon material-symbols-outlined" aria-hidden="true">groups</span>Usuarios</a>
-                <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/libros}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">menu_book</span>Libros</a>
-                <a data-roles="ADMINISTRADOR" th:href="@{/dashboard}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">query_stats</span>Reportes</a>
-                <a data-roles="ADMINISTRADOR" th:href="@{/configuracion}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">settings</span>Ajustes</a>
-            </nav>
-            <a class="signout-link" th:href="@{/logout}"><span class="material-symbols-outlined" aria-hidden="true">logout</span><span>Cerrar sesión</span></a>
-        </aside>
+        <aside th:replace="~{admin-sidebar :: sidebar('usuarios')}" class="admin-sidebar"></aside>
 
         <main class="admin-main">
             <header class="admin-topbar">
@@ -50,56 +40,57 @@
             </header>
 
             <section class="users-content" aria-labelledby="users-title">
-                <div class="users-heading-row mb-3">
-                    <h1 class="page-heading mb-0" id="users-title">
-                        Usuarios
-                        <span class="users-total"><b id="user-count">0</b><span class="visually-hidden"> usuarios registrados</span></span>
-                    </h1>
+                <div class="users-heading-row ed-enter">
+                    <div>
+                        <h1 class="page-heading" id="users-title">
+                            Usuarios
+                            <span class="users-total ed-count-pill"><b id="user-count">0</b><span class="visually-hidden"> usuarios registrados</span></span>
+                        </h1>
+                        <p class="ed-page-subtitle">Administra usuarios, filtra por rol y gestiona los roles disponibles desde esta sección.</p>
+                    </div>
                     <div class="users-actions">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled title="La exportación todavía no está disponible">
-                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">download</span>
-                            Exportar
-                        </button>
-                        <a class="btn btn-brand btn-sm" th:href="@{/usuarios/nuevo}">
-                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">person_add</span>
-                            Nuevo usuario
+                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/reportes/usuarios/pdf}">
+                            <span class="material-symbols-outlined" aria-hidden="true">download</span>PDF
+                        </a>
+                        <a class="btn btn-outline-success btn-sm" th:href="@{/reportes/usuarios/excel}">
+                            <span class="material-symbols-outlined" aria-hidden="true">download</span>Excel
+                        </a>
+                        <a data-roles="ADMINISTRADOR" class="btn btn-brand btn-sm" th:href="@{/usuarios/nuevo}">
+                            <span class="material-symbols-outlined" aria-hidden="true">person_add</span>Nuevo usuario
                         </a>
                     </div>
-                    <div class="users-actions">
-                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/reportes/usuarios/pdf}">⇩ PDF</a>
-                        <a class="btn btn-outline-success btn-sm" th:href="@{/reportes/usuarios/excel}">⇩ Excel</a>
-                        <a class="btn btn-brand btn-sm" th:href="@{/usuarios/nuevo}">＋ Nuevo usuario</a>
+                </div>
+                <nav class="user-tabs ed-tabs" aria-label="Secciones de usuarios">
+                    <a class="selected" th:href="@{/usuarios}" aria-current="page">Todos los usuarios</a>
+                    <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/roles}">Roles</a>
+                </nav>
+                <div class="alert alert-info ed-notice py-2 small mb-3" id="users-message" role="status" aria-live="polite" hidden>Cargando usuarios…</div>
+                <div class="user-toolbar ed-toolbar ed-enter" data-stagger="1">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <label class="visually-hidden" for="role-filter">Filtrar usuarios por rol</label>
+                        <select class="form-select form-select-sm w-auto" id="role-filter"><option value="">Todos los roles</option></select>
                     </div>
                 </div>
-                <div class="alert alert-info" role="status">Listado de muestra. Exportación, filtros y cambio de vista todavía no están conectados.</div>
-                <div class="user-tabs"><a class="selected" th:href="@{/usuarios}">Todos</a><a th:href="@{/roles}">Roles</a></div>
-                <div class="alert alert-info py-2 small mb-3" id="users-message" role="status" aria-live="polite" hidden>Cargando usuarios…</div>
-                <div class="user-toolbar">
-                    <form class="user-search" th:action="@{/usuarios}" method="get"><span
-                            aria-hidden="true">⌕</span><input type="search" name="usuario" placeholder="Buscar usuario"
-                            aria-label="Buscar usuario"></form>
-                    <div class="table-tools"><button class="btn btn-outline-secondary btn-sm" type="button" disabled>☷
-                            <span>Filtrar</span></button><button class="view-toggle active" type="button"
-                            aria-label="Vista de lista" disabled>☷</button><button class="view-toggle" type="button" disabled
-                            aria-label="Vista de tarjetas">▦</button></div>
-                </div>
 
-                <div class="table-responsive users-table-wrap border rounded-bottom-3 shadow-sm">
-                    <table class="table users-table table-hover align-middle mb-0">
+                <div class="table-responsive users-table-wrap ed-table-wrap ed-enter" data-stagger="2" tabindex="0" role="region" aria-labelledby="users-title">
+                    <table class="table users-table ed-table table-hover align-middle mb-0">
                         <caption class="visually-hidden">Usuarios registrados en la biblioteca</caption>
                         <thead>
                             <tr>
-                                <th class="check-col" scope="col"><input type="checkbox" aria-label="Seleccionar todos los usuarios"></th>
+                                <th data-roles="ADMINISTRADOR" class="check-col" scope="col"><input type="checkbox" aria-label="Seleccionar todos los usuarios"></th>
                                 <th scope="col">Nombre</th>
                                 <th scope="col">ID de usuario</th>
                                 <th scope="col">Rol</th>
                                 <th scope="col">Estado</th>
-                                <th class="text-end" scope="col"><span class="visually-hidden">Acciones</span></th>
+                                <th data-roles="ADMINISTRADOR" class="text-end" scope="col"><span class="visually-hidden">Acciones</span></th>
                             </tr>
                         </thead>
-                        <tbody id="users-table-body"></tbody>
+                        <tbody id="users-table-body">
+                            <tr><td colspan="6" class="py-3"><span class="ed-skeleton ed-skeleton--row" aria-hidden="true"></span></td></tr>
+                            <tr><td colspan="6" class="py-3"><span class="ed-skeleton ed-skeleton--row-md" aria-hidden="true"></span></td></tr>
+                        </tbody>
                     </table>
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-top px-3 py-2 small text-secondary">
+                    <div class="ed-table-footer">
                         <span id="users-summary" role="status" aria-live="polite">Cargando usuarios…</span>
                         <span>La paginación todavía no está disponible.</span>
                     </div>
@@ -109,6 +100,11 @@
     </div>
 
     <script th:inline="javascript">
+        const canManageUsers = Auth.hasRole(["ADMINISTRADOR"]);
+        const userTableColumns = canManageUsers ? 6 : 4;
+        if (!canManageUsers) {
+            document.querySelectorAll("#users-table-body td").forEach(cell => { cell.colSpan = userTableColumns; });
+        }
         const usersApi = /*[[@{/api/bibliotecario/usuarios}]]*/ "/api/bibliotecario/usuarios";
         const body = document.getElementById("users-table-body");
         const notice = document.getElementById("users-message");
@@ -116,7 +112,8 @@
         const summary = document.getElementById("users-summary");
         const searchForm = document.getElementById("users-search-form");
         const searchInput = document.getElementById("users-search");
-        const allCheck = document.querySelector('.users-table thead input[type="checkbox"]');
+        const allCheck = canManageUsers ? document.querySelector('.users-table thead input[type="checkbox"]') : null;
+        const roleFilter = document.getElementById("role-filter");
         let allUsers = [];
 
         function normalizarBusqueda(texto) {
@@ -125,13 +122,14 @@
 
         function renderUsers(query = "") {
             const q = normalizarBusqueda(query.trim());
-            const matches = allUsers.filter(user => normalizarBusqueda(
+            const selectedRole = roleFilter.value;
+            const matches = allUsers.filter(user => (!selectedRole || user.rol === selectedRole) && normalizarBusqueda(
                 `${user.nombres || ""} ${user.apellidos || ""} ${user.email || ""} ${user.rol || ""} ${user.idUsuario || ""}`
             ).includes(q));
 
             body.replaceChildren();
-            count.textContent = allUsers.length;
-            summary.textContent = q
+            count.textContent = matches.length;
+            summary.textContent = q || selectedRole
                 ? `Mostrando ${matches.length} de ${allUsers.length} usuarios.`
                 : `${allUsers.length} usuarios registrados.`;
             if (allCheck) allCheck.checked = false;
@@ -139,9 +137,11 @@
             if (matches.length === 0) {
                 const row = document.createElement("tr");
                 const cell = document.createElement("td");
-                cell.colSpan = 6;
+                cell.colSpan = userTableColumns;
                 cell.className = "text-center text-secondary py-5";
-                cell.textContent = q ? "No hay usuarios que coincidan con la búsqueda." : "Aún no hay usuarios registrados.";
+                cell.textContent = q || selectedRole
+                    ? "No hay usuarios que coincidan con la búsqueda y el rol seleccionado."
+                    : "Aún no hay usuarios registrados.";
                 row.append(cell);
                 body.append(row);
                 return;
@@ -149,11 +149,15 @@
 
             matches.forEach((user, index) => {
                 const row = document.createElement("tr");
-                const checkCell = document.createElement("td");
-                const check = document.createElement("input");
-                check.type = "checkbox";
-                check.setAttribute("aria-label", `Seleccionar a ${user.nombres} ${user.apellidos}`);
-                checkCell.append(check);
+                const cells = [];
+                if (canManageUsers) {
+                    const checkCell = document.createElement("td");
+                    const check = document.createElement("input");
+                    check.type = "checkbox";
+                    check.setAttribute("aria-label", `Seleccionar a ${user.nombres} ${user.apellidos}`);
+                    checkCell.append(check);
+                    cells.push(checkCell);
+                }
 
                 const nameCell = document.createElement("td");
                 const link = document.createElement("a");
@@ -187,17 +191,23 @@
                 state.textContent = user.activo ? "Activo" : "Inactivo";
                 stateCell.append(state);
 
-                const actions = document.createElement("td");
-                actions.className = "text-end";
-                const remove = document.createElement("button");
-                remove.className = "btn btn-sm btn-outline-danger";
-                remove.type = "button";
-                remove.innerHTML = '<span class="material-symbols-outlined align-middle" aria-hidden="true">delete</span><span class="visually-hidden">Eliminar</span>';
-                remove.setAttribute("aria-label", `Eliminar a ${user.nombres} ${user.apellidos}`);
-                remove.addEventListener("click", () => eliminarUsuario(user, remove));
-
-                actions.append(remove);
-                row.append(checkCell, nameCell, idCell, role, stateCell, actions);
+                cells.push(nameCell, idCell, role, stateCell);
+                if (canManageUsers) {
+                    const actions = document.createElement("td");
+                    actions.className = "text-end";
+                    const actionsWrap = document.createElement("div");
+                    actionsWrap.className = "ed-row-actions";
+                    const remove = document.createElement("button");
+                    remove.className = "btn btn-sm btn-outline-danger ed-btn-icon";
+                    remove.type = "button";
+                    remove.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">delete</span><span class="visually-hidden">Eliminar</span>';
+                    remove.setAttribute("aria-label", `Eliminar a ${user.nombres} ${user.apellidos}`);
+                    remove.addEventListener("click", () => eliminarUsuario(user, remove));
+                    actionsWrap.append(remove);
+                    actions.append(actionsWrap);
+                    cells.push(actions);
+                }
+                row.append(...cells);
                 body.append(row);
             });
         }
@@ -230,6 +240,8 @@
                 const response = await fetch(usersApi, { headers: { Accept: "application/json" } });
                 if (!response.ok) throw new Error(await mensajeErrorApi(response));
                 allUsers = await response.json();
+                const roles = [...new Set(allUsers.map(user => user.rol).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+                roleFilter.replaceChildren(new Option("Todos los roles", ""), ...roles.map(role => new Option(role, role)));
                 notice.hidden = true;
                 renderUsers(searchInput.value);
                 return true;
@@ -267,6 +279,7 @@
 
         searchForm.addEventListener("submit", event => event.preventDefault());
         searchInput.addEventListener("input", () => renderUsers(searchInput.value));
+        roleFilter.addEventListener("change", () => renderUsers(searchInput.value));
         if (allCheck) allCheck.addEventListener("change", event => {
             body.querySelectorAll('input[type="checkbox"]').forEach(check => check.checked = event.target.checked);
         });

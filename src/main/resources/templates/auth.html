@@ -101,9 +101,14 @@
         // ---- Reglas de acceso por página ('*' = cualquier usuario con sesión) ----
         var RULES = [
             {path: '/dashboard', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO']},
+            {path: '/usuarios/nuevo', roles: ['ADMINISTRADOR']},
+            {path: '/usuarios/editar', roles: ['ADMINISTRADOR']},
             {path: '/usuarios', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO'], prefix: true},
             {path: '/libros', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO'], prefix: true},
-            {path: '/roles', roles: ['ADMINISTRADOR']},
+            {path: '/prestamos', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO'], prefix: true},
+            {path: '/autores', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO'], prefix: true},
+            {path: '/editoriales', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO'], prefix: true},
+            {path: '/roles', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO']},
             {path: '/configuracion', roles: ['ADMINISTRADOR']},
 
             {path: '/perfil', roles: ['*']},
@@ -159,7 +164,8 @@
                 var target = new URL(inputUrl, window.location.href);
 
                 isApi = target.origin === window.location.origin
-                    && target.pathname.indexOf(ctx + '/api/') === 0;
+                    && (target.pathname.indexOf(ctx + '/api/') === 0
+                        || target.pathname.indexOf(ctx + '/actuator/') === 0);
 
             } catch (e) {
                 console.error('Error identificando la petición:', e);
@@ -227,8 +233,163 @@
                     logout();
                 });
             });
+            activarNotificaciones();
             document.documentElement.classList.remove('auth-pending');
             document.documentElement.classList.remove('auth-pending');
+        }
+
+        function activarNotificaciones() {
+            if (!user() || window.__bibliotNotificationsStarted) return;
+            window.__bibliotNotificationsStarted = true;
+            var api = ctx + '/api/notificaciones';
+            var badgeStyle = document.createElement('style');
+            badgeStyle.textContent = '.bibliot-notification-count{position:absolute;top:-.25rem;right:-.35rem;min-width:1.2rem;height:1.2rem;padding:0 .25rem;border-radius:999px;background:#a83232;color:#fff;font:600 .7rem/1.2rem system-ui;text-align:center;z-index:2}';
+            document.head.appendChild(badgeStyle);
+            var selectors = 'a[href$="/notificaciones"],button[aria-label="Notificaciones"]';
+            var dialog = document.createElement('dialog');
+            dialog.id = 'bibliot-notifications-dialog';
+            dialog.setAttribute('closedby', 'any');
+            dialog.setAttribute('aria-labelledby', 'bibliot-notifications-title');
+            dialog.className = 'bibliot-notifications-dialog';
+            dialog.innerHTML = '<header class="bibliot-notifications-header"><div><h1 id="bibliot-notifications-title">Notificaciones</h1><p>Actualizaciones de libros y préstamos</p></div><form method="dialog"><button type="submit" class="bibliot-notifications-close" autofocus>Cerrar</button></form></header><p id="bibliot-notifications-status" class="bibliot-notifications-status" role="status" aria-live="polite">Cargando notificaciones…</p><div id="bibliot-notifications-list" class="bibliot-notifications-list"></div>';
+            document.body.appendChild(dialog);
+            var status = dialog.querySelector('#bibliot-notifications-status');
+            var list = dialog.querySelector('#bibliot-notifications-list');
+            function abrirDialogo(event) {
+                if (event) event.preventDefault();
+                if (!dialog.open) dialog.showModal();
+                cargarNotificaciones();
+            }
+            document.querySelectorAll(selectors).forEach(function (control) {
+                if (control.hasAttribute('data-notification-bound')) return;
+                control.setAttribute('data-notification-bound', '');
+                control.addEventListener('click', abrirDialogo);
+            });
+            if (!('closedBy' in HTMLDialogElement.prototype)) {
+                var presionoFuera = false;
+                var estaFuera = function (event) {
+                    var rect = dialog.getBoundingClientRect();
+                    return event.clientX < rect.left || event.clientX > rect.right
+                        || event.clientY < rect.top || event.clientY > rect.bottom;
+                };
+                dialog.addEventListener('pointerdown', function (event) { presionoFuera = estaFuera(event); });
+                dialog.addEventListener('pointerup', function (event) {
+                    if (presionoFuera && estaFuera(event) && dialog.open) dialog.close();
+                    presionoFuera = false;
+                });
+            }
+            function pintarLista(items) {
+                list.replaceChildren();
+                status.hidden = items.length > 0;
+                status.className = 'bibliot-notifications-status';
+                if (!items.length) {
+                    status.textContent = 'No tienes notificaciones.';
+                    return;
+                }
+                items.forEach(function (item) {
+                    var button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'bibliot-notification-item' + (item.leida ? '' : ' is-unread');
+                    button.setAttribute('aria-label', (item.leida ? '' : 'No leída. ') + item.titulo + '. ' + item.mensaje);
+                    var title = document.createElement('strong');
+                    title.textContent = item.titulo;
+                    var message = document.createElement('span');
+                    message.textContent = item.mensaje;
+                    var date = document.createElement('time');
+                    date.dateTime = item.fechaCreacion;
+                    date.textContent = new Date(item.fechaCreacion).toLocaleString('es-CO');
+                    button.append(title, message, date);
+                    button.addEventListener('click', async function () {
+                        if (!item.leida) {
+                            button.disabled = true;
+                            try {
+                                var readResponse = await window.fetch(api + '/' + item.id + '/leida', { method: 'POST' });
+                                if (!readResponse.ok) throw new Error('No se pudo marcar como leída.');
+                                item.leida = true;
+                                window.dispatchEvent(new CustomEvent('bibliot-notifications-refresh'));
+                            } catch (error) {
+                                status.hidden = false;
+                                status.className = 'bibliot-notifications-status is-error';
+                                status.textContent = error.message;
+                                button.disabled = false;
+                                return;
+                            }
+                        }
+                        if (item.urlDestino) {
+                            var destino = new URL(item.urlDestino, location.origin);
+                            if (destino.origin === location.origin) location.assign(destino.href);
+                        } else cargarNotificaciones();
+                    });
+                    list.appendChild(button);
+                });
+            }
+            async function cargarNotificaciones() {
+                status.hidden = false;
+                status.className = 'bibliot-notifications-status';
+                status.textContent = 'Cargando notificaciones…';
+                try {
+                    var response = await window.fetch(api, { headers: { Accept: 'application/json' } });
+                    if (!response.ok) throw new Error('No se pudieron cargar las notificaciones.');
+                    pintarLista(await response.json());
+                } catch (error) {
+                    status.hidden = false;
+                    status.className = 'bibliot-notifications-status is-error';
+                    status.textContent = error.message;
+                }
+            }
+            window.addEventListener('bibliot-notifications-refresh', function () {
+                actualizar();
+                if (dialog.open) cargarNotificaciones();
+            });
+            function pintarContador(count) {
+                document.querySelectorAll(selectors).forEach(function (control) {
+                    var badge = control.querySelector('[data-notification-count]');
+                    if (!badge) {
+                        badge = document.createElement('span');
+                        badge.setAttribute('data-notification-count', '');
+                        badge.className = 'bibliot-notification-count';
+                        badge.setAttribute('aria-live', 'polite');
+                        control.appendChild(badge);
+                    }
+                    badge.textContent = count > 99 ? '99+' : String(count);
+                    badge.hidden = !count;
+                    control.style.position = 'relative';
+                });
+            }
+            function actualizar() {
+                return window.fetch(api + '/no-leidas', { headers: { Accept: 'application/json' } })
+                    .then(function (r) { if (!r.ok) throw new Error('No se pudo leer el contador'); return r.json(); })
+                    .then(pintarContador).catch(function () {});
+            }
+            actualizar();
+            (async function conectar() {
+                var espera = 1000;
+                while (user()) {
+                    try {
+                        var response = await window.fetch(api + '/stream', { headers: { Accept: 'text/event-stream' } });
+                        if (!response.ok || !response.body) throw new Error('Stream no disponible');
+                        espera = 1000;
+                        var reader = response.body.getReader();
+                        var decoder = new TextDecoder();
+                        var buffer = '';
+                        while (user()) {
+                            var chunk = await reader.read();
+                            if (chunk.done) break;
+                            buffer += decoder.decode(chunk.value, { stream: true });
+                            var frames = buffer.split(/\r?\n\r?\n/);
+                            buffer = frames.pop() || '';
+                            frames.forEach(function (frame) {
+                                if (frame.indexOf('event: notification') >= 0) {
+                                    window.dispatchEvent(new CustomEvent('bibliot-notifications-refresh'));
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        await new Promise(function (resolve) { setTimeout(resolve, espera); });
+                        espera = Math.min(espera * 2, 30000);
+                    }
+                }
+            })();
         }
 
         guardPage();

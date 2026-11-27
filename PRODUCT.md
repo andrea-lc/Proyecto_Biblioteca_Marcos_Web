@@ -39,9 +39,9 @@ Bibliot. is a Spanish-language web application for discovering books and managin
 
 ## Evidence on Hand
 
-- Thymeleaf templates in `src/main/resources/templates` cover catalog discovery, book details, login and registration, dashboard, and administrative book and user pages.
+- Thymeleaf templates in `src/main/resources/templates` cover catalog discovery, book details, login and registration, dashboard, and administrative book, author, publisher, user, role, and settings pages.
 - REST controllers and entity-specific DTOs are in `src/main/java/com/bibliot/gestion_biblioteca`.
-- The shared stylesheet is `src/main/resources/static/css/bibliot.css`.
+- The shared stylesheet is `src/main/resources/static/css/bibliot.css`, which centralizes the "Editorial Cálido" design tokens and reusable components applied consistently across both the administrator/librarian panel (Phase 1) and the reader portal, reading, auth, and error views (Phase 2).
 - No user research, usage analytics, institutional lending policies, or validated reporting requirements are present in the repository.
 
 ## Product Principles

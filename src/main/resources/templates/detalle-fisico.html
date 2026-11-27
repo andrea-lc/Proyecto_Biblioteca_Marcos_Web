@@ -13,54 +13,60 @@
           rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
     <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle"/>
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_circle,bookmark_add,chevron_right,explore,help,home,notifications,person,sell"/>
 </head>
 <body class="catalog-body">
-<aside class="catalog-sidebar"><a class="catalog-brand" th:href="@{/index}">Bibliot.</a>
-    <nav class="catalog-nav" aria-label="Navegación principal"><a th:href="@{/index}"><span>⌂</span>Inicio</a><a
-            class="active" th:href="@{/explorar}" aria-current="page"><span>⊘</span>Explorar</a></nav>
-    <nav class="catalog-nav catalog-bottom-nav" aria-label="Ayuda y cuenta"><a data-auth-show="user" th:href="@{/perfil}"><span>♙</span>Mi
-        cuenta</a><a th:href="@{/ayuda}"><span>ⓘ</span>Ayuda</a></nav>
+<aside class="catalog-sidebar">
+    <a class="catalog-brand" th:href="@{/index}">Bibliot.</a>
+    <nav class="catalog-nav" aria-label="Navegación principal">
+        <a th:href="@{/index}"><span class="material-symbols-outlined" aria-hidden="true">home</span>Inicio</a>
+        <a class="active" th:href="@{/explorar}" aria-current="page"><span class="material-symbols-outlined" aria-hidden="true">explore</span>Explorar</a>
+    </nav>
+    <nav class="catalog-nav catalog-bottom-nav" aria-label="Ayuda y cuenta">
+        <a data-auth-show="user" th:href="@{/perfil}"><span class="material-symbols-outlined" aria-hidden="true">person</span>Mi cuenta</a>
+        <a th:href="@{/ayuda}"><span class="material-symbols-outlined" aria-hidden="true">help</span>Ayuda</a>
+    </nav>
 </aside>
 <main class="catalog-main">
     <header class="catalog-topbar">
-        <button class="catalog-menu" type="button" aria-label="Abrir menú">☰</button>
         <div class="catalog-account-actions">
             <a data-auth-show="guest" th:href="@{/login}" class="btn btn-brand btn-sm">Iniciar sesión</a>
             <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/dashboard}"
                class="btn btn-outline-secondary btn-sm">Panel</a>
-            <a data-auth-show="user" th:href="@{/notificaciones}" class="catalog-icon-button w-auto h-auto p-2"
+            <a data-auth-show="user" th:href="@{/notificaciones}" class="catalog-icon-button"
                aria-label="Notificaciones"><span class="material-symbols-outlined"
                                                  aria-hidden="true">notifications</span></a>
-            <a data-auth-show="user" th:href="@{/perfil}" class="catalog-icon-button w-auto h-auto p-2"
+            <a data-auth-show="user" th:href="@{/perfil}" class="catalog-icon-button"
                aria-label="Mi perfil"><span class="material-symbols-outlined"
                                             aria-hidden="true">account_circle</span></a>
             <a data-auth-show="user" href="#" data-logout class="btn btn-outline-secondary btn-sm">Cerrar sesión</a>
         </div>
     </header>
     <section class="book-detail-content">
-        <div class="book-summary">
+        <nav class="ed-breadcrumb mb-3" aria-label="Migas de pan"><a th:href="@{/explorar}">Explorar</a><span aria-hidden="true">/</span><span aria-current="page">Detalle del libro</span></nav>
+        <div class="book-summary ed-enter">
             <img class="detail-cover" id="detail-cover" src="" alt="Portada del libro">
-            <div class="book-primary-info"><h1 id="detail-title">Cargando libro...</h1>
-                <p class="detail-author-label">Autor:</p>
+            <div class="book-primary-info">
+                <h1 id="detail-title">Cargando libro...</h1>
+                <p class="detail-author-label">Autoría</p>
                 <p class="detail-author" id="detail-authors"></p>
                 <div class="detail-metadata">
                     <div><span>Fecha de publicación</span><b id="detail-year">—</b></div>
                     <div><span>Páginas</span><b id="detail-pages">—</b></div>
-                    <div><span>Ejemplares registrados</span><b id="detail-copies">—</b></div>
+                    <div><span>Ejemplares disponibles</span><b id="detail-copies">—</b></div>
                 </div>
             </div>
             <div class="detail-actions">
                 <div class="action-buttons">
-                    <button class="reserve-button" id="reserve-button" type="button" disabled aria-describedby="reservation-status"><span
-                            aria-hidden="true"><span class="material-symbols-outlined">notifications</span></span><span
+                    <button class="reserve-button" id="reserve-button" type="button" disabled aria-describedby="reservation-status"><span class="material-symbols-outlined" aria-hidden="true">bookmark_add</span><span
                             id="reserve-label">Cargando…</span>
                     </button>
                 </div>
-                <p class="small text-secondary mt-2 mb-0" id="reservation-status">Verificando tu reserva…</p><a class="book-category" th:href="@{/explorar}"><span
-                    aria-hidden="true">♙</span>Categoría <b>›</b></a></div>
+                <p class="small text-secondary mt-2 mb-0" id="reservation-status">Verificando tu reserva…</p>
+                <a class="book-category" th:href="@{/explorar}"><span class="material-symbols-outlined" aria-hidden="true">sell</span> Categoría <span class="material-symbols-outlined ms-auto" aria-hidden="true">chevron_right</span></a>
+            </div>
         </div>
-        <section class="book-description"><h2>Descripción</h2>
+        <section class="book-description ed-enter" data-stagger="1"><h2>Descripción</h2>
             <div class="description-copy" id="detail-description"><p>Cargando descripción…</p></div>
         </section>
     </section>
@@ -205,7 +211,7 @@
             document.getElementById("detail-pages").textContent = book.paginas ?? "—";
             document.getElementById("detail-copies").textContent = book.cantidadEjemplares ?? "0";
             const cover = document.getElementById("detail-cover");
-            if (book.isbn) cover.src = `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(book.isbn)}-L.jpg`;
+            cover.src = book.imagenUrl || (book.isbn ? `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(book.isbn)}-L.jpg` : '');
             cover.alt = `Portada de ${book.titulo || "libro"}`;
             const categoryLink = document.querySelector(".book-category");
             const categoryName = (book.categorias || [])[0];

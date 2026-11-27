@@ -8,29 +8,58 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=bookmark,menu_book">
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
-<body>
-<header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/index}">Bibliot.</a><nav class="nav"><a class="nav-link text-dark" th:href="@{/explorar}">Explorar</a><a class="nav-link text-dark" th:href="@{/notificaciones}">Notificaciones</a><a class="nav-link text-dark" th:href="@{/perfil}">Mi cuenta</a></nav></div></header>
-<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-xl-10">
-    <div class="mb-4"><p class="text-secondary mb-1">Tu actividad</p><h1 class="h2 mb-0">Mis préstamos y reservas</h1></div>
-    <div class="alert alert-danger d-none" id="error" role="alert"></div>
-    <div class="alert alert-success d-none" id="ok" role="status"></div>
-    <section class="card border-0 shadow-sm mb-4"><div class="card-body p-4">
-        <h2 class="h5 mb-3">Préstamos</h2>
-        <div class="table-responsive"><table class="table align-middle mb-0">
-            <thead><tr><th>Libro</th><th>Prestado</th><th>Vence</th><th>Estado</th></tr></thead>
-            <tbody id="prestamos"><tr><td colspan="4" class="text-secondary">Cargando…</td></tr></tbody>
-        </table></div>
-    </div></section>
-    <section class="card border-0 shadow-sm"><div class="card-body p-4">
-        <h2 class="h5 mb-3">Reservas</h2>
-        <div class="table-responsive"><table class="table align-middle mb-0">
-            <thead><tr><th>Libro</th><th>Reservado</th><th>Expira</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
-            <tbody id="reservas"><tr><td colspan="5" class="text-secondary">Cargando…</td></tr></tbody>
-        </table></div>
-    </div></section>
-</div></div></main>
+<body class="ed-portal-page">
+<header class="navbar ed-portal-navbar">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/index}">Bibliot.</a>
+        <nav class="nav" aria-label="Navegación principal">
+            <a class="nav-link" th:href="@{/explorar}">Explorar</a>
+            <a class="nav-link" th:href="@{/notificaciones}">Notificaciones</a>
+            <a class="nav-link" th:href="@{/perfil}">Mi cuenta</a>
+        </nav>
+    </div>
+</header>
+<main class="ed-portal-main">
+    <div class="container">
+        <div class="row justify-content-center"><div class="col-12 col-xl-10">
+            <div class="ed-page-header ed-enter">
+                <div>
+                    <h1 class="page-heading">Mis préstamos y reservas</h1>
+                    <p class="ed-page-subtitle">Consulta tus ejemplares en préstamo, fechas de vencimiento y reservas activas.</p>
+                </div>
+            </div>
+            <div class="alert alert-danger d-none mb-3" id="error" role="alert"></div>
+            <div class="alert alert-success d-none mb-3" id="ok" role="status"></div>
+            <section class="ed-card mb-4 ed-enter" data-stagger="1" aria-labelledby="loans-heading">
+                <div class="ed-card-header">
+                    <h2 class="ed-card-title" id="loans-heading">Préstamos</h2>
+                    <span class="ed-card-meta">Historial y plazos</span>
+                </div>
+                <div class="table-responsive ed-table-wrap" tabindex="0" role="region" aria-labelledby="loans-heading">
+                    <table class="table ed-table table-hover align-middle mb-0">
+                        <thead><tr><th scope="col">Libro</th><th scope="col">Prestado</th><th scope="col">Vence</th><th scope="col">Estado</th></tr></thead>
+                        <tbody id="prestamos"><tr><td colspan="4" class="py-3"><span class="ed-skeleton ed-skeleton--row" aria-hidden="true"></span></td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <section class="ed-card ed-enter" data-stagger="2" aria-labelledby="reservations-heading">
+                <div class="ed-card-header">
+                    <h2 class="ed-card-title" id="reservations-heading">Reservas</h2>
+                    <span class="ed-card-meta">Solicitudes registradas</span>
+                </div>
+                <div class="table-responsive ed-table-wrap" tabindex="0" role="region" aria-labelledby="reservations-heading">
+                    <table class="table ed-table table-hover align-middle mb-0">
+                        <thead><tr><th scope="col">Libro</th><th scope="col">Reservado</th><th scope="col">Expira</th><th scope="col">Estado</th><th class="text-end" scope="col">Acciones</th></tr></thead>
+                        <tbody id="reservas"><tr><td colspan="5" class="py-3"><span class="ed-skeleton ed-skeleton--row" aria-hidden="true"></span></td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+        </div></div>
+    </div>
+</main>
 
 <script th:inline="javascript">
     (function () {
@@ -50,17 +79,35 @@
             box.classList.remove('d-none');
         }
 
-        function emptyRow(tbody, cols, text) {
+        function emptyRow(tbody, cols, text, icon = 'menu_book') {
             const tr = document.createElement('tr');
             const td = document.createElement('td');
-            td.colSpan = cols; td.className = 'text-secondary'; td.textContent = text;
+            td.colSpan = cols;
+            td.className = 'py-4 text-center';
+            const box = document.createElement('div');
+            box.className = 'ed-empty border-0 py-3';
+            const ic = document.createElement('span');
+            ic.className = 'material-symbols-outlined';
+            ic.setAttribute('aria-hidden', 'true');
+            ic.textContent = icon;
+            const p = document.createElement('p');
+            p.textContent = text;
+            box.append(ic, p);
+            td.append(box);
             tr.append(td); tbody.append(tr);
         }
 
-        function badge(estado) {
+        function badge(estado, textoPersonalizado) {
             const td = document.createElement('td');
             const b = document.createElement('span');
-            b.className = 'badge text-bg-secondary'; b.textContent = estado || '—';
+            const norm = String(estado || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            let variant = 'ed-badge--neutral';
+            if (/devuelt|complet|atendid/.test(norm)) variant = 'ed-badge--success';
+            else if (/vencid|cancelad|expirad/.test(norm)) variant = 'ed-badge--danger';
+            else if (/vencer|pendient|por entregar|por recoger/.test(norm)) variant = 'ed-badge--warning';
+            else if (/activ|proceso|prestad|confirmad/.test(norm)) variant = 'ed-badge--info';
+            b.className = `ed-badge ${variant}`;
+            b.textContent = textoPersonalizado || estado || '—';
             td.append(b);
             return td;
         }
@@ -68,13 +115,18 @@
         function renderPrestamos(rows) {
             const tbody = document.getElementById('prestamos');
             tbody.replaceChildren();
-            if (!rows.length) return emptyRow(tbody, 4, 'Aún no tienes préstamos.');
+            if (!rows.length) return emptyRow(tbody, 4, 'Aún no tienes préstamos registrados. Explora el catálogo para solicitar tu primera lectura.', 'menu_book');
             rows.forEach((x) => {
                 const tr = document.createElement('tr');
-                [x.tituloLibro || 'Libro sin título', fmt(x.fechaPrestamo), fmt(x.fechaVencimiento)].forEach((t) => {
-                    const td = document.createElement('td'); td.textContent = t; tr.append(td);
+                const esPorEntregar = /por entregar/i.test(x.estado || '');
+                const fechaInicio = x.fechaPrestamo ? fmt(x.fechaPrestamo) : (esPorEntregar ? 'Pendiente de entrega' : '—');
+                const fechaFin = x.fechaVencimiento ? fmt(x.fechaVencimiento) : (esPorEntregar ? 'Pendiente de entrega' : '—');
+                [x.tituloLibro || 'Libro sin título', fechaInicio, fechaFin].forEach((t, idx) => {
+                    const td = document.createElement('td');
+                    td.className = idx === 0 ? 'ed-cell-primary' : 'ed-num';
+                    td.textContent = t; tr.append(td);
                 });
-                tr.append(badge(x.estado));
+                tr.append(badge(x.estado, esPorEntregar ? 'Por recoger' : x.estado));
                 tbody.append(tr);
             });
         }
@@ -82,11 +134,13 @@
         function renderReservas(rows) {
             const tbody = document.getElementById('reservas');
             tbody.replaceChildren();
-            if (!rows.length) return emptyRow(tbody, 5, 'Aún no tienes reservas.');
+            if (!rows.length) return emptyRow(tbody, 5, 'Aún no tienes reservas activas.', 'bookmark');
             rows.forEach((x) => {
                 const tr = document.createElement('tr');
-                [x.tituloLibro || 'Libro sin título', fmt(x.fechaReserva), fmt(x.fechaExpiracion)].forEach((t) => {
-                    const td = document.createElement('td'); td.textContent = t; tr.append(td);
+                [x.tituloLibro || 'Libro sin título', fmt(x.fechaReserva), fmt(x.fechaExpiracion)].forEach((t, idx) => {
+                    const td = document.createElement('td');
+                    td.className = idx === 0 ? 'ed-cell-primary' : 'ed-num';
+                    td.textContent = t; tr.append(td);
                 });
                 tr.append(badge(x.estado));
                 const act = document.createElement('td');
@@ -111,7 +165,9 @@
                 const res = await fetch(cancelarUrl + '/' + encodeURIComponent(reserva.idReserva), { method: 'DELETE' });
                 if (!res.ok) throw new Error((await res.text()) || ('HTTP ' + res.status));
                 show(okBox, 'Reserva cancelada.');
-                await cargarReservas();
+                const [p, r] = await Promise.all([fetch(prestamosUrl, opts), fetch(reservasUrl, opts)]);
+                if (p.ok) renderPrestamos(await p.json());
+                if (r.ok) renderReservas(await r.json());
             } catch (e) {
                 btn.disabled = false;
                 show(errorBox, 'No se pudo cancelar la reserva. ' + e.message);
