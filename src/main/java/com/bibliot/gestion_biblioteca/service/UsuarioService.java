@@ -11,12 +11,12 @@ import com.bibliot.gestion_biblioteca.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 
 @Service
-public class UsuarioService {
+public class UsuarioService{
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+    
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
     }
@@ -43,36 +43,43 @@ public class UsuarioService {
     }
 
     @Transactional
-    public Usuario actualizar(Integer id, Usuario datosActualizados) {
-        Usuario existente = buscarPorId(id);
+    public Usuario actualizarUsuario(Usuario usuario) {
+        // Primero buscamos el existente
+        Usuario existente = buscarPorId(usuario.getIdUsuario());
 
-        if (datosActualizados.getNombres() != null) {
-            existente.setNombres(datosActualizados.getNombres());
+        // Validar email solo si cambió
+        if (!existente.getEmail().equals(usuario.getEmail())) {
+            if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+                throw new RuntimeException("El email ya está registrado por otro usuario");
+            }
         }
-        if (datosActualizados.getApellidos() != null) {
-            existente.setApellidos(datosActualizados.getApellidos());
+
+        // Validar DNI solo si cambió
+        if (!existente.getDni().equals(usuario.getDni())) {
+            if (usuarioRepository.findByDni(usuario.getDni()).isPresent()) {
+                throw new RuntimeException("El DNI ya está registrado por otro usuario");
+            }
         }
-        if (datosActualizados.getDni() != null) {
-            existente.setDni(datosActualizados.getDni());
+
+        // Actualizar campos
+        existente.setNombres(usuario.getNombres());
+        existente.setApellidos(usuario.getApellidos());
+        existente.setEmail(usuario.getEmail());
+        existente.setDni(usuario.getDni());
+        existente.setTelefono(usuario.getTelefono());
+        existente.setDireccion(usuario.getDireccion());
+        if (usuario.getRol() != null) {
+            existente.setRol(usuario.getRol());
         }
-        if (datosActualizados.getEmail() != null) {
-            existente.setEmail(datosActualizados.getEmail());
+        if (usuario.getActivo() != null) {
+            existente.setActivo(usuario.getActivo());
         }
-        if (datosActualizados.getTelefono() != null) {
-            existente.setTelefono(datosActualizados.getTelefono());
+
+        // Actualizar contraseña solo si se proporcionó una nueva
+        if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
+            existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
-        if (datosActualizados.getDireccion() != null) {
-            existente.setDireccion(datosActualizados.getDireccion());
-        }
-        if (datosActualizados.getPassword() != null && !datosActualizados.getPassword().isEmpty()) {
-            existente.setPassword(passwordEncoder.encode(datosActualizados.getPassword()));
-        }
-        if (datosActualizados.getRol() != null) {
-            existente.setRol(datosActualizados.getRol());
-        }
-        if (datosActualizados.getActivo() != null) {
-            existente.setActivo(datosActualizados.getActivo());
-        }
+
         return usuarioRepository.save(existente);
     }
 
@@ -86,7 +93,7 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
     }
-
+    
     public Usuario buscarPorDni(String dni) {
         return usuarioRepository.findByDni(dni)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con DNI: " + dni));

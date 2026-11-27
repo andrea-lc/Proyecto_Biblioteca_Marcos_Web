@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base th:href="@{/}">
+    <script th:replace="~{auth :: auth}"></script>
     <title>Mi cuenta | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,10 +17,75 @@
 <main class="container py-5">
     <div class="row justify-content-center"><div class="col-12 col-lg-9">
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4"><div><p class="text-secondary mb-1">Tu espacio en la biblioteca</p><h1 class="h2 mb-0">Mi cuenta</h1></div><a class="btn btn-outline-secondary" th:href="@{/mis-prestamos}">Ver mis préstamos</a></div>
-        <div class="alert alert-info" role="status">La cuenta de lector todavía no está conectada. Estos datos son una maqueta.</div>
-        <section class="card border-0 shadow-sm"><div class="card-body p-4"><h2 class="h5 mb-4">Datos personales</h2><dl class="row mb-0"><dt class="col-sm-4 text-secondary">Nombre</dt><dd class="col-sm-8">Lector de ejemplo</dd><dt class="col-sm-4 text-secondary">Correo electrónico</dt><dd class="col-sm-8">lector@ejemplo.com</dd><dt class="col-sm-4 text-secondary">Estado de cuenta</dt><dd class="col-sm-8"><span class="badge text-bg-secondary">Sin conexión</span></dd></dl></div></section>
+
+        <div class="alert alert-danger d-none" id="perfil-error" role="alert"></div>
+
+        <section class="card border-0 shadow-sm mb-4"><div class="card-body p-4">
+            <h2 class="h5 mb-4">Datos personales</h2>
+            <dl class="row mb-0">
+                <dt class="col-sm-4 text-secondary">Nombre</dt><dd class="col-sm-8" id="v-nombre">—</dd>
+                <dt class="col-sm-4 text-secondary">Correo electrónico</dt><dd class="col-sm-8" id="v-email">—</dd>
+                <dt class="col-sm-4 text-secondary">DNI</dt><dd class="col-sm-8" id="v-dni">—</dd>
+                <dt class="col-sm-4 text-secondary">Teléfono</dt><dd class="col-sm-8" id="v-telefono">—</dd>
+                <dt class="col-sm-4 text-secondary">Dirección</dt><dd class="col-sm-8" id="v-direccion">—</dd>
+                <dt class="col-sm-4 text-secondary">Rol</dt><dd class="col-sm-8" id="v-rol">—</dd>
+                <dt class="col-sm-4 text-secondary">Miembro desde</dt><dd class="col-sm-8" id="v-fecha">—</dd>
+                <dt class="col-sm-4 text-secondary">Estado de cuenta</dt><dd class="col-sm-8"><span class="badge text-bg-secondary" id="v-estado">—</span></dd>
+            </dl>
+        </div></section>
+
+        <section class="card border-0 shadow-sm"><div class="card-body p-4">
+            <h2 class="h5 mb-3">Mis accesos</h2>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-outline-secondary btn-sm" data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/dashboard}">Panel de reportes</a>
+                <a class="btn btn-outline-secondary btn-sm" data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/usuarios}">Usuarios</a>
+                <a class="btn btn-outline-secondary btn-sm" data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/libros}">Libros</a>
+                <a class="btn btn-outline-secondary btn-sm" data-roles="ADMINISTRADOR" th:href="@{/roles}">Roles</a>
+                <a class="btn btn-outline-secondary btn-sm" data-roles="ADMINISTRADOR" th:href="@{/configuracion}">Ajustes</a>
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/mis-prestamos}">Mis préstamos y reservas</a>
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/explorar}">Explorar catálogo</a>
+                <a class="btn btn-outline-danger btn-sm" href="#" data-logout>Cerrar sesión</a>
+            </div>
+        </div></section>
     </div></div>
 </main>
 <footer class="container border-top py-4"><div class="d-flex flex-wrap gap-3"><a th:href="@{/ayuda}" class="link-secondary">Ayuda</a><a th:href="@{/terminos}" class="link-secondary">Términos y condiciones</a></div></footer>
+
+<script th:inline="javascript">
+    (function () {
+        const meUrl = /*[[@{/api/lector/me}]]*/ '/api/lector/me';
+        const $ = (id) => document.getElementById(id);
+
+        // Datos mínimos desde el token: se ven al instante, aunque la API falle
+        const sesion = Auth.user();
+        if (sesion) {
+            $('v-nombre').textContent = sesion.nombre;
+            $('v-email').textContent = sesion.email;
+            $('v-rol').textContent = sesion.rol;
+        }
+
+        (async () => {
+            try {
+                const r = await fetch(meUrl, { headers: { Accept: 'application/json' } });
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const u = await r.json();
+                $('v-nombre').textContent = `${u.nombres} ${u.apellidos}`;
+                $('v-email').textContent = u.email || '—';
+                $('v-dni').textContent = u.dni || '—';
+                $('v-telefono').textContent = u.telefono || '—';
+                $('v-direccion').textContent = u.direccion || '—';
+                $('v-rol').textContent = u.rol || '—';
+                $('v-fecha').textContent = u.fechaRegistro ? new Date(u.fechaRegistro).toLocaleDateString('es-PE') : '—';
+                const badge = $('v-estado');
+                badge.textContent = u.activo ? 'Activa' : 'Inactiva';
+                badge.className = 'badge ' + (u.activo ? 'text-bg-success' : 'text-bg-secondary');
+            } catch (e) {
+                const box = $('perfil-error');
+                box.textContent = 'No se pudieron cargar todos tus datos (' + e.message + ').';
+                box.classList.remove('d-none');
+            }
+        })();
+    })();
+</script>
 </body>
 </html>

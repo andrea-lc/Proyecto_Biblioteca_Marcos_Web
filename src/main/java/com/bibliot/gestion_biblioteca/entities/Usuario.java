@@ -21,6 +21,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "usuario")
@@ -67,10 +68,12 @@ public class Usuario {
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 8, max = 255, message = "La contraseña debe tener entre 8 y 255 caracteres")
     @Column(name = "password", nullable = false, length = 255)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_rol", nullable = false)
+    @jakarta.validation.constraints.NotNull(message = "Debe asignarse un rol")
     private Rol rol;
 
     @PastOrPresent(message = "La fecha de registro no puede ser en el futuro")
