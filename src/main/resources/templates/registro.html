@@ -38,23 +38,23 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label" for="reg-nombres">Nombres y apellidos</label>
-                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">person</span></span><input class="form-control" id="reg-nombres" type="text" name="nombres" maxlength="100" autocomplete="name" placeholder="Nombres y apellidos" required></div>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">person</span></span><input class="form-control" id="reg-nombres" type="text" name="nombres" th:value="${param.nombres != null ? param.nombres[0] : ''}" maxlength="100" autocomplete="name" placeholder="Nombres y apellidos" required></div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <label class="form-label" for="reg-dni">DNI</label>
-                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">badge</span></span><input class="form-control" id="reg-dni" type="text" name="dni" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" placeholder="8 dígitos" required></div>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">badge</span></span><input class="form-control" id="reg-dni" type="text" name="dni" th:value="${param.dni != null ? param.dni[0] : ''}" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" title="Ingresa un DNI válido de 8 dígitos." placeholder="8 dígitos" required></div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <label class="form-label" for="reg-telefono">Teléfono</label>
-                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">call</span></span><input class="form-control" id="reg-telefono" type="tel" name="telefono" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" autocomplete="tel" placeholder="9 dígitos" required></div>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">call</span></span><input class="form-control" id="reg-telefono" type="tel" name="telefono" th:value="${param.telefono != null ? param.telefono[0] : ''}" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" title="Ingresa un teléfono válido de 9 dígitos." autocomplete="tel" placeholder="9 dígitos" required></div>
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="reg-correo">Correo electrónico</label>
-                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">mail</span></span><input class="form-control" id="reg-correo" type="email" name="correo" maxlength="150" autocomplete="email" placeholder="tu@correo.com" required></div>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">mail</span></span><input class="form-control" id="reg-correo" type="email" name="correo" th:value="${param.correo != null ? param.correo[0] : ''}" maxlength="150" autocomplete="email" placeholder="tu@correo.com" required></div>
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="reg-direccion">Dirección <span class="text-secondary fw-normal">(opcional)</span></label>
-                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">location_on</span></span><input class="form-control" id="reg-direccion" type="text" name="direccion" maxlength="200" autocomplete="street-address" placeholder="Tu dirección"></div>
+                            <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">location_on</span></span><input class="form-control" id="reg-direccion" type="text" name="direccion" th:value="${param.direccion != null ? param.direccion[0] : ''}" maxlength="200" autocomplete="street-address" placeholder="Tu dirección"></div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <label class="form-label" for="reg-password">Contraseña</label>
@@ -65,7 +65,7 @@
                             <div class="input-group"><span class="input-group-text" aria-hidden="true"><span class="material-symbols-outlined">lock</span></span><input class="form-control" id="reg-confirm" type="password" name="confirmarPassword" autocomplete="new-password" placeholder="Repite la contraseña" required></div>
                         </div>
                     </div>
-                    <div class="form-check small my-3"><input class="form-check-input" type="checkbox" id="terms" required><label class="form-check-label" for="terms">Acepto los <a th:href="@{/terminos}">Términos y condiciones</a></label></div>
+                    <div class="form-check small my-3"><input class="form-check-input" type="checkbox" id="terms" name="aceptaTerminos" th:checked="${param.aceptaTerminos != null}" required><label class="form-check-label" for="terms">Acepto los <a th:href="@{/terminos}">Términos y condiciones</a></label></div>
                     <button class="btn btn-brand w-100" id="register-submit" type="submit">Registrarme</button>
                 </form>
                 <p class="text-center small mt-3 mb-0">¿Ya tienes una cuenta? <a th:href="@{/login}" class="ms-1">Inicia sesión</a></p>
