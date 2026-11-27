@@ -10,7 +10,117 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
-<body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/index}">Bibliot.</a><a class="nav-link text-dark" th:href="@{/perfil}">Mi cuenta</a></div></header>
-<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-lg-8"><p class="text-secondary mb-1">Tu actividad</p><h1 class="h2 mb-4">Notificaciones</h1><div class="alert alert-info" role="status">El centro de notificaciones todavía no está conectado. No podemos mostrar si tienes novedades.</div><div class="card border-0 shadow-sm"><div class="card-body p-4"><h2 class="h5 mb-2">¿Qué aparecerá aquí?</h2><p class="text-secondary mb-0">Cuando la biblioteca active este servicio, podrás consultar avisos sobre tus préstamos y reservas.</p></div></div></div></div></main>
+<body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/index}">Bibliot.</a><nav class="nav"><a class="nav-link text-dark" th:href="@{/mis-prestamos}">Mis préstamos</a><a class="nav-link text-dark" th:href="@{/perfil}">Mi cuenta</a></nav></div></header>
+<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-lg-8">
+    <p class="text-secondary mb-1">Tu actividad</p>
+    <h1 class="h2 mb-4">Notificaciones</h1>
+    <div class="alert alert-info" id="notif-message" role="status">Cargando notificaciones…</div>
+    <div class="card border-0 shadow-sm" id="notif-card" hidden>
+        <ul class="list-group list-group-flush" id="notif-list"></ul>
+    </div>
+    <p class="small text-secondary mt-3 mb-0">Los avisos se calculan a partir del estado actual de tus préstamos y reservas.</p>
+</div></div></main>
+
+<script th:inline="javascript">
+    (function () {
+        const prestamosUrl = /*[[@{/api/lector/me/prestamos}]]*/ '/api/lector/me/prestamos';
+        const reservasUrl = /*[[@{/api/lector/me/reservas}]]*/ '/api/lector/me/reservas';
+        const misPrestamosUrl = /*[[@{/mis-prestamos}]]*/ '/mis-prestamos';
+
+        // Ajusta a los estados reales de tu BD
+        const PRESTAMO_CERRADO = /devuelt|finaliz|cerrad/i;
+        const RESERVA_CERRADA = /cancelad|expirad|atendid|complet|finaliz/i;
+        const DIA = 24 * 60 * 60 * 1000;
+        const AVISO_PRESTAMO_DIAS = 3;
+        const AVISO_RESERVA_DIAS = 1;
+
+        const ORDEN = { danger: 0, warning: 1, info: 2, secondary: 3 };
+        const fmt = (d) => new Date(d).toLocaleDateString('es-PE');
+        const plazo = (dias) => dias <= 0 ? 'hoy' : dias === 1 ? 'mañana' : 'en ' + dias + ' días';
+
+        function construir(prestamos, reservas) {
+            const ahora = Date.now();
+            const out = [];
+
+            prestamos.forEach((p) => {
+                if (PRESTAMO_CERRADO.test(p.estado || '') || !p.fechaVencimiento) return;
+                const titulo = p.tituloLibro || 'Un libro';
+                const vence = new Date(p.fechaVencimiento);
+                const dias = Math.ceil((vence - ahora) / DIA);
+                if (vence < ahora) {
+                    out.push({ tipo: 'danger', titulo: 'Préstamo vencido', fecha: vence,
+                        texto: '“' + titulo + '” venció el ' + fmt(vence) + '. Devuélvelo lo antes posible para evitar sanciones.' });
+                } else if (dias <= AVISO_PRESTAMO_DIAS) {
+                    out.push({ tipo: 'warning', titulo: 'Préstamo por vencer', fecha: vence,
+                        texto: '“' + titulo + '” vence ' + plazo(dias) + ' (' + fmt(vence) + ').' });
+                }
+            });
+
+            reservas.forEach((r) => {
+                if (RESERVA_CERRADA.test(r.estado || '') || !r.fechaExpiracion) return;
+                const titulo = r.tituloLibro || 'Un libro';
+                const expira = new Date(r.fechaExpiracion);
+                const dias = Math.ceil((expira - ahora) / DIA);
+                if (expira < ahora) {
+                    out.push({ tipo: 'secondary', titulo: 'Reserva expirada', fecha: expira,
+                        texto: 'Tu reserva de “' + titulo + '” expiró el ' + fmt(expira) + '.' });
+                } else if (dias <= AVISO_RESERVA_DIAS) {
+                    out.push({ tipo: 'warning', titulo: 'Reserva por expirar', fecha: expira,
+                        texto: 'Tu reserva de “' + titulo + '” expira ' + plazo(dias) + '.' });
+                } else {
+                    out.push({ tipo: 'info', titulo: 'Reserva activa', fecha: expira,
+                        texto: 'Tienes reservado “' + titulo + '” hasta el ' + fmt(expira) + '.' });
+                }
+            });
+
+            return out.sort((a, b) => ORDEN[a.tipo] - ORDEN[b.tipo] || a.fecha - b.fecha);
+        }
+
+        function pintar(items) {
+            const list = document.getElementById('notif-list');
+            list.replaceChildren();
+            items.forEach((n) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item p-4 d-flex gap-3 align-items-start';
+                const b = document.createElement('span');
+                b.className = 'badge text-bg-' + n.tipo + ' mt-1';
+                b.textContent = n.titulo;
+                const body = document.createElement('div');
+                const p = document.createElement('p');
+                p.className = 'mb-0';
+                p.textContent = n.texto;
+                body.append(p);
+                li.append(b, body);
+                list.append(li);
+            });
+        }
+
+        (async () => {
+            const msg = document.getElementById('notif-message');
+            try {
+                const opts = { headers: { Accept: 'application/json' } };
+                const [p, r] = await Promise.all([fetch(prestamosUrl, opts), fetch(reservasUrl, opts)]);
+                if (!p.ok || !r.ok) throw new Error('HTTP ' + p.status + '/' + r.status);
+                const items = construir(await p.json(), await r.json());
+                if (!items.length) {
+                    msg.className = 'alert alert-success';
+                    msg.textContent = 'No tienes novedades. Todo está al día.';
+                    return;
+                }
+                pintar(items);
+                document.getElementById('notif-card').hidden = false;
+                msg.className = 'alert alert-secondary';
+                msg.innerHTML = '';
+                msg.append('Tienes ' + items.length + (items.length === 1 ? ' aviso. ' : ' avisos. '));
+                const a = document.createElement('a');
+                a.href = misPrestamosUrl; a.textContent = 'Ver mis préstamos y reservas';
+                msg.append(a);
+            } catch (e) {
+                msg.className = 'alert alert-danger';
+                msg.textContent = 'No se pudieron cargar tus notificaciones (' + e.message + ').';
+            }
+        })();
+    })();
+</script>
 </body>
 </html>

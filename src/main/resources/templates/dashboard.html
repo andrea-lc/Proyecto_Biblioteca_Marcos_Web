@@ -24,8 +24,8 @@
             <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
             <nav class="admin-nav" aria-label="Navegación principal">
                 <a data-roles="ADMINISTRADOR" th:href="@{/roles}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>Roles</a>
-                <a data-roles="ADMINISTRADOR" th:href="@{/usuarios}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">groups</span>Usuarios</a>
-                <a data-roles="ADMINISTRADOR" th:href="@{/libros}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">menu_book</span>Libros</a>
+                <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/usuarios}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">groups</span>Usuarios</a>
+                <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/libros}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">menu_book</span>Libros</a>
                 <a class="active" th:href="@{/dashboard}" aria-current="page"><span class="nav-icon material-symbols-outlined" aria-hidden="true">query_stats</span>Reportes</a>
                 <a data-roles="ADMINISTRADOR" th:href="@{/configuracion}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">settings</span>Ajustes</a>
             </nav>

@@ -101,9 +101,8 @@
         // ---- Reglas de acceso por página ('*' = cualquier usuario con sesión) ----
         var RULES = [
             {path: '/dashboard', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO']},
-
-            {path: '/usuarios', roles: ['ADMINISTRADOR'], prefix: true},
-            {path: '/libros', roles: ['ADMINISTRADOR'], prefix: true},
+            {path: '/usuarios', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO'], prefix: true},
+            {path: '/libros', roles: ['ADMINISTRADOR', 'BIBLIOTECARIO'], prefix: true},
             {path: '/roles', roles: ['ADMINISTRADOR']},
             {path: '/configuracion', roles: ['ADMINISTRADOR']},
 
@@ -228,6 +227,7 @@
                     logout();
                 });
             });
+            document.documentElement.classList.remove('auth-pending');
             document.documentElement.classList.remove('auth-pending');
         }
 

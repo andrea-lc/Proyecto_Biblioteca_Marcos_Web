@@ -11,10 +11,11 @@
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
 <body>
-<header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/index}">Bibliot.</a><nav class="nav"><a class="nav-link text-dark" th:href="@{/explorar}">Explorar</a><a class="nav-link text-dark" th:href="@{/perfil}">Mi cuenta</a></nav></div></header>
+<header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/index}">Bibliot.</a><nav class="nav"><a class="nav-link text-dark" th:href="@{/explorar}">Explorar</a><a class="nav-link text-dark" th:href="@{/notificaciones}">Notificaciones</a><a class="nav-link text-dark" th:href="@{/perfil}">Mi cuenta</a></nav></div></header>
 <main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-xl-10">
     <div class="mb-4"><p class="text-secondary mb-1">Tu actividad</p><h1 class="h2 mb-0">Mis préstamos y reservas</h1></div>
     <div class="alert alert-danger d-none" id="error" role="alert"></div>
+    <div class="alert alert-success d-none" id="ok" role="status"></div>
     <section class="card border-0 shadow-sm mb-4"><div class="card-body p-4">
         <h2 class="h5 mb-3">Préstamos</h2>
         <div class="table-responsive"><table class="table align-middle mb-0">
@@ -25,8 +26,8 @@
     <section class="card border-0 shadow-sm"><div class="card-body p-4">
         <h2 class="h5 mb-3">Reservas</h2>
         <div class="table-responsive"><table class="table align-middle mb-0">
-            <thead><tr><th>Libro</th><th>Reservado</th><th>Expira</th><th>Estado</th></tr></thead>
-            <tbody id="reservas"><tr><td colspan="4" class="text-secondary">Cargando…</td></tr></tbody>
+            <thead><tr><th>Libro</th><th>Reservado</th><th>Expira</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+            <tbody id="reservas"><tr><td colspan="5" class="text-secondary">Cargando…</td></tr></tbody>
         </table></div>
     </div></section>
 </div></div></main>
@@ -35,40 +36,104 @@
     (function () {
         const prestamosUrl = /*[[@{/api/lector/me/prestamos}]]*/ '/api/lector/me/prestamos';
         const reservasUrl = /*[[@{/api/lector/me/reservas}]]*/ '/api/lector/me/reservas';
+        const cancelarUrl = /*[[@{/api/lector/reservas}]]*/ '/api/lector/reservas';
+        // Estados de reserva que ya no se pueden cancelar (ajusta a los de tu BD)
+        const RESERVA_CERRADA = /cancelad|expirad|atendid|complet|finaliz/i;
         const fmt = (d) => d ? new Date(d).toLocaleDateString('es-PE') : '—';
+        const errorBox = document.getElementById('error');
+        const okBox = document.getElementById('ok');
 
-        function render(tbodyId, rows, vacio, f1, f2) {
-            const tbody = document.getElementById(tbodyId);
+        function show(box, text) {
+            errorBox.classList.add('d-none');
+            okBox.classList.add('d-none');
+            box.textContent = text;
+            box.classList.remove('d-none');
+        }
+
+        function emptyRow(tbody, cols, text) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = cols; td.className = 'text-secondary'; td.textContent = text;
+            tr.append(td); tbody.append(tr);
+        }
+
+        function badge(estado) {
+            const td = document.createElement('td');
+            const b = document.createElement('span');
+            b.className = 'badge text-bg-secondary'; b.textContent = estado || '—';
+            td.append(b);
+            return td;
+        }
+
+        function renderPrestamos(rows) {
+            const tbody = document.getElementById('prestamos');
             tbody.replaceChildren();
-            if (!rows.length) {
-                const tr = document.createElement('tr');
-                const td = document.createElement('td');
-                td.colSpan = 4; td.className = 'text-secondary'; td.textContent = vacio;
-                tr.append(td); tbody.append(tr); return;
-            }
+            if (!rows.length) return emptyRow(tbody, 4, 'Aún no tienes préstamos.');
             rows.forEach((x) => {
                 const tr = document.createElement('tr');
-                [x.tituloLibro || 'Libro sin título', fmt(x[f1]), fmt(x[f2])].forEach((t) => {
+                [x.tituloLibro || 'Libro sin título', fmt(x.fechaPrestamo), fmt(x.fechaVencimiento)].forEach((t) => {
                     const td = document.createElement('td'); td.textContent = t; tr.append(td);
                 });
-                const tdE = document.createElement('td');
-                const b = document.createElement('span');
-                b.className = 'badge text-bg-secondary'; b.textContent = x.estado || '—';
-                tdE.append(b); tr.append(tdE); tbody.append(tr);
+                tr.append(badge(x.estado));
+                tbody.append(tr);
             });
+        }
+
+        function renderReservas(rows) {
+            const tbody = document.getElementById('reservas');
+            tbody.replaceChildren();
+            if (!rows.length) return emptyRow(tbody, 5, 'Aún no tienes reservas.');
+            rows.forEach((x) => {
+                const tr = document.createElement('tr');
+                [x.tituloLibro || 'Libro sin título', fmt(x.fechaReserva), fmt(x.fechaExpiracion)].forEach((t) => {
+                    const td = document.createElement('td'); td.textContent = t; tr.append(td);
+                });
+                tr.append(badge(x.estado));
+                const act = document.createElement('td');
+                act.className = 'text-end';
+                if (!RESERVA_CERRADA.test(x.estado || '')) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn btn-outline-danger btn-sm';
+                    btn.textContent = 'Cancelar';
+                    btn.addEventListener('click', () => cancelar(x, btn));
+                    act.append(btn);
+                }
+                tr.append(act);
+                tbody.append(tr);
+            });
+        }
+
+        async function cancelar(reserva, btn) {
+            if (!confirm('¿Cancelar la reserva de "' + (reserva.tituloLibro || 'este libro') + '"?')) return;
+            btn.disabled = true;
+            try {
+                const res = await fetch(cancelarUrl + '/' + encodeURIComponent(reserva.idReserva), { method: 'DELETE' });
+                if (!res.ok) throw new Error((await res.text()) || ('HTTP ' + res.status));
+                show(okBox, 'Reserva cancelada.');
+                await cargarReservas();
+            } catch (e) {
+                btn.disabled = false;
+                show(errorBox, 'No se pudo cancelar la reserva. ' + e.message);
+            }
+        }
+
+        const opts = { headers: { Accept: 'application/json' } };
+
+        async function cargarReservas() {
+            const r = await fetch(reservasUrl, opts);
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            renderReservas(await r.json());
         }
 
         (async () => {
             try {
-                const opts = { headers: { Accept: 'application/json' } };
                 const [p, r] = await Promise.all([fetch(prestamosUrl, opts), fetch(reservasUrl, opts)]);
                 if (!p.ok || !r.ok) throw new Error('HTTP ' + p.status + '/' + r.status);
-                render('prestamos', await p.json(), 'Aún no tienes préstamos.', 'fechaPrestamo', 'fechaVencimiento');
-                render('reservas', await r.json(), 'Aún no tienes reservas.', 'fechaReserva', 'fechaExpiracion');
+                renderPrestamos(await p.json());
+                renderReservas(await r.json());
             } catch (e) {
-                const box = document.getElementById('error');
-                box.textContent = 'No se pudo cargar tu historial (' + e.message + ').';
-                box.classList.remove('d-none');
+                show(errorBox, 'No se pudo cargar tu historial (' + e.message + ').');
             }
         })();
     })();

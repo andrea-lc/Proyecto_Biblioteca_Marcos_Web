@@ -24,8 +24,8 @@
             <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
             <nav class="admin-nav" aria-label="Navegación principal">
                 <a data-roles="ADMINISTRADOR" th:href="@{/roles}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>Roles</a>
-                <a data-roles="ADMINISTRADOR" th:href="@{/usuarios}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">groups</span>Usuarios</a>
-                <a data-roles="ADMINISTRADOR" class="active" th:href="@{/libros}" aria-current="page"><span class="nav-icon material-symbols-outlined" aria-hidden="true">menu_book</span>Libros</a>
+                <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/usuarios}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">groups</span>Usuarios</a>
+                <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" class="active" th:href="@{/libros}" aria-current="page"><span class="nav-icon material-symbols-outlined" aria-hidden="true">menu_book</span>Libros</a>
                 <a th:href="@{/dashboard}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">query_stats</span>Reportes</a>
                 <a data-roles="ADMINISTRADOR" th:href="@{/configuracion}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">settings</span>Ajustes</a>
             </nav>
@@ -60,8 +60,7 @@
                             <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">download</span>
                             Exportar
                         </button>
-                        <a class="btn btn-brand btn-sm" th:href="@{/libros/nuevo}">
-                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">add</span>
+                        <a class="btn btn-brand btn-sm" data-roles="ADMINISTRADOR" th:href="@{/libros/nuevo}">                            <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">add</span>
                             Agregar libro
                         </a>
                     </div>
@@ -110,7 +109,9 @@
     </div>
 
     <script th:inline="javascript">
-        const apiLibrosUrl = /*[[@{/api/admin/libros}]]*/ "/api/admin/libros";
+        const adminLibrosUrl = /*[[@{/api/admin/libros}]]*/ "/api/admin/libros";
+        const biblioLibrosUrl = /*[[@{/api/bibliotecario/libros}]]*/ "/api/bibliotecario/libros";
+        const apiLibrosUrl = Auth.hasRole(['ADMINISTRADOR']) ? adminLibrosUrl : biblioLibrosUrl;
         const cuerpoLibros = document.getElementById("books-table-body");
         const mensajeLibros = document.getElementById("books-message");
         const totalLibros = document.getElementById("book-count");
@@ -197,13 +198,15 @@
 
                 const celdaAcciones = document.createElement("td");
                 celdaAcciones.className = "text-end";
-                const eliminar = document.createElement("button");
-                eliminar.className = "btn btn-sm btn-outline-danger";
-                eliminar.type = "button";
-                eliminar.innerHTML = '<span class="material-symbols-outlined align-middle" aria-hidden="true">delete</span><span class="visually-hidden">Eliminar</span>';
-                eliminar.setAttribute("aria-label", `Eliminar ${libro.titulo || "libro sin título"}`);
-                eliminar.addEventListener("click", () => eliminarLibro(libro, eliminar));
-                celdaAcciones.append(eliminar);
+                if (Auth.hasRole(['ADMINISTRADOR'])) {
+                    const eliminar = document.createElement("button");
+                    eliminar.className = "btn btn-sm btn-outline-danger";
+                    eliminar.type = "button";
+                    eliminar.innerHTML = '<span class="material-symbols-outlined align-middle" aria-hidden="true">delete</span><span class="visually-hidden">Eliminar</span>';
+                    eliminar.setAttribute("aria-label", `Eliminar ${libro.titulo || "libro sin título"}`);
+                    eliminar.addEventListener("click", () => eliminarLibro(libro, eliminar));
+                    celdaAcciones.append(eliminar);
+                }
                 fila.append(celdaAcciones);
 
                 cuerpoLibros.append(fila);
