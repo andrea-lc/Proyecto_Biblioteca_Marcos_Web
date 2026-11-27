@@ -14,6 +14,10 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addViewController("/index").setViewName("index");
 
+        registry.addViewController("/login").setViewName("login");
+
+        registry.addViewController("/registro").setViewName("registro");
+
         registry.addViewController("/explorar").setViewName("explorar");
 
         registry.addViewController("/ayuda").setViewName("ayuda");
@@ -55,6 +59,12 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/configuracion").setViewName("configuracion");
         
         registry.addViewController("/roles").setViewName("roles");
+
+        registry.addViewController("/acceso-denegado").setViewName("acceso-denegado");
+
+        registry.addViewController("/confirmacion-reserva").setViewName("confirmacion-reserva");
+
+        registry.addRedirectViewController("/oauth2/authorization/google", "/login?oauth=unavailable");
     }
 
 }

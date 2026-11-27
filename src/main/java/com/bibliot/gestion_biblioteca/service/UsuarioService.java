@@ -11,12 +11,12 @@ import com.bibliot.gestion_biblioteca.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 
 @Service
-public class UsuarioService {
+public class UsuarioService{
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+    
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
     }
@@ -79,6 +79,7 @@ public class UsuarioService {
         if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
             existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
+
         return usuarioRepository.save(existente);
     }
 
@@ -97,7 +98,7 @@ public class UsuarioService {
         }
         return usuario;
     }
-
+    
     public Usuario buscarPorDni(String dni) {
         return usuarioRepository.findByDni(dni)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con DNI: " + dni));

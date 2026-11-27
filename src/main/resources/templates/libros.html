@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base th:href="@{/}">
+    <script th:replace="~{auth :: auth}"></script>
     <title>Libros | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,31 +22,44 @@
     <div class="admin-layout">
         <aside class="admin-sidebar"><a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
             <nav class="admin-nav" aria-label="Navegación principal">
-                <a th:href="@{/roles}"><span class="nav-icon">▱</span>Roles</a>
-                <a th:href="@{/usuarios}"><span class="nav-icon"><span class="material-symbols-outlined">groups</span></span>Usuarios</a>
-                <a class="active" th:href="@{/libros}" aria-current="page"><span class="nav-icon">▤</span>Libros</a>
-                <a th:href="@{/dashboard}"><span class="nav-icon">◷</span>Reportes</a>
-                <a th:href="@{/configuracion}"><span class="nav-icon">⚙</span>Ajustes</a>
+
+                <a data-roles="ADMINISTRADOR" th:href="@{/roles}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>Roles</a>
+                <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/usuarios}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">groups</span>Usuarios</a>
+                <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" class="active" th:href="@{/libros}" aria-current="page"><span class="nav-icon material-symbols-outlined" aria-hidden="true">menu_book</span>Libros</a>
+                <a th:href="@{/dashboard}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">query_stats</span>Reportes</a>
+                <a data-roles="ADMINISTRADOR" th:href="@{/configuracion}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">settings</span>Ajustes</a>
+
             </nav>
                 <a class="signout-link" th:href="@{/login}">↪ <span>Cerrar sesión</span></a>
         </aside>
         <main class="admin-main">
-            <header class="admin-topbar">
-                <form class="admin-search" role="search" th:action="@{/libros}" method="get"><span
-                        aria-hidden="true">⌕</span><input type="search" name="q" placeholder="Buscar"
-                        aria-label="Buscar"></form>
-                <div class="topbar-actions"><button class="round-action" type="button" aria-label="Notificaciones"><span
-                            class="material-symbols-outlined">notifications</span></button><button
-                        class="round-action user-action" type="button" aria-label="Perfil"><span
-                            class="material-symbols-outlined">account_circle</span></button></div>
+
+                <form class="admin-search api-book-search" id="book-search-form" role="search" th:action="@{/libros}" method="get">
+                    <label class="visually-hidden" for="book-search">Buscar libros</label>
+                    <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                    <input id="book-search" type="search" name="q" placeholder="Buscar libros" autocomplete="off">
+                </form>
+                <div class="topbar-actions">
+                    <button class="round-action" type="button" aria-label="Notificaciones">
+                        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+                    </button>
+                    <a class="round-action user-action" th:href="@{/perfil}" aria-label="Mi cuenta">
+                        <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
+                    </a>
+                </div>
+
             </header>
             <section class="users-content">
                 <div class="users-heading-row">
-                    <h1 class="page-heading mb-1">Libros <span class="users-total">ⓘ <b>50</b></span></h1>
-                    <div class="users-actions">
+                    <h1 class="page-heading mb-1">Libros <span class="users-total">ⓘ <b id="book-count">0</b></span></h1>                    <div class="users-actions">
                         <a class="btn btn-outline-secondary btn-sm" th:href="@{/reportes/libros/pdf}">⇩ PDF</a>
                         <a class="btn btn-outline-success btn-sm" th:href="@{/reportes/libros/excel}">⇩ Excel</a>
                         <a class="btn btn-brand btn-sm" th:href="@{/libros/nuevo}">＋ Agregar libro</a></div>
+
+                </div>
+                <div class="alert alert-info" role="status">Catálogo de muestra. Exportación, filtros y cambio de vista todavía no están conectados.</div>
+                <div class="user-tabs"><a class="selected" th:href="@{/libros}">Todos</a><span class="text-secondary px-3 py-2" aria-disabled="true">Categorías</span>
+
                 </div>
                 <div class="alert alert-info" role="status">Catálogo de muestra. Exportación, filtros y cambio de vista todavía no están conectados.</div>
                 <div class="user-tabs"><a class="selected" th:href="@{/libros}">Todos</a><span class="text-secondary px-3 py-2" aria-disabled="true">Categorías</span>
@@ -182,6 +196,182 @@
             </section>
         </main>
     </div>
+
+
+    <script th:inline="javascript">
+        const adminLibrosUrl = /*[[@{/api/admin/libros}]]*/ "/api/admin/libros";
+        const biblioLibrosUrl = /*[[@{/api/bibliotecario/libros}]]*/ "/api/bibliotecario/libros";
+        const apiLibrosUrl = Auth.hasRole(['ADMINISTRADOR']) ? adminLibrosUrl : biblioLibrosUrl;
+        const cuerpoLibros = document.getElementById("books-table-body");
+        const mensajeLibros = document.getElementById("books-message");
+        const totalLibros = document.getElementById("book-count");
+        const resumenLibros = document.getElementById("books-summary");
+        const formularioBusqueda = document.getElementById("book-search-form");
+        const campoBusqueda = document.getElementById("book-search");
+        const seleccionarTodos = document.querySelector(".books-table thead input[type='checkbox']");
+        let busquedaActual = "";
+
+        function crearCelda(texto, clase = "") {
+            const celda = document.createElement("td");
+            if (clase) celda.className = clase;
+            celda.textContent = texto;
+            return celda;
+        }
+
+        function mensaje(texto, tipo = "info") {
+            mensajeLibros.hidden = false;
+            mensajeLibros.className = `alert alert-${tipo} py-2 small mb-3`;
+            mensajeLibros.textContent = texto;
+        }
+
+        function mostrarEstadoTabla(texto, cargando = false) {
+            cuerpoLibros.replaceChildren();
+            const fila = document.createElement("tr");
+            const celda = crearCelda("", "text-center text-secondary py-5");
+            celda.colSpan = 7;
+            if (cargando) {
+                const spinner = document.createElement("span");
+                spinner.className = "spinner-border spinner-border-sm me-2";
+                spinner.setAttribute("aria-hidden", "true");
+                celda.append(spinner);
+            }
+            celda.append(document.createTextNode(texto));
+            fila.append(celda);
+            cuerpoLibros.append(fila);
+        }
+
+        function dibujarLibros(libros, termino = "") {
+            cuerpoLibros.replaceChildren();
+            totalLibros.textContent = libros.length;
+            resumenLibros.textContent = `${libros.length} ${libros.length === 1 ? "libro" : "libros"} en el listado.`;
+
+            if (seleccionarTodos) seleccionarTodos.checked = false;
+            if (libros.length === 0) {
+                mostrarEstadoTabla(termino
+                    ? "No hay libros que coincidan con la búsqueda."
+                    : "Aún no hay libros registrados en el catálogo.");
+                return;
+            }
+
+            libros.forEach(libro => {
+                const fila = document.createElement("tr");
+                const celdaSeleccion = document.createElement("td");
+                const casilla = document.createElement("input");
+                casilla.type = "checkbox";
+                casilla.setAttribute("aria-label", `Seleccionar ${libro.titulo || "libro sin título"}`);
+                celdaSeleccion.append(casilla);
+                fila.append(celdaSeleccion);
+
+                const celdaTitulo = document.createElement("td");
+                const enlaceTitulo = document.createElement("a");
+                enlaceTitulo.className = "book-title-cell link-dark text-decoration-none d-flex flex-column";
+                enlaceTitulo.href = `/libros/editar?id=${encodeURIComponent(libro.idLibro)}`;
+                const titulo = document.createElement("b");
+                titulo.textContent = libro.titulo || "Sin título";
+                const detalle = document.createElement("small");
+                detalle.textContent = (libro.autores || []).join(", ") || (libro.isbn ? `ISBN ${libro.isbn}` : "Autoría no disponible");
+                enlaceTitulo.append(titulo, detalle);
+                celdaTitulo.append(enlaceTitulo);
+                fila.append(celdaTitulo);
+
+                fila.append(crearCelda(`#${libro.idLibro}`, "employee-id"));
+                fila.append(crearCelda(libro.formato || "Sin ejemplares"));
+                fila.append(crearCelda((libro.categorias || []).join(", ") || "Sin categoría"));
+
+                const celdaEstado = document.createElement("td");
+                const estado = document.createElement("span");
+                const disponible = libro.estado === "Disponible";
+                estado.className = `badge rounded-pill ${disponible ? "text-bg-success" : "text-bg-secondary"}`;
+                estado.textContent = libro.estado || "Sin estado";
+                celdaEstado.append(estado);
+                fila.append(celdaEstado);
+
+                const celdaAcciones = document.createElement("td");
+                celdaAcciones.className = "text-end";
+                if (Auth.hasRole(['ADMINISTRADOR'])) {
+                    const eliminar = document.createElement("button");
+                    eliminar.className = "btn btn-sm btn-outline-danger";
+                    eliminar.type = "button";
+                    eliminar.innerHTML = '<span class="material-symbols-outlined align-middle" aria-hidden="true">delete</span><span class="visually-hidden">Eliminar</span>';
+                    eliminar.setAttribute("aria-label", `Eliminar ${libro.titulo || "libro sin título"}`);
+                    eliminar.addEventListener("click", () => eliminarLibro(libro, eliminar));
+                    celdaAcciones.append(eliminar);
+                }
+                fila.append(celdaAcciones);
+
+                cuerpoLibros.append(fila);
+            });
+        }
+
+        async function mensajeErrorApi(respuesta) {
+            const texto = await respuesta.text();
+            if (!texto) return `Error HTTP ${respuesta.status}.`;
+            try {
+                const detalle = JSON.parse(texto);
+                return detalle.message || detalle.detail || detalle.error || texto;
+            } catch (_) {
+                return texto.trim().startsWith("<")
+                    ? `Error HTTP ${respuesta.status}. Comprueba el estado del servicio e inténtalo de nuevo.`
+                    : texto;
+            }
+        }
+
+        async function cargarLibros(q = "") {
+            busquedaActual = q.trim();
+            mensaje("Cargando libros…");
+            resumenLibros.textContent = "Cargando libros…";
+            mostrarEstadoTabla("Cargando el catálogo…", true);
+            if (seleccionarTodos) seleccionarTodos.checked = false;
+
+            try {
+                const url = new URL(apiLibrosUrl, window.location.origin);
+                if (busquedaActual) url.searchParams.set("q", busquedaActual);
+                const respuesta = await fetch(url, { headers: { Accept: "application/json" } });
+                if (!respuesta.ok) throw new Error(await mensajeErrorApi(respuesta));
+                const libros = await respuesta.json();
+                dibujarLibros(libros, busquedaActual);
+                mensajeLibros.hidden = true;
+                return true;
+            } catch (error) {
+                mensaje(`No se pudo cargar el catálogo. ${error.message}`, "danger");
+                resumenLibros.textContent = "No se pudo cargar el catálogo.";
+                mostrarEstadoTabla("Comprueba la conexión con el servidor e inténtalo de nuevo.");
+                return false;
+            }
+        }
+
+        async function eliminarLibro(libro, boton) {
+            if (!window.confirm(`¿Eliminar “${libro.titulo}”?`)) return;
+            boton.disabled = true;
+            boton.setAttribute("aria-busy", "true");
+            boton.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span class="visually-hidden">Eliminando</span>';
+
+            try {
+                const respuesta = await fetch(`${apiLibrosUrl}/${encodeURIComponent(libro.idLibro)}`, { method: "DELETE" });
+                if (!respuesta.ok) throw new Error(await mensajeErrorApi(respuesta));
+                if (await cargarLibros(busquedaActual)) mensaje(`Se eliminó “${libro.titulo}”.`, "success");
+            } catch (error) {
+                mensaje(`No se pudo eliminar “${libro.titulo}”. ${error.message}`, "danger");
+                if (boton.isConnected) {
+                    boton.disabled = false;
+                    boton.removeAttribute("aria-busy");
+                    boton.innerHTML = '<span class="material-symbols-outlined align-middle" aria-hidden="true">delete</span><span class="visually-hidden">Eliminar</span>';
+                }
+            }
+        }
+
+        formularioBusqueda.addEventListener("submit", evento => {
+            evento.preventDefault();
+            cargarLibros(campoBusqueda.value);
+        });
+        campoBusqueda.value = new URLSearchParams(window.location.search).get("q") || "";
+        if (seleccionarTodos) seleccionarTodos.addEventListener("change", evento => {
+            cuerpoLibros.querySelectorAll('input[type="checkbox"]').forEach(casilla => casilla.checked = evento.target.checked);
+        });
+
+        cargarLibros(campoBusqueda.value);
+    </script>
+
 </body>
 
 </html>

@@ -5,187 +5,256 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base th:href="@{/}">
+    <script th:replace="~{auth :: auth}"></script>
     <title>Perfil de usuario | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
+            rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle,groups" />
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle,groups"/>
 </head>
 
 <body class="admin-body">
-    <div class="admin-layout">
-        <aside class="admin-sidebar">
-            <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
-            <nav class="admin-nav" aria-label="Navegación principal">
-                <a th:href="@{/roles}"><span class="nav-icon">▱</span>Roles</a><a class="active" th:href="@{/usuarios}"><span
-                        class="nav-icon"><span class="material-symbols-outlined">groups</span></span>Usuarios</a>
-                <a th:href="@{/libros}"><span class="nav-icon">▤</span>Libros</a><a th:href="@{/dashboard}"><span
-                        class="nav-icon">◷</span>Reportes</a><a th:href="@{/configuracion}"><span
-                        class="nav-icon">⚙</span>Ajustes</a>
-            </nav>
-            <a class="signout-link" th:href="@{/logout}">↪ <span>Cerrar sesión</span></a>
-        </aside>
-        <main class="admin-main">
-            <header class="admin-topbar">
-                <form class="admin-search" role="search" th:action="@{/usuarios}" method="get"><span
-                        aria-hidden="true">⌕</span><input type="search" name="q" placeholder="Buscar"
-                        aria-label="Buscar"></form>
-                <div class="topbar-actions"><button class="round-action" type="button" aria-label="Notificaciones"><span
-                            class="material-symbols-outlined">notifications</span></button><button
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
+        <nav class="admin-nav" aria-label="Navegación principal">
+            <a data-roles="ADMINISTRADOR" th:href="@{/roles}"><span class="nav-icon">▱</span>Roles</a><a
+                data-roles="ADMINISTRADOR,BIBLIOTECARIO" class="active" th:href="@{/usuarios}"><span
+                class="nav-icon"><span class="material-symbols-outlined">groups</span></span>Usuarios</a>
+            <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/libros}"><span class="nav-icon">▤</span>Libros</a><a
+                th:href="@{/dashboard}"><span
+                class="nav-icon">◷</span>Reportes</a><a data-roles="ADMINISTRADOR" th:href="@{/configuracion}"><span
+                class="nav-icon">⚙</span>Ajustes</a>
+        </nav>
+        <a class="signout-link" th:href="@{/login}">↪ <span>Cerrar sesión</span></a>
+    </aside>
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <form class="admin-search" role="search" th:action="@{/usuarios}" method="get"><span
+                    aria-hidden="true">⌕</span><input type="search" name="q" placeholder="Buscar"
+                                                      aria-label="Buscar"></form>
+            <div class="topbar-actions">
+                <button class="round-action" type="button" aria-label="Notificaciones"><span
+                        class="material-symbols-outlined">notifications</span></button>
+                <button
                         class="round-action user-action" type="button" aria-label="Perfil"><span
-                            class="material-symbols-outlined">account_circle</span></button></div>
-            </header>
-            <section class="profile-content profile-page" aria-labelledby="profile-page-title" id="user-detail">
-                <div class="alert alert-info" id="user-message" role="status">Cargando usuario...</div>
-                <div class="profile-title-row">
-                    <div>
-                        <h1 class="page-heading" id="profile-page-title">Perfil de usuario</h1>
-                        <nav class="breadcrumb-text" aria-label="Migas de pan">
-                            <a th:href="@{/usuarios}">Usuarios</a>
-                            <span aria-hidden="true">/</span>
-                            <span aria-current="page">Perfil</span>
-                        </nav>
-                    </div>
-                    <button class="btn btn-outline-secondary btn-sm profile-disabled-action" type="button"
-                        disabled>Exportar</button>
+                        class="material-symbols-outlined">account_circle</span></button>
+            </div>
+        </header>
+        <section class="profile-content profile-page" aria-labelledby="profile-page-title" id="user-detail">
+            <div class="alert alert-info" id="user-message" role="status">Cargando usuario...</div>
+            <div class="profile-title-row">
+                <div>
+                    <h1 class="page-heading" id="profile-page-title">Perfil de usuario</h1>
+                    <nav class="breadcrumb-text" aria-label="Migas de pan">
+                        <a th:href="@{/usuarios}">Usuarios</a>
+                        <span aria-hidden="true">/</span>
+                        <span aria-current="page">Perfil</span>
+                    </nav>
                 </div>
-                <p class="profile-actions-note" id="profile-actions-note">Las acciones de gestión no están disponibles en esta maqueta.</p>
-                <div class="profile-grid">
-                    <article class="profile-card" aria-labelledby="profile-name">
-                        <div class="profile-identity">
-                            <div class="profile-avatar" aria-hidden="true">EM</div>
-                            <h2 class="profile-name" id="profile-name">Cargando...</h2>
-                        </div>
-                        <div class="profile-info">
-                            <h3>Información</h3>
-                            <dl>
-                                <div>
-                                    <dt>Nombre para mostrar</dt>
-                                    <dd>Emeto Mamani</dd>
-                                </div>
-                                <div>
-                                    <dt>Nombre completo</dt>
-                                    <dd>Emeto Winner Montes</dd>
-                                </div>
-                                <div>
-                                    <dt>Correo electrónico</dt>
-                                    <dd><a href="mailto:Emetomamani@gmail.com">Emetomamani@gmail.com</a></dd>
-                                </div>
-                                <div>
-                                    <dt>Rol</dt>
-                                    <dd>Cliente</dd>
-                                </div>
-                                <div>
-                                    <dt>Estado</dt>
-                                    <dd><span class="profile-status profile-status-inactive">Desactivado</span></dd>
-                                </div>
-                            </dl>
-                        </div>
-                        <div class="profile-buttons">
-                            <a class="btn btn-outline-secondary" th:href="@{/usuarios/editar}">Editar</a>
-                            <button class="btn btn-profile-primary" type="button" disabled
-                                aria-describedby="profile-actions-note">Cambiar estado</button>
+                <button class="btn btn-outline-secondary btn-sm profile-disabled-action" type="button"
+                        disabled>Exportar
+                </button>
+            </div>
+            <p class="profile-actions-note" id="profile-actions-note">Las acciones de gestión no están disponibles en
+                esta maqueta.</p>
+            <div class="profile-grid">
+                <article class="profile-card" aria-labelledby="profile-name">
+                    <div class="profile-identity">
+                        <div class="profile-avatar" aria-hidden="true">EM</div>
+                        <h2 class="profile-name" id="profile-name">Cargando...</h2>
+                    </div>
+                    <div class="profile-info">
+                        <h3>Información</h3>
+                        <dl>
+                            <div>
+                                <dt>Nombre para mostrar</dt>
+                                <dd>Emeto Mamani</dd>
+                            </div>
+                            <div>
+                                <dt>Nombre completo</dt>
+                                <dd>Emeto Winner Montes</dd>
+                            </div>
+                            <div>
+                                <dt>Correo electrónico</dt>
+                                <dd><a href="mailto:Emetomamani@gmail.com">Emetomamani@gmail.com</a></dd>
+                            </div>
+                            <div>
+                                <dt>Rol</dt>
+                                <dd>Cliente</dd>
+                            </div>
+                            <div>
+                                <dt>Estado</dt>
+                                <dd><span class="profile-status profile-status-inactive">Desactivado</span></dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <div class="profile-buttons">
+                        <a class="btn btn-outline-secondary" th:href="@{/usuarios/editar}">Editar</a>
+                        <button class="btn btn-profile-primary" type="button" disabled
+                                aria-describedby="profile-actions-note">Cambiar estado
+                        </button>
+                    </div>
+                </article>
+                <div class="profile-details">
+                    <article class="profile-panel loans-panel">
+                        <h2>Préstamos</h2>
+                        <div class="table-responsive">
+                            <table class="table profile-loans-table mb-0">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Libro</th>
+                                    <th scope="col">Fecha del préstamo</th>
+                                    <th scope="col">Fecha de vencimiento</th>
+                                    <th scope="col">Estado</th>
+                                </tr>
+                                </thead>
+                                <tbody id="user-loans">
+                                <tr>
+                                    <td data-label="Libro">Cien años de soledad</td>
+                                    <td data-label="Fecha del préstamo">
+                                        <time datetime="2026-05-12">12 de mayo de 2026</time>
+                                    </td>
+                                    <td data-label="Fecha de vencimiento">
+                                        <time datetime="2026-06-12">12 de junio de 2026</time>
+                                    </td>
+                                    <td data-label="Estado"><span class="loan-progress">En proceso</span></td>
+                                </tr>
+                                <tr>
+                                    <td data-label="Libro">Don Quijote de la Mancha</td>
+                                    <td data-label="Fecha del préstamo">
+                                        <time datetime="2026-04-11">11 de abril de 2026</time>
+                                    </td>
+                                    <td data-label="Fecha de vencimiento">
+                                        <time datetime="2026-05-11">11 de mayo de 2026</time>
+                                    </td>
+                                    <td data-label="Estado"><span class="loan-overdue">Plazo vencido</span></td>
+                                </tr>
+                                <tr>
+                                    <td data-label="Libro">Crimen y castigo</td>
+                                    <td data-label="Fecha del préstamo">
+                                        <time datetime="2026-04-05">5 de abril de 2026</time>
+                                    </td>
+                                    <td data-label="Fecha de vencimiento">
+                                        <time datetime="2026-05-05">5 de mayo de 2026</time>
+                                    </td>
+                                    <td data-label="Estado"><span class="loan-returned">Devuelto</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </article>
-                    <div class="profile-details">
-                        <article class="profile-panel loans-panel">
-                            <h2>Préstamos</h2>
-                            <div class="table-responsive">
-                                <table class="table profile-loans-table mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Libro</th>
-                                            <th scope="col">Fecha del préstamo</th>
-                                            <th scope="col">Fecha de vencimiento</th>
-                                            <th scope="col">Estado</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="user-loans">
-                                        <tr>
-                                            <td data-label="Libro">Cien años de soledad</td>
-                                            <td data-label="Fecha del préstamo"><time datetime="2026-05-12">12 de mayo de 2026</time></td>
-                                            <td data-label="Fecha de vencimiento"><time datetime="2026-06-12">12 de junio de 2026</time></td>
-                                            <td data-label="Estado"><span class="loan-progress">En proceso</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td data-label="Libro">Don Quijote de la Mancha</td>
-                                            <td data-label="Fecha del préstamo"><time datetime="2026-04-11">11 de abril de 2026</time></td>
-                                            <td data-label="Fecha de vencimiento"><time datetime="2026-05-11">11 de mayo de 2026</time></td>
-                                            <td data-label="Estado"><span class="loan-overdue">Plazo vencido</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td data-label="Libro">Crimen y castigo</td>
-                                            <td data-label="Fecha del préstamo"><time datetime="2026-04-05">5 de abril de 2026</time></td>
-                                            <td data-label="Fecha de vencimiento"><time datetime="2026-05-05">5 de mayo de 2026</time></td>
-                                            <td data-label="Estado"><span class="loan-returned">Devuelto</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </article>
-                        <article class="profile-panel timeline-panel">
-                            <h2>Actividad reciente</h2>
-                            <ol class="activity-list">
-                                <li class="activity-red"><span class="activity-dot" aria-hidden="true"></span>
-                                    <div><b>Devolución fuera de plazo</b>
-                                        <p>Don Quijote de la Mancha lleva 1 día fuera de plazo de devolución.</p>
-                                    </div><time>Hace 12 min</time>
-                                </li>
-                                <li class="activity-purple"><span class="activity-dot" aria-hidden="true"></span>
-                                    <div><b>Préstamo registrado</b>
-                                        <p>Se registró el préstamo de Cien años de soledad.</p>
-                                    </div><time>Hace 45 min</time>
-                                </li>
-                                <li class="activity-yellow"><span class="activity-dot" aria-hidden="true"></span>
-                                    <div><b>Devolución registrada</b>
-                                        <p>Se registró la devolución de Crimen y castigo.</p>
-                                    </div><time>Hace 8 días</time>
-                                </li>
-                            </ol>
-                        </article>
-                    </div>
+                    <article class="profile-panel timeline-panel">
+                        <h2>Actividad reciente</h2>
+                        <ol class="activity-list">
+                            <li class="activity-red"><span class="activity-dot" aria-hidden="true"></span>
+                                <div><b>Devolución fuera de plazo</b>
+                                    <p>Don Quijote de la Mancha lleva 1 día fuera de plazo de devolución.</p>
+                                </div>
+                                <time>Hace 12 min</time>
+                            </li>
+                            <li class="activity-purple"><span class="activity-dot" aria-hidden="true"></span>
+                                <div><b>Préstamo registrado</b>
+                                    <p>Se registró el préstamo de Cien años de soledad.</p>
+                                </div>
+                                <time>Hace 45 min</time>
+                            </li>
+                            <li class="activity-yellow"><span class="activity-dot" aria-hidden="true"></span>
+                                <div><b>Devolución registrada</b>
+                                    <p>Se registró la devolución de Crimen y castigo.</p>
+                                </div>
+                                <time>Hace 8 días</time>
+                            </li>
+                        </ol>
+                    </article>
                 </div>
-            </section>
-        </main>
-    </div>
+            </div>
+        </section>
+    </main>
+</div>
 <script th:inline="javascript">
-const usersApi = /*[[@{/api/admin/usuarios}]]*/ "/api/admin/usuarios";
-const loansApi = /*[[@{/api/lector/mis-prestamos}]]*/ "/api/lector/mis-prestamos";
-(async () => {
- const id = new URLSearchParams(location.search).get("id");
- const message = document.getElementById("user-message");
- const tbody = document.getElementById("user-loans");
- document.getElementById("profile-name").textContent = "Cargando usuario...";
- document.querySelectorAll(".profile-info dd").forEach(field => field.textContent = "Cargando...");
- tbody.replaceChildren();
- document.querySelector(".activity-list").replaceChildren();
- if (!id) { message.className = "alert alert-warning"; message.textContent = "Falta el identificador del usuario."; return; }
- try {
-  const [userResponse, loansResponse] = await Promise.all([fetch(`${usersApi}/${encodeURIComponent(id)}`), fetch(`${loansApi}/${encodeURIComponent(id)}`)]);
-  if (!userResponse.ok) throw new Error(`Error al cargar el usuario (${userResponse.status})`);
-  const user = await userResponse.json();
-  const fullName = `${user.nombres || ""} ${user.apellidos || ""}`.trim();
-  document.getElementById("profile-name").textContent = fullName || "Usuario";
-  document.querySelector(".profile-avatar").textContent = `${user.nombres?.[0] || ""}${user.apellidos?.[0] || ""}`.toUpperCase();
-  const dds = document.querySelectorAll(".profile-info dd");
-  dds[0].textContent = fullName || "—"; dds[1].textContent = fullName || "—";
-  dds[2].replaceChildren(); if (user.email) { const email = document.createElement("a"); email.href = `mailto:${user.email}`; email.textContent = user.email; dds[2].append(email); } else dds[2].textContent = "—";
-  dds[3].textContent = user.rol || "—";
-  const badge = document.createElement("span"); badge.className = `profile-status ${user.activo ? "profile-status-active" : "profile-status-inactive"}`; badge.textContent = user.activo ? "Activo" : "Inactivo"; dds[4].replaceChildren(badge);
-  const edit = document.querySelector(".profile-buttons a"); edit.href = `/usuarios/editar?id=${encodeURIComponent(user.idUsuario)}`;
-  if (loansResponse.ok) {
-   const loans = await loansResponse.json(); tbody.replaceChildren();
-   loans.forEach(loan => { const row = document.createElement("tr"); const values = [loan.tituloLibro || `Ejemplar #${loan.idEjemplar}`, loan.fechaPrestamo, loan.fechaVencimiento, loan.estado]; values.forEach((value, i) => { const cell = document.createElement("td"); cell.dataset.label = ["Libro", "Fecha del préstamo", "Fecha de vencimiento", "Estado"][i]; cell.textContent = value || "—"; row.append(cell); }); tbody.append(row); });
-   if (!loans.length) { const row = document.createElement("tr"); const cell = document.createElement("td"); cell.colSpan = 4; cell.textContent = "No hay préstamos registrados."; row.append(cell); tbody.append(row); }
-  } else { tbody.replaceChildren(); const row = document.createElement("tr"); const cell = document.createElement("td"); cell.colSpan = 4; cell.textContent = "No se pudieron cargar los préstamos."; row.append(cell); tbody.append(row); }
-  document.querySelector(".activity-list").replaceChildren(); message.hidden = true;
- } catch (error) { message.className = "alert alert-danger"; message.textContent = `No se pudo cargar el usuario. ${error.message}`; }
-})();
+    const usersApi = /*[[@{/api/bibliotecario/usuarios}]]*/ "/api/bibliotecario/usuarios";
+    const loansApi = /*[[@{/api/lector/mis-prestamos}]]*/ "/api/lector/mis-prestamos";
+    (async () => {
+        const id = new URLSearchParams(location.search).get("id");
+        const message = document.getElementById("user-message");
+        const tbody = document.getElementById("user-loans");
+        document.getElementById("profile-name").textContent = "Cargando usuario...";
+        document.querySelectorAll(".profile-info dd").forEach(field => field.textContent = "Cargando...");
+        tbody.replaceChildren();
+        document.querySelector(".activity-list").replaceChildren();
+        if (!id) {
+            message.className = "alert alert-warning";
+            message.textContent = "Falta el identificador del usuario.";
+            return;
+        }
+        try {
+            const [userResponse, loansResponse] = await Promise.all([fetch(`${usersApi}/${encodeURIComponent(id)}`), fetch(`${loansApi}/${encodeURIComponent(id)}`)]);
+            if (!userResponse.ok) throw new Error(`Error al cargar el usuario (${userResponse.status})`);
+            const user = await userResponse.json();
+            const fullName = `${user.nombres || ""} ${user.apellidos || ""}`.trim();
+            document.getElementById("profile-name").textContent = fullName || "Usuario";
+            document.querySelector(".profile-avatar").textContent = `${user.nombres?.[0] || ""}${user.apellidos?.[0] || ""}`.toUpperCase();
+            const dds = document.querySelectorAll(".profile-info dd");
+            dds[0].textContent = fullName || "—";
+            dds[1].textContent = fullName || "—";
+            dds[2].replaceChildren();
+            if (user.email) {
+                const email = document.createElement("a");
+                email.href = `mailto:${user.email}`;
+                email.textContent = user.email;
+                dds[2].append(email);
+            } else dds[2].textContent = "—";
+            dds[3].textContent = user.rol || "—";
+            const badge = document.createElement("span");
+            badge.className = `profile-status ${user.activo ? "profile-status-active" : "profile-status-inactive"}`;
+            badge.textContent = user.activo ? "Activo" : "Inactivo";
+            dds[4].replaceChildren(badge);
+            const edit = document.querySelector(".profile-buttons a");
+            edit.href = `/usuarios/editar?id=${encodeURIComponent(user.idUsuario)}`;
+            if (loansResponse.ok) {
+                const loans = await loansResponse.json();
+                tbody.replaceChildren();
+                loans.forEach(loan => {
+                    const row = document.createElement("tr");
+                    const values = [loan.tituloLibro || `Ejemplar #${loan.idEjemplar}`, loan.fechaPrestamo, loan.fechaVencimiento, loan.estado];
+                    values.forEach((value, i) => {
+                        const cell = document.createElement("td");
+                        cell.dataset.label = ["Libro", "Fecha del préstamo", "Fecha de vencimiento", "Estado"][i];
+                        cell.textContent = value || "—";
+                        row.append(cell);
+                    });
+                    tbody.append(row);
+                });
+                if (!loans.length) {
+                    const row = document.createElement("tr");
+                    const cell = document.createElement("td");
+                    cell.colSpan = 4;
+                    cell.textContent = "No hay préstamos registrados.";
+                    row.append(cell);
+                    tbody.append(row);
+                }
+            } else {
+                tbody.replaceChildren();
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+                cell.colSpan = 4;
+                cell.textContent = "No se pudieron cargar los préstamos.";
+                row.append(cell);
+                tbody.append(row);
+            }
+            document.querySelector(".activity-list").replaceChildren();
+            message.hidden = true;
+        } catch (error) {
+            message.className = "alert alert-danger";
+            message.textContent = `No se pudo cargar el usuario. ${error.message}`;
+        }
+    })();
 </script>
 </body>
 

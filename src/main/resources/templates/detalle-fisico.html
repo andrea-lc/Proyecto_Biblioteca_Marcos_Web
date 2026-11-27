@@ -1,58 +1,228 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <base th:href="@{/}">
-    <title>Argonauta | Bibliot.</title>
+    <script th:replace="~{auth :: auth}"></script>
+    <title>Libro | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
+          rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle" />
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=notifications,account_circle"/>
 </head>
 <body class="catalog-body">
-<aside class="catalog-sidebar"><a class="catalog-brand" th:href="@{/index}">Bibliot.</a><nav class="catalog-nav" aria-label="Navegación principal"><a th:href="@{/index}"><span>⌂</span>Inicio</a><a class="active" th:href="@{/explorar}" aria-current="page"><span>⊘</span>Explorar</a></nav><nav class="catalog-nav catalog-bottom-nav" aria-label="Ayuda y cuenta"><a th:href="@{/perfil}"><span>♙</span>Mi cuenta</a><a th:href="@{/ayuda}"><span>ⓘ</span>Ayuda</a></nav></aside>
+<aside class="catalog-sidebar"><a class="catalog-brand" th:href="@{/index}">Bibliot.</a>
+    <nav class="catalog-nav" aria-label="Navegación principal"><a th:href="@{/index}"><span>⌂</span>Inicio</a><a
+            class="active" th:href="@{/explorar}" aria-current="page"><span>⊘</span>Explorar</a></nav>
+    <nav class="catalog-nav catalog-bottom-nav" aria-label="Ayuda y cuenta"><a data-auth-show="user" th:href="@{/perfil}"><span>♙</span>Mi
+        cuenta</a><a th:href="@{/ayuda}"><span>ⓘ</span>Ayuda</a></nav>
+</aside>
 <main class="catalog-main">
-    <header class="catalog-topbar"><button class="catalog-menu" type="button" aria-label="Abrir menú">☰</button><div class="catalog-account-actions"><a th:href="@{/notificaciones}" class="catalog-icon-button" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></a><a th:href="@{/perfil}" class="catalog-icon-button" aria-label="Mi perfil"><span class="material-symbols-outlined">account_circle</span></a></div></header>
+    <header class="catalog-topbar">
+        <button class="catalog-menu" type="button" aria-label="Abrir menú">☰</button>
+        <div class="catalog-account-actions">
+            <a data-auth-show="guest" th:href="@{/login}" class="btn btn-brand btn-sm">Iniciar sesión</a>
+            <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/dashboard}"
+               class="btn btn-outline-secondary btn-sm">Panel</a>
+            <a data-auth-show="user" th:href="@{/notificaciones}" class="catalog-icon-button w-auto h-auto p-2"
+               aria-label="Notificaciones"><span class="material-symbols-outlined"
+                                                 aria-hidden="true">notifications</span></a>
+            <a data-auth-show="user" th:href="@{/perfil}" class="catalog-icon-button w-auto h-auto p-2"
+               aria-label="Mi perfil"><span class="material-symbols-outlined"
+                                            aria-hidden="true">account_circle</span></a>
+            <a data-auth-show="user" href="#" data-logout class="btn btn-outline-secondary btn-sm">Cerrar sesión</a>
+        </div>
+    </header>
     <section class="book-detail-content">
         <div class="book-summary">
             <img class="detail-cover" id="detail-cover" src="" alt="Portada del libro">
-            <div class="book-primary-info"><h1 id="detail-title">Cargando libro...</h1><p class="detail-author-label">Autor:</p><p class="detail-author" id="detail-authors"></p>
-                <div class="detail-metadata"><div><span>Fecha de publicación</span><b id="detail-year">—</b></div><div><span>Páginas</span><b id="detail-pages">—</b></div><div><span>Ejemplares registrados</span><b id="detail-copies">—</b></div></div>
+            <div class="book-primary-info"><h1 id="detail-title">Cargando libro...</h1>
+                <p class="detail-author-label">Autor:</p>
+                <p class="detail-author" id="detail-authors"></p>
+                <div class="detail-metadata">
+                    <div><span>Fecha de publicación</span><b id="detail-year">—</b></div>
+                    <div><span>Páginas</span><b id="detail-pages">—</b></div>
+                    <div><span>Ejemplares registrados</span><b id="detail-copies">—</b></div>
+                </div>
             </div>
-            <div class="detail-actions"><div class="action-buttons"><button class="reserve-button" type="button" disabled aria-describedby="reservation-status"><span aria-hidden="true"><span class="material-symbols-outlined">notifications</span></span>Reservas no disponibles</button></div><p class="small text-secondary mt-2 mb-0" id="reservation-status">La biblioteca aún no ha conectado el servicio de reservas.</p><a class="book-category" th:href="@{/explorar(categoria='fantasia')}"><span aria-hidden="true">♙</span>Fantasía <b>›</b></a></div>
+            <div class="detail-actions">
+                <div class="action-buttons">
+                    <button class="reserve-button" id="reserve-button" type="button" disabled aria-describedby="reservation-status"><span
+                            aria-hidden="true"><span class="material-symbols-outlined">notifications</span></span><span
+                            id="reserve-label">Cargando…</span>
+                    </button>
+                </div>
+                <p class="small text-secondary mt-2 mb-0" id="reservation-status">Verificando tu reserva…</p><a class="book-category" th:href="@{/explorar}"><span
+                    aria-hidden="true">♙</span>Categoría <b>›</b></a></div>
         </div>
-        <section class="book-description"><h2>Descripción</h2><div class="description-copy" id="detail-description">
-            <p>Los argonautas son los últimos sobrevivientes de sus mundos. No héroes, no dioses, sino fragmentos de historias olvidadas, vagando entre los restos del omniverso. En la Ciudad NUO, una entidad en constante movimiento entre dimensiones, los recién llegados deben tomar una decisión: aceptar su destino y recibir el poder de un argonauta, ser expulsados al mar de la entropía o buscar redención en un nuevo mundo.</p>
-            <p>Bajo el gobierno de tres grandes fuerzas —Onus, Orlum y los propios Argonautas— la Ciudad NUO se mantiene en equilibrio, protegida de la realidad de amenazas que trascienden el tiempo y el espacio. Pero algo se mueve en las sombras del infinito. Una verdad oculta en las ruinas de los mundos desaparecidos.</p>
-            <p>Nour, Elen y Leen son tres almas marcadas por la tragedia, unidas por la misma condena: haber sobrevivido. A medida que descubren los secretos de NUO y los límites de su propio poder, se enfrentan a una verdad aterradora: tal vez la existencia misma sea un error.</p>
-            <p>Entre misterio, horror cósmico y poderes que desafían la realidad, Argonauta es una historia sobre el destino, el conocimiento y el precio de la inmortalidad.</p>
-        </div></section>
+        <section class="book-description"><h2>Descripción</h2>
+            <div class="description-copy" id="detail-description"><p>Cargando descripción…</p></div>
+        </section>
     </section>
 </main>
 <script th:inline="javascript">
-const bookApi = /*[[@{/api/catalogo/libros}]]*/ "/api/catalogo/libros";
-(async () => {
- const id = new URLSearchParams(location.search).get("id");
- const status = document.getElementById("reservation-status") || document.getElementById("digital-status");
- if (!id) { status.textContent = "Falta el identificador del libro en la dirección."; return; }
- try {
-  const response = await fetch(`${bookApi}/${encodeURIComponent(id)}`, { headers: { Accept: "application/json" } });
-  if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
-  const book = await response.json();
-  document.title = `${book.titulo} | Bibliot.`;
-  document.getElementById("detail-title").textContent = book.titulo || "Sin título";
-  document.getElementById("detail-authors").textContent = (book.autores || []).join(", ") || "Autor no registrado";
-  const date = book.fechaPublicacion;
-  document.getElementById("detail-year").textContent = date ? (Array.isArray(date) ? date[0] : String(date).slice(0, 4)) : "—";
-  document.getElementById("detail-pages").textContent = book.paginas ?? "—";
-  const copies = document.getElementById("detail-copies"); if (copies) copies.textContent = book.cantidadEjemplares ?? "0";
-  const state = document.getElementById("detail-state"); if (state) state.textContent = book.estado || "Sin estado";
-  const cover = document.getElementById("detail-cover"); if (book.isbn) cover.src = `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(book.isbn)}-L.jpg`; cover.alt = `Portada de ${book.titulo || "libro"}`;
-  const categoryLink = document.querySelector(".book-category"); const categoryName = (book.categorias || [])[0]; if (categoryLink) { if (categoryLink.childNodes[1]) categoryLink.childNodes[1].textContent = ` ${categoryName || "Sin categoría"} `; categoryLink.href = categoryName ? `/explorar?categoria=${encodeURIComponent(categoryName)}` : "/explorar"; }
-  const description = document.getElementById("detail-description"); description.replaceChildren(); const paragraph = document.createElement("p"); paragraph.textContent = book.descripcion || book.contenidoTexto || "Este libro no tiene descripción registrada."; description.append(paragraph);
- } catch (error) { document.getElementById("detail-title").textContent = "No se pudo cargar el libro"; status.textContent = `No se encontró el libro o el servicio no está disponible. ${error.message}`; }
-})();
+    const bookApi = /*[[@{/api/catalogo/libros}]]*/ "/api/catalogo/libros";
+    const reserveApi = /*[[@{/api/lector/reservar-libro}]]*/ "/api/lector/reservar-libro";
+    const myReservationsApi = /*[[@{/api/lector/mis-reservas}]]*/ "/api/lector/mis-reservas";
+    const cancelReservationApi = /*[[@{/api/lector/reservas}]]*/ "/api/lector/reservas";
+    const loginUrl = /*[[@{/login}]]*/ "/login";
+
+    // Ajusta estos valores a los que use tu backend/BD
+    const RESERVA_ESTADO_INICIAL = "Pendiente";
+    const RESERVA_DIAS = 3;
+    const RESERVA_CERRADA = /cancelad|expirad|atendid|complet|finaliz/i;
+
+    const button = document.getElementById("reserve-button");
+    const label = document.getElementById("reserve-label");
+    const status = document.getElementById("reservation-status");
+    let bookId = null;
+    let activeReservation = null;
+    let busy = false;
+
+    const pad = n => String(n).padStart(2, "0");
+    // LocalDateTime de Java no admite zona horaria: se envía "yyyy-MM-ddTHH:mm:ss"
+    const toLocalDateTime = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    const fmtDate = v => v ? new Date(v).toLocaleDateString("es-PE") : "—";
+
+    function setUi(text, message, disabled) {
+        label.textContent = text;
+        status.textContent = message;
+        button.disabled = !!disabled;
+    }
+
+    async function readError(res) {
+        try {
+            const text = await res.text();
+            try {
+                const json = JSON.parse(text);
+                return json.message || json.error || text;
+            } catch (e) {
+                return text || `Error HTTP ${res.status}`;
+            }
+        } catch (e) {
+            return `Error HTTP ${res.status}`;
+        }
+    }
+
+    function renderReservation() {
+        if (activeReservation) {
+            setUi("Cancelar reserva",
+                `Tienes una reserva (${activeReservation.estado || "activa"}) que expira el ${fmtDate(activeReservation.fechaExpiracion)}.`, false);
+        } else {
+            setUi("Reservar libro", `La reserva se mantiene ${RESERVA_DIAS} días.`, false);
+        }
+    }
+
+    async function loadReservation() {
+        const user = window.Auth && Auth.user();
+        if (!user) {
+            setUi("Inicia sesión para reservar", "Necesitas una cuenta para reservar este libro.", false);
+            return;
+        }
+        if (!user.uid) {
+            setUi("Reservas no disponibles", "Tu sesión no incluye el identificador de usuario. Vuelve a iniciar sesión.", true);
+            return;
+        }
+        try {
+            const res = await fetch(`${myReservationsApi}/${encodeURIComponent(user.uid)}`, {headers: {Accept: "application/json"}});
+            if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
+            const list = await res.json();
+            activeReservation = list.find(r => String(r.idLibro) === String(bookId) && !RESERVA_CERRADA.test(r.estado || "")) || null;
+        } catch (e) {
+            activeReservation = null;
+        }
+        renderReservation();
+    }
+
+    async function reserve(user) {
+        const now = new Date();
+        const expires = new Date(now.getTime() + RESERVA_DIAS * 24 * 60 * 60 * 1000);
+        const res = await fetch(reserveApi, {
+            method: "POST",
+            headers: {"Content-Type": "application/json", Accept: "application/json"},
+            body: JSON.stringify({
+                idUsuario: Number(user.uid),
+                idLibro: Number(bookId),
+                fechaReserva: toLocalDateTime(now),
+                fechaExpiracion: toLocalDateTime(expires),
+                estado: RESERVA_ESTADO_INICIAL
+            })
+        });
+        if (!res.ok) throw new Error(await readError(res));
+        activeReservation = await res.json();
+    }
+
+    async function cancelReservation() {
+        const res = await fetch(`${cancelReservationApi}/${encodeURIComponent(activeReservation.idReserva)}`, {method: "DELETE"});
+        if (!res.ok) throw new Error(await readError(res));
+        activeReservation = null;
+    }
+
+    button.addEventListener("click", async () => {
+        if (busy) return;
+        const user = window.Auth && Auth.user();
+        if (!user) {
+            location.assign(`${loginUrl}?next=${encodeURIComponent(location.pathname + location.search)}`);
+            return;
+        }
+        busy = true;
+        button.disabled = true;
+        const wasCancel = !!activeReservation;
+        label.textContent = wasCancel ? "Cancelando…" : "Reservando…";
+        try {
+            if (wasCancel) await cancelReservation(); else await reserve(user);
+            renderReservation();
+            status.textContent = wasCancel ? "Reserva cancelada." : `Reserva registrada. Expira el ${fmtDate(activeReservation.fechaExpiracion)}.`;
+        } catch (e) {
+            renderReservation();
+            status.textContent = `${wasCancel ? "No se pudo cancelar la reserva" : "No se pudo reservar"}. ${e.message}`;
+        } finally {
+            busy = false;
+            button.disabled = false;
+        }
+    });
+
+    (async () => {
+        bookId = new URLSearchParams(location.search).get("id");
+        if (!bookId) {
+            setUi("Reservas no disponibles", "Falta el identificador del libro en la dirección.", true);
+            return;
+        }
+        try {
+            const response = await fetch(`${bookApi}/${encodeURIComponent(bookId)}`, {headers: {Accept: "application/json"}});
+            if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+            const book = await response.json();
+            document.title = `${book.titulo} | Bibliot.`;
+            document.getElementById("detail-title").textContent = book.titulo || "Sin título";
+            document.getElementById("detail-authors").textContent = (book.autores || []).join(", ") || "Autor no registrado";
+            const date = book.fechaPublicacion;
+            document.getElementById("detail-year").textContent = date ? (Array.isArray(date) ? date[0] : String(date).slice(0, 4)) : "—";
+            document.getElementById("detail-pages").textContent = book.paginas ?? "—";
+            document.getElementById("detail-copies").textContent = book.cantidadEjemplares ?? "0";
+            const cover = document.getElementById("detail-cover");
+            if (book.isbn) cover.src = `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(book.isbn)}-L.jpg`;
+            cover.alt = `Portada de ${book.titulo || "libro"}`;
+            const categoryLink = document.querySelector(".book-category");
+            const categoryName = (book.categorias || [])[0];
+            if (categoryLink.childNodes[1]) categoryLink.childNodes[1].textContent = ` ${categoryName || "Sin categoría"} `;
+            // Ruta relativa: respeta el <base> y el context path
+            categoryLink.setAttribute("href", categoryName ? `explorar?categoria=${encodeURIComponent(categoryName)}` : "explorar");
+            const description = document.getElementById("detail-description");
+            description.replaceChildren();
+            const paragraph = document.createElement("p");
+            paragraph.textContent = book.descripcion || book.contenidoTexto || "Este libro no tiene descripción registrada.";
+            description.append(paragraph);
+            await loadReservation();
+        } catch (error) {
+            document.getElementById("detail-title").textContent = "No se pudo cargar el libro";
+            setUi("Reservas no disponibles", `No se encontró el libro o el servicio no está disponible. ${error.message}`, true);
+        }
+    })();
 </script>
 </body>
 </html>

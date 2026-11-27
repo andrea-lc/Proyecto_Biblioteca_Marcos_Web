@@ -1,20 +1,28 @@
+
 package com.bibliot.gestion_biblioteca.config;
 
-import com.bibliot.gestion_biblioteca.entities.Usuario;
-import com.bibliot.gestion_biblioteca.service.UsuarioService;
+import com.bibliot.gestion_biblioteca.segurity.JwtFilter;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtFilter jwtFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -22,46 +30,65 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(UsuarioService usuarios) {
-        return email -> {
-            Usuario usuario;
-            try {
-                usuario = usuarios.buscarPorEmail(email);
-            } catch (RuntimeException noExiste) {
-                throw new UsernameNotFoundException("No existe un usuario con ese correo");
-            }
-            String rol = usuario.getRol() == null ? "LECTOR" : usuario.getRol().getNombre().toUpperCase();
-            return User.withUsername(usuario.getEmail())
-                    .password(usuario.getPassword())
-                    .authorities("ROLE_" + rol)
-                    .disabled(!Boolean.TRUE.equals(usuario.getActivo()))
-                    .build();
-        };
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/dashboard", true)
-                .failureUrl("/login?error")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .permitAll()
-            )
-            .rememberMe(remember -> remember
-                .key("bibliot-remember-key")
-                .tokenValiditySeconds(7 * 24 * 60 * 60)
-            );
+                // La autenticación se realizará mediante JWT
+                .csrf(csrf -> csrf.disable())
+                // No se almacenan sesiones en el servidor
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                // Deshabilitar autenticación HTTP básica y formulario de login
+                .httpBasic(basic -> basic.disable())
+                .formLogin(form -> form.disable())
+                // Reglas de autorización
+                .authorizeHttpRequests(auth -> auth
+
+                        // Login y registro públicos
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/registro").permitAll()
+
+                        // Catálogo: únicamente consultas GET públicas
+                        .requestMatchers(HttpMethod.GET, "/api/catalogo/**").permitAll()
+
+                        // Administración: solo administrador
+                        .requestMatchers("/api/admin/**")
+                        .hasRole("ADMINISTRADOR")
+
+                        // Bibliotecario: conserva todos sus permisos
+                        .requestMatchers("/api/bibliotecario/**")
+                        .hasAnyRole("ADMINISTRADOR", "BIBLIOTECARIO")
+
+                        // Cuenta personal: cualquier usuario autenticado
+                        .requestMatchers("/api/lector/me/**")
+                        .authenticated()
+
+                        // Rutas de lector
+                        .requestMatchers("/api/lector/**")
+                        .hasAnyRole("ADMINISTRADOR", "BIBLIOTECARIO", "LECTOR")
+
+                        // Cualquier otra API requiere autenticación
+                        .requestMatchers("/api/**").authenticated()
+
+                        // Vistas Thymeleaf y demás recursos
+                        .anyRequest().permitAll()
+                )
+                // Respuesta cuando no existe autenticación válida
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(401, "No autenticado")
+                        )
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                response.sendError(403, "Acceso denegado")
+                        )
+                )
+                // Ejecutar el filtro JWT antes del filtro de autenticación
+                .addFilterBefore(
+                        jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
+
+
         return http.build();
     }
 }

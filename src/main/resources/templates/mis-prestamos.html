@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <base th:href="@{/}">
+    <script th:replace="~{auth :: auth}"></script>
     <title>Mis préstamos | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,12 +11,132 @@
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
 <body>
-<header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/index}">Bibliot.</a><nav class="nav"><a class="nav-link text-dark" th:href="@{/explorar}">Explorar</a><a class="nav-link text-dark" th:href="@{/perfil}">Mi cuenta</a></nav></div></header>
+<header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/index}">Bibliot.</a><nav class="nav"><a class="nav-link text-dark" th:href="@{/explorar}">Explorar</a><a class="nav-link text-dark" th:href="@{/notificaciones}">Notificaciones</a><a class="nav-link text-dark" th:href="@{/perfil}">Mi cuenta</a></nav></div></header>
 <main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-xl-10">
     <div class="mb-4"><p class="text-secondary mb-1">Tu actividad</p><h1 class="h2 mb-0">Mis préstamos y reservas</h1></div>
-    <div class="alert alert-info" role="status">El historial de préstamos y reservas todavía no está conectado.</div>
-    <section class="card border-0 shadow-sm mb-4"><div class="card-body p-4"><h2 class="h5 mb-2">Préstamos</h2><p class="text-secondary mb-0">Cuando la biblioteca conecte este servicio, aquí aparecerán tus préstamos y sus fechas.</p></div></section>
-    <section class="card border-0 shadow-sm"><div class="card-body p-4"><h2 class="h5 mb-2">Reservas</h2><p class="text-secondary mb-0">Aquí podrás consultar tus solicitudes cuando el servicio esté disponible.</p></div></section>
+    <div class="alert alert-danger d-none" id="error" role="alert"></div>
+    <div class="alert alert-success d-none" id="ok" role="status"></div>
+    <section class="card border-0 shadow-sm mb-4"><div class="card-body p-4">
+        <h2 class="h5 mb-3">Préstamos</h2>
+        <div class="table-responsive"><table class="table align-middle mb-0">
+            <thead><tr><th>Libro</th><th>Prestado</th><th>Vence</th><th>Estado</th></tr></thead>
+            <tbody id="prestamos"><tr><td colspan="4" class="text-secondary">Cargando…</td></tr></tbody>
+        </table></div>
+    </div></section>
+    <section class="card border-0 shadow-sm"><div class="card-body p-4">
+        <h2 class="h5 mb-3">Reservas</h2>
+        <div class="table-responsive"><table class="table align-middle mb-0">
+            <thead><tr><th>Libro</th><th>Reservado</th><th>Expira</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+            <tbody id="reservas"><tr><td colspan="5" class="text-secondary">Cargando…</td></tr></tbody>
+        </table></div>
+    </div></section>
 </div></div></main>
+
+<script th:inline="javascript">
+    (function () {
+        const prestamosUrl = /*[[@{/api/lector/me/prestamos}]]*/ '/api/lector/me/prestamos';
+        const reservasUrl = /*[[@{/api/lector/me/reservas}]]*/ '/api/lector/me/reservas';
+        const cancelarUrl = /*[[@{/api/lector/reservas}]]*/ '/api/lector/reservas';
+        // Estados de reserva que ya no se pueden cancelar (ajusta a los de tu BD)
+        const RESERVA_CERRADA = /cancelad|expirad|atendid|complet|finaliz/i;
+        const fmt = (d) => d ? new Date(d).toLocaleDateString('es-PE') : '—';
+        const errorBox = document.getElementById('error');
+        const okBox = document.getElementById('ok');
+
+        function show(box, text) {
+            errorBox.classList.add('d-none');
+            okBox.classList.add('d-none');
+            box.textContent = text;
+            box.classList.remove('d-none');
+        }
+
+        function emptyRow(tbody, cols, text) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = cols; td.className = 'text-secondary'; td.textContent = text;
+            tr.append(td); tbody.append(tr);
+        }
+
+        function badge(estado) {
+            const td = document.createElement('td');
+            const b = document.createElement('span');
+            b.className = 'badge text-bg-secondary'; b.textContent = estado || '—';
+            td.append(b);
+            return td;
+        }
+
+        function renderPrestamos(rows) {
+            const tbody = document.getElementById('prestamos');
+            tbody.replaceChildren();
+            if (!rows.length) return emptyRow(tbody, 4, 'Aún no tienes préstamos.');
+            rows.forEach((x) => {
+                const tr = document.createElement('tr');
+                [x.tituloLibro || 'Libro sin título', fmt(x.fechaPrestamo), fmt(x.fechaVencimiento)].forEach((t) => {
+                    const td = document.createElement('td'); td.textContent = t; tr.append(td);
+                });
+                tr.append(badge(x.estado));
+                tbody.append(tr);
+            });
+        }
+
+        function renderReservas(rows) {
+            const tbody = document.getElementById('reservas');
+            tbody.replaceChildren();
+            if (!rows.length) return emptyRow(tbody, 5, 'Aún no tienes reservas.');
+            rows.forEach((x) => {
+                const tr = document.createElement('tr');
+                [x.tituloLibro || 'Libro sin título', fmt(x.fechaReserva), fmt(x.fechaExpiracion)].forEach((t) => {
+                    const td = document.createElement('td'); td.textContent = t; tr.append(td);
+                });
+                tr.append(badge(x.estado));
+                const act = document.createElement('td');
+                act.className = 'text-end';
+                if (!RESERVA_CERRADA.test(x.estado || '')) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn btn-outline-danger btn-sm';
+                    btn.textContent = 'Cancelar';
+                    btn.addEventListener('click', () => cancelar(x, btn));
+                    act.append(btn);
+                }
+                tr.append(act);
+                tbody.append(tr);
+            });
+        }
+
+        async function cancelar(reserva, btn) {
+            if (!confirm('¿Cancelar la reserva de "' + (reserva.tituloLibro || 'este libro') + '"?')) return;
+            btn.disabled = true;
+            try {
+                const res = await fetch(cancelarUrl + '/' + encodeURIComponent(reserva.idReserva), { method: 'DELETE' });
+                if (!res.ok) throw new Error((await res.text()) || ('HTTP ' + res.status));
+                show(okBox, 'Reserva cancelada.');
+                await cargarReservas();
+            } catch (e) {
+                btn.disabled = false;
+                show(errorBox, 'No se pudo cancelar la reserva. ' + e.message);
+            }
+        }
+
+        const opts = { headers: { Accept: 'application/json' } };
+
+        async function cargarReservas() {
+            const r = await fetch(reservasUrl, opts);
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            renderReservas(await r.json());
+        }
+
+        (async () => {
+            try {
+                const [p, r] = await Promise.all([fetch(prestamosUrl, opts), fetch(reservasUrl, opts)]);
+                if (!p.ok || !r.ok) throw new Error('HTTP ' + p.status + '/' + r.status);
+                renderPrestamos(await p.json());
+                renderReservas(await r.json());
+            } catch (e) {
+                show(errorBox, 'No se pudo cargar tu historial (' + e.message + ').');
+            }
+        })();
+    })();
+</script>
 </body>
 </html>
