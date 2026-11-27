@@ -105,7 +105,9 @@
         if (!canManageUsers) {
             document.querySelectorAll("#users-table-body td").forEach(cell => { cell.colSpan = userTableColumns; });
         }
-        const usersApi = /*[[@{/api/bibliotecario/usuarios}]]*/ "/api/bibliotecario/usuarios";
+        const adminUsersApi = /*[[@{/api/admin/usuarios}]]*/ "/api/admin/usuarios";
+        const librarianUsersApi = /*[[@{/api/bibliotecario/usuarios}]]*/ "/api/bibliotecario/usuarios";
+        const usersApi = canManageUsers ? adminUsersApi : librarianUsersApi;
         const body = document.getElementById("users-table-body");
         const notice = document.getElementById("users-message");
         const count = document.getElementById("user-count");
@@ -254,13 +256,13 @@
 
         async function eliminarUsuario(user, button) {
             const name = `${user.nombres} ${user.apellidos}`.trim();
-            if (!window.confirm(`¿Eliminar a ${name}?`)) return;
+            if (!window.confirm(`¿Eliminar a ${name} junto con sus préstamos, devoluciones, sanciones, reservas y notificaciones?`)) return;
 
             button.disabled = true;
             button.setAttribute("aria-busy", "true");
             button.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span class="visually-hidden">Eliminando</span>';
             try {
-                const response = await fetch(`${usersApi}/${encodeURIComponent(user.idUsuario)}`, { method: "DELETE" });
+                const response = await fetch(`${adminUsersApi}/${encodeURIComponent(user.idUsuario)}`, { method: "DELETE" });
                 if (!response.ok) throw new Error(await mensajeErrorApi(response));
                 allUsers = allUsers.filter(item => String(item.idUsuario) !== String(user.idUsuario));
                 renderUsers(searchInput.value);

@@ -6,13 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bibliot.gestion_biblioteca.entities.Editorial;
+import com.bibliot.gestion_biblioteca.entities.Libro;
 import com.bibliot.gestion_biblioteca.repository.EditorialRepository;
+import com.bibliot.gestion_biblioteca.repository.LibroRepository;
 import jakarta.transaction.Transactional;
 
 @Service
 public class EditorialService {
     @Autowired
     private EditorialRepository editorialRepository;
+
+    @Autowired
+    private LibroRepository libros;
 
     public List<Editorial> listarTodos() {
         return editorialRepository.findAll();
@@ -48,6 +53,9 @@ public class EditorialService {
     @Transactional
     public void eliminar(Integer id) {
         Editorial editorial = buscarPorId(id);
+        List<Libro> asociados = libros.findByEditorialIdEditorial(id);
+        asociados.forEach(libro -> libro.setEditorial(null));
+        libros.saveAll(asociados);
         editorialRepository.delete(editorial);
     }
 }

@@ -93,6 +93,26 @@ public class LibroArchivoService {
         if (archivo != null) eliminar(archivo.path());
     }
 
+    public void eliminarArchivoLocal(String url) {
+        if (url == null || url.isBlank()) return;
+        String subdirectorio;
+        String prefijo;
+        if (url.startsWith("/uploads/pdfs/")) {
+            subdirectorio = "pdfs";
+            prefijo = "/uploads/pdfs/";
+        } else if (url.startsWith("/uploads/covers/")) {
+            subdirectorio = "covers";
+            prefijo = "/uploads/covers/";
+        } else {
+            return;
+        }
+        String nombre = url.substring(prefijo.length());
+        if (!nombre.matches("[A-Za-z0-9_-]+\\.(pdf|jpg|png|webp)")) return;
+        Path carpeta = raizAlmacenamiento.resolve(subdirectorio).normalize();
+        Path archivo = carpeta.resolve(nombre).normalize();
+        if (archivo.startsWith(carpeta)) eliminar(archivo);
+    }
+
     public Resource abrirPdfLocal(String archivoUrl) {
         if (archivoUrl == null || archivoUrl.isBlank()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Este libro no tiene un PDF local disponible.");

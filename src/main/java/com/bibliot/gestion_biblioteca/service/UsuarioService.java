@@ -6,7 +6,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.bibliot.gestion_biblioteca.entities.Usuario;
+import com.bibliot.gestion_biblioteca.entities.Prestamo;
 import com.bibliot.gestion_biblioteca.repository.UsuarioRepository;
+import com.bibliot.gestion_biblioteca.repository.PrestamoRepository;
+import com.bibliot.gestion_biblioteca.repository.ReservaRepository;
+import com.bibliot.gestion_biblioteca.repository.NotificacionRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -16,6 +20,10 @@ public class UsuarioService{
     private UsuarioRepository usuarioRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired private PrestamoRepository prestamoRepository;
+    @Autowired private ReservaRepository reservaRepository;
+    @Autowired private NotificacionRepository notificacionRepository;
+    @Autowired private CirculacionEliminacionService circulacionEliminacionService;
     
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
@@ -85,7 +93,28 @@ public class UsuarioService{
 
     @Transactional
     public void eliminar(Integer id) {
+        eliminarConDependencias(id);
+    }
+
+    @Transactional
+    public void eliminarConDependencias(Integer id) {
         Usuario usuario = buscarPorId(id);
+        var reservas = reservaRepository.findByUsuarioIdUsuario(id);
+        java.util.Map<Integer, Prestamo> prestamos = new java.util.LinkedHashMap<>();
+        prestamoRepository.findByUsuarioIdUsuario(id)
+                .forEach(prestamo -> prestamos.put(prestamo.getIdPrestamo(), prestamo));
+        reservas.forEach(reserva -> prestamoRepository.findByReservaIdReserva(reserva.getIdReserva())
+                .ifPresent(prestamo -> {
+                    if (prestamo.getUsuario().getIdUsuario().equals(id)) {
+                        prestamos.put(prestamo.getIdPrestamo(), prestamo);
+                    } else {
+                        prestamo.setReserva(null);
+                        prestamoRepository.save(prestamo);
+                    }
+                }));
+        circulacionEliminacionService.eliminarPrestamos(List.copyOf(prestamos.values()));
+        reservaRepository.deleteAll(reservas);
+        notificacionRepository.deleteAll(notificacionRepository.findByUsuarioIdUsuarioOrderByFechaCreacionDesc(id));
         usuarioRepository.delete(usuario);
     }
 

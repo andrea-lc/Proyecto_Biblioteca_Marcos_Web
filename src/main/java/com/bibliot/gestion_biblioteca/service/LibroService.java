@@ -10,7 +10,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.bibliot.gestion_biblioteca.entities.Libro;
+import com.bibliot.gestion_biblioteca.entities.Prestamo;
 import com.bibliot.gestion_biblioteca.repository.LibroRepository;
+import com.bibliot.gestion_biblioteca.repository.LibroAutorRepository;
+import com.bibliot.gestion_biblioteca.repository.LibroCategoriaRepository;
+import com.bibliot.gestion_biblioteca.repository.EjemplarRepository;
+import com.bibliot.gestion_biblioteca.repository.LibroDigitalRepository;
+import com.bibliot.gestion_biblioteca.repository.PrestamoRepository;
+import com.bibliot.gestion_biblioteca.repository.ReservaRepository;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +27,15 @@ public class LibroService {
 
     @Autowired
     private LibroRepository libroRepository;
+
+    @Autowired private LibroAutorRepository libroAutorRepository;
+    @Autowired private LibroCategoriaRepository libroCategoriaRepository;
+    @Autowired private EjemplarRepository ejemplarRepository;
+    @Autowired private LibroDigitalRepository libroDigitalRepository;
+    @Autowired private PrestamoRepository prestamoRepository;
+    @Autowired private ReservaRepository reservaRepository;
+    @Autowired private LibroArchivoService libroArchivoService;
+    @Autowired private CirculacionEliminacionService circulacionEliminacionService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -93,7 +109,38 @@ public class LibroService {
 
     @Transactional
     public void eliminar(Integer id) {
+        eliminarConDependencias(id);
+    }
+
+    @Transactional
+    public void eliminarConDependencias(Integer id) {
         Libro libro = buscarPorId(id);
+        var ejemplares = ejemplarRepository.findByLibroIdLibro(id);
+        var reservas = reservaRepository.findByLibroIdLibro(id);
+        java.util.Map<Integer, Prestamo> prestamos = new java.util.LinkedHashMap<>();
+        ejemplares.forEach(ejemplar -> prestamoRepository.findByEjemplarIdEjemplar(ejemplar.getIdEjemplar())
+                .forEach(prestamo -> prestamos.put(prestamo.getIdPrestamo(), prestamo)));
+        reservas.forEach(reserva -> prestamoRepository.findByReservaIdReserva(reserva.getIdReserva())
+                .ifPresent(prestamo -> {
+                    if (prestamo.getEjemplar().getLibro().getIdLibro().equals(id)) {
+                        prestamos.put(prestamo.getIdPrestamo(), prestamo);
+                    } else {
+                        prestamo.setReserva(null);
+                        prestamoRepository.save(prestamo);
+                    }
+                }));
+        circulacionEliminacionService.eliminarPrestamos(List.copyOf(prestamos.values()));
+        reservaRepository.deleteAll(reservas);
+
+        var digital = libroDigitalRepository.findByLibroIdLibro(id).orElse(null);
+        libroAutorRepository.deleteByLibroIdLibro(id);
+        libroCategoriaRepository.deleteByLibroIdLibro(id);
+        if (digital != null) {
+            libroArchivoService.eliminarArchivoLocal(digital.getArchivoUrl());
+            libroDigitalRepository.delete(digital);
+        }
+        ejemplarRepository.deleteAll(ejemplares);
+        libroArchivoService.eliminarArchivoLocal(libro.getImagenUrl());
         libroRepository.delete(libro);
     }
 

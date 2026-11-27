@@ -154,8 +154,11 @@
     <script th:inline="javascript">
         const adminLibrosUrl = /*[[@{/api/admin/libros/pagina}]]*/ "/api/admin/libros/pagina";
         const biblioLibrosUrl = /*[[@{/api/bibliotecario/libros/pagina}]]*/ "/api/bibliotecario/libros/pagina";
+        const adminLibrosCrudUrl = /*[[@{/api/admin/libros}]]*/ "/api/admin/libros";
+        const biblioLibrosCrudUrl = /*[[@{/api/bibliotecario/libros}]]*/ "/api/bibliotecario/libros";
         const apiFiltrosUrl = /*[[@{/api/catalogo/filtros}]]*/ "/api/catalogo/filtros";
         const apiLibrosUrl = Auth.hasRole(['ADMINISTRADOR']) ? adminLibrosUrl : biblioLibrosUrl;
+        const apiLibrosCrudUrl = Auth.hasRole(['ADMINISTRADOR']) ? adminLibrosCrudUrl : biblioLibrosCrudUrl;
         const cuerpoLibros = document.getElementById("books-table-body");
         const mensajeLibros = document.getElementById("books-message");
         const totalLibros = document.getElementById("book-count");
@@ -385,13 +388,13 @@
         }
 
         async function eliminarLibro(libro, boton) {
-            if (!window.confirm(`¿Eliminar “${libro.titulo}”?`)) return;
+            if (!window.confirm(`¿Eliminar “${libro.titulo}” junto con sus ejemplares, préstamos, devoluciones, sanciones, reservas y archivos asociados?`)) return;
             boton.disabled = true;
             boton.setAttribute("aria-busy", "true");
             boton.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span class="visually-hidden">Eliminando</span>';
 
             try {
-                const respuesta = await fetch(`${apiLibrosUrl}/${encodeURIComponent(libro.idLibro)}`, { method: "DELETE" });
+                const respuesta = await fetch(`${apiLibrosCrudUrl}/${encodeURIComponent(libro.idLibro)}`, { method: "DELETE" });
                 if (!respuesta.ok) throw new Error(await mensajeErrorApi(respuesta));
                 if (await cargarLibros(busquedaActual, paginaActual, filtrosActuales)) mensaje(`Se eliminó “${libro.titulo}”.`, "success");
             } catch (error) {

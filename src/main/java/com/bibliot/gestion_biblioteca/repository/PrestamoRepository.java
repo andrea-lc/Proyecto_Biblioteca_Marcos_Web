@@ -22,6 +22,8 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, Integer> {
 
     List<Prestamo> findByEjemplarIdEjemplar(Integer idEjemplar);
 
+    boolean existsByEjemplarIdEjemplar(Integer idEjemplar);
+
     @Query("SELECT p FROM Prestamo p JOIN FETCH p.usuario JOIN FETCH p.ejemplar e JOIN FETCH e.libro "
             + "WHERE UPPER(p.estado) = 'ACTIVO' AND p.fechaVencimiento IS NOT NULL AND p.fechaVencimiento <= :hasta "
             + "AND NOT EXISTS (SELECT d.idDevolucion FROM Devolucion d WHERE d.prestamo = p)")

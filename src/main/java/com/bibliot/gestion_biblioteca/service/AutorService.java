@@ -1,18 +1,21 @@
 package com.bibliot.gestion_biblioteca.service;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bibliot.gestion_biblioteca.entities.Autor;
 import com.bibliot.gestion_biblioteca.repository.AutorRepository;
+import com.bibliot.gestion_biblioteca.repository.LibroAutorRepository;
 import jakarta.transaction.Transactional;
 
 @Service
 public class AutorService {
     @Autowired
     private AutorRepository autorRepository;
+
+    @Autowired
+    private LibroAutorRepository libroAutorRepository;
 
     public List<Autor> listarTodos() {
         return autorRepository.findAll();
@@ -31,6 +34,7 @@ public class AutorService {
     @Transactional
     public void eliminar(Integer id) {
         Autor autor = buscarPorId(id);
+        libroAutorRepository.deleteAll(libroAutorRepository.findByAutorIdAutor(id));
         autorRepository.delete(autor);
     }
 

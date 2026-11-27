@@ -157,8 +157,6 @@ public class LibroController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        autores.reemplazarPorLibro(id, List.of());
-        categorias.reemplazarPorLibro(id, List.of());
         service.eliminar(id);
         return ResponseEntity.noContent().build();
     }
