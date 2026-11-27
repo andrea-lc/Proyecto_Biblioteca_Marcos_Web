@@ -57,6 +57,10 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
+            )
+            .rememberMe(remember -> remember
+                .key("bibliot-remember-key")
+                .tokenValiditySeconds(7 * 24 * 60 * 60)
             );
         return http.build();
     }

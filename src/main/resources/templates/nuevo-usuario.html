@@ -14,9 +14,9 @@
     <form id="user-form" class="card border-0 shadow-sm"><div class="card-body p-4"><div class="row g-3">
         <div class="col-md-6"><label for="firstName" class="form-label">Nombres</label><input class="form-control" id="firstName" name="nombres" maxlength="100" autocomplete="given-name" required></div>
         <div class="col-md-6"><label for="lastName" class="form-label">Apellidos</label><input class="form-control" id="lastName" name="apellidos" maxlength="100" autocomplete="family-name" required></div>
-        <div class="col-md-6"><label for="dni" class="form-label">DNI</label><input class="form-control" id="dni" name="dni" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" required></div>
+        <div class="col-md-6"><label for="dni" class="form-label">DNI</label><input class="form-control" id="dni" name="dni" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" title="Ingresa un DNI válido de 8 dígitos." required></div>
         <div class="col-md-6"><label for="email" class="form-label">Correo electrónico</label><input class="form-control" id="email" name="email" type="email" maxlength="150" autocomplete="email" required></div>
-        <div class="col-md-6"><label for="phone" class="form-label">Teléfono</label><input class="form-control" id="phone" name="telefono" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" required></div>
+        <div class="col-md-6"><label for="phone" class="form-label">Teléfono</label><input class="form-control" id="phone" name="telefono" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" title="Ingresa un teléfono válido de 9 dígitos." required></div>
         <div class="col-md-6"><label for="role" class="form-label">Rol</label><select id="role" name="idRol" class="form-select" required><option value="">Cargando roles…</option></select></div>
         <div class="col-12"><label for="address" class="form-label">Dirección</label><input class="form-control" id="address" name="direccion" maxlength="200"></div>
         <div class="col-md-6"><label for="password" class="form-label">Contraseña inicial</label><input class="form-control" id="password" name="password" type="password" minlength="8" maxlength="255" autocomplete="new-password" required></div>

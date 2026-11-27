@@ -104,14 +104,15 @@
 
     <script th:inline="javascript">
         const usersApi = /*[[@{/api/admin/usuarios}]]*/ "/api/admin/usuarios";
+        const rolesApi = /*[[@{/api/admin/roles}]]*/ "/api/admin/roles";
         const body = document.getElementById("users-table-body");
         const notice = document.getElementById("users-message");
-        const count = document.getElementById("user-count");
         const summary = document.getElementById("users-summary");
         const searchForm = document.getElementById("users-search-form");
         const searchInput = document.getElementById("users-search");
         const allCheck = document.querySelector('.users-table thead input[type="checkbox"]');
         let allUsers = [];
+        let allRoles = [];
 
         function normalizarBusqueda(texto) {
             return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase();
@@ -124,7 +125,6 @@
             ).includes(q));
 
             body.replaceChildren();
-            count.textContent = allUsers.length;
             summary.textContent = q
                 ? `Mostrando ${matches.length} de ${allUsers.length} usuarios.`
                 : `${allUsers.length} usuarios registrados.`;
@@ -173,7 +173,14 @@
                 idCell.append(id);
 
                 const role = document.createElement("td");
-                role.textContent = user.rol || "Sin rol";
+                const roleSelect = document.createElement("select");
+                roleSelect.className = "form-select form-select-sm w-auto";
+                roleSelect.setAttribute("aria-label", `Cambiar rol de ${user.nombres} ${user.apellidos}`);
+                if (!user.idRol) roleSelect.add(new Option("Sin rol", ""));
+                allRoles.forEach(item => roleSelect.add(new Option(item.nombre, item.idRol)));
+                roleSelect.value = user.idRol ? String(user.idRol) : "";
+                roleSelect.addEventListener("change", () => cambiarRol(user, roleSelect));
+                role.append(roleSelect);
 
                 const stateCell = document.createElement("td");
                 const state = document.createElement("span");
@@ -221,9 +228,14 @@
             notice.textContent = "Cargando usuarios…";
             summary.textContent = "Cargando usuarios…";
             try {
-                const response = await fetch(usersApi, { headers: { Accept: "application/json" } });
+                const [response, rolesResponse] = await Promise.all([
+                    fetch(usersApi, { headers: { Accept: "application/json" } }),
+                    fetch(rolesApi, { headers: { Accept: "application/json" } })
+                ]);
                 if (!response.ok) throw new Error(await mensajeErrorApi(response));
+                if (!rolesResponse.ok) throw new Error(await mensajeErrorApi(rolesResponse));
                 allUsers = await response.json();
+                allRoles = await rolesResponse.json();
                 notice.hidden = true;
                 renderUsers(searchInput.value);
                 return true;
@@ -231,6 +243,48 @@
                 showError(`No se pudieron cargar los usuarios. ${error.message}`);
                 summary.textContent = "No se pudo cargar el listado.";
                 return false;
+            }
+        }
+
+        async function cambiarRol(user, select) {
+            const idRol = Number(select.value);
+            const rol = allRoles.find(item => Number(item.idRol) === idRol);
+            if (!idRol || !rol) {
+                select.value = user.idRol ? String(user.idRol) : "";
+                showError("Selecciona un rol válido.");
+                return;
+            }
+
+            const payload = {
+                nombres: user.nombres,
+                apellidos: user.apellidos,
+                dni: user.dni,
+                email: user.email,
+                telefono: user.telefono,
+                direccion: user.direccion,
+                idRol: idRol,
+                password: null,
+                activo: user.activo
+            };
+            const rolAnterior = user.idRol;
+            select.disabled = true;
+            try {
+                const response = await fetch(`${usersApi}/${encodeURIComponent(user.idUsuario)}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json", Accept: "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(await mensajeErrorApi(response));
+                user.idRol = idRol;
+                user.rol = rol.nombre;
+                notice.className = "alert alert-success py-2 small mb-3";
+                notice.textContent = `Rol de ${user.nombres} ${user.apellidos} cambiado a ${rol.nombre}.`;
+                notice.hidden = false;
+                renderUsers(searchInput.value);
+            } catch (error) {
+                select.value = rolAnterior ? String(rolAnterior) : "";
+                select.disabled = false;
+                showError(`No se pudo cambiar el rol de ${user.nombres} ${user.apellidos}. ${error.message}`);
             }
         }
 

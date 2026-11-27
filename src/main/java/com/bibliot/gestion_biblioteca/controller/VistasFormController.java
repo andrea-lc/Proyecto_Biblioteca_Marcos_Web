@@ -63,9 +63,10 @@ public class VistasFormController {
             @RequestParam(required = false) String direccion,
             @RequestParam(required = false) String password,
             @RequestParam(name = "confirmarPassword", required = false) String confirmarPassword,
+            @RequestParam(name = "aceptaTerminos", required = false) String aceptaTerminos,
             Model model, RedirectAttributes redirectAttributes) {
 
-        String error = validar(nombres, dni, email, telefono, direccion, password, confirmarPassword);
+        String error = validar(nombres, dni, email, telefono, direccion, password, confirmarPassword, aceptaTerminos);
         if (error != null) {
             model.addAttribute("formMessage", error);
             model.addAttribute("formMessageType", "danger");
@@ -98,7 +99,7 @@ public class VistasFormController {
     }
 
     private String validar(String nombres, String dni, String email, String telefono, String direccion,
-            String password, String confirmarPassword) {
+            String password, String confirmarPassword, String aceptaTerminos) {
         if (nombres == null || nombres.isBlank()) {
             return "Ingresa tus nombres y apellidos.";
         }
@@ -122,6 +123,9 @@ public class VistasFormController {
         }
         if (!password.equals(confirmarPassword)) {
             return "Las contraseñas no coinciden.";
+        }
+        if (aceptaTerminos == null) {
+            return "Debes aceptar los términos y condiciones.";
         }
         return null;
     }
