@@ -36,12 +36,14 @@ public class AuthController {
             authService.registrar(form);
         } catch (IllegalArgumentException e) {
             model.addAttribute("formMessage", e.getMessage());
+            model.addAttribute("formMessageType", "danger");
             return "registro";
         } catch (RuntimeException e) {
             String msg = e.getMessage() != null && e.getMessage().contains("ya está registrado")
                     ? e.getMessage()
                     : "No se pudo crear la cuenta. Inténtalo de nuevo.";
             model.addAttribute("formMessage", msg);
+            model.addAttribute("formMessageType", "danger");
             return "registro";
         }
         return "redirect:/login?registrado"; // login.html ya muestra "Cuenta creada correctamente"
