@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +30,13 @@ public class AuthController {
         return token != null ? ResponseEntity.ok(token) : ResponseEntity.status(401).build();
     }
 
-    // REGISTRO: registro.html envía el formulario a /registro
+    // Vista de registro público (exclusivo para lectores)
+    @GetMapping("/registro")
+    public String mostrarRegistro() {
+        return "registro";
+    }
+
+    // REGISTRO: registro.html envía el formulario a /registro (solo asigna rol Lector)
     @PostMapping("/registro")
     public String registro(@ModelAttribute RegistroDtos form, Model model) {
         try {

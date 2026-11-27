@@ -45,7 +45,7 @@ public class UsuarioController {
         return Response.desde(service.buscarPorDni(dni));
     }
 
-    @PostMapping({ "/admin/usuarios", "/bibliotecario/usuarios" })
+    @PostMapping("/admin/usuarios")
     public ResponseEntity<Response> crear(@Valid @RequestBody Request dto) {
         if (dto.password() == null || dto.password().length() < 8)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La contraseña debe tener al menos 8 caracteres");
@@ -55,7 +55,7 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(Response.desde(service.crearUsuario(usuario)));
     }
 
-    @PutMapping({ "/admin/usuarios/{id}", "/bibliotecario/usuarios/{id}" })
+    @PutMapping("/admin/usuarios/{id}")
     public Response actualizar(@PathVariable Integer id, @Valid @RequestBody Request dto) {
         Usuario usuario = dto.toEntity();
         usuario.setIdUsuario(id);
@@ -63,7 +63,7 @@ public class UsuarioController {
         return Response.desde(service.actualizarUsuario(usuario));
     }
 
-    @DeleteMapping({ "/admin/usuarios/{id}", "/bibliotecario/usuarios/{id}" })
+    @DeleteMapping("/admin/usuarios/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         service.eliminar(id);
         return ResponseEntity.noContent().build();

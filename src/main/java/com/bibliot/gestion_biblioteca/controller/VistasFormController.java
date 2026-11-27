@@ -12,11 +12,6 @@ public class VistasFormController {
         return "login";
     }
 
-    @GetMapping("/registro")
-    public String registroPage() {
-        return "registro";
-    }
-
     @GetMapping(value = "/login", params = "oauth=unavailable")
     public String oauthPendiente(Model model) {
         model.addAttribute("formMessage", "El acceso con Google todavía no está configurado.");

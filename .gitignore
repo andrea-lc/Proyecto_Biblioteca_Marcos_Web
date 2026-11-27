@@ -106,6 +106,7 @@ HELP.md
 *.db
 *.sqlite
 *.sqlite3
+/storage/
 
 # ============================
 # TEMPORARY FILES

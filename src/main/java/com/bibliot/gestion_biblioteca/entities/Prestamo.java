@@ -43,13 +43,15 @@ public class Prestamo {
     @JoinColumn(name = "id_ejemplar", nullable = false)
     private Ejemplar ejemplar;
 
-    @Column(name = "fecha_prestamo", nullable = false)
-    @NotNull(message = "La fecha del préstamo es obligatoria")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_reserva", nullable = true)
+    private Reserva reserva;
+
+    @Column(name = "fecha_prestamo", nullable = true)
     @jakarta.validation.constraints.PastOrPresent(message = "La fecha del préstamo no puede ser futura")
     private LocalDateTime fechaPrestamo;
 
-    @Column(name = "fecha_vencimiento", nullable = false)
-    @NotNull(message = "La fecha de vencimiento es obligatoria")
+    @Column(name = "fecha_vencimiento", nullable = true)
     @FutureOrPresent(message = "El vencimiento debe ser actual o futuro")
     private LocalDateTime fechaVencimiento;
 

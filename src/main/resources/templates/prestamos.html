@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base th:href="@{/}">
+    <script th:replace="~{auth :: auth}"></script>
+    <title>Préstamos y reservas | Bibliot.</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_circle,admin_panel_settings,bookmark,business,chevron_left,chevron_right,edit_note,groups,home,logout,menu_book,notifications,query_stats,refresh,search,settings,swap_horiz">
+    <link rel="stylesheet" href="./css/bibliot.css">
+</head>
+<body class="admin-body">
+<div class="admin-layout">
+    <aside th:replace="~{admin-sidebar :: sidebar('prestamos')}" class="admin-sidebar"></aside>
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <form class="admin-search" id="circulacion-search-form" role="search">
+                <label class="visually-hidden" for="circulacion-search">Buscar préstamos y reservas</label>
+                <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                <input id="circulacion-search" type="search" placeholder="Buscar por usuario, DNI, libro o ISBN" autocomplete="off">
+            </form>
+            <div class="topbar-actions">
+                <button class="round-action" type="button" aria-label="Notificaciones">
+                    <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+                </button>
+                <a class="round-action user-action" th:href="@{/perfil}" aria-label="Mi cuenta">
+                    <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
+                </a>
+            </div>
+        </header>
+
+        <section class="users-content" aria-labelledby="circulacion-title">
+            <div class="users-heading-row ed-enter">
+                <div>
+                    <h1 class="page-heading" id="circulacion-title">
+                        Préstamos y reservas
+                        <span class="users-total ed-count-pill"><b id="total-count">0</b></span>
+                    </h1>
+                    <p class="ed-page-subtitle">Gestiona los préstamos realizados, las reservas activas, sus categorías y el cambio de estado validado.</p>
+                </div>
+                <div class="users-actions">
+                    <button class="btn btn-outline-secondary btn-sm" id="refresh-btn" type="button">
+                        <span class="material-symbols-outlined" aria-hidden="true">refresh</span>Actualizar
+                    </button>
+                </div>
+            </div>
+
+            <div class="user-tabs ed-tabs" role="tablist" aria-label="Secciones de circulación">
+                <button class="ed-tab-btn" id="tab-prestamos" type="button" role="tab" aria-selected="true" aria-controls="panel-prestamos">
+                    <span>Préstamos</span>
+                    <span class="ed-count-pill"><b id="count-prestamos">0</b></span>
+                </button>
+                <button class="ed-tab-btn" id="tab-reservas" type="button" role="tab" aria-selected="false" aria-controls="panel-reservas">
+                    <span>Reservas</span>
+                    <span class="ed-count-pill"><b id="count-reservas">0</b></span>
+                </button>
+            </div>
+
+            <div class="alert alert-info ed-notice py-2 small mb-3" id="circulacion-message" role="status" aria-live="polite">Cargando circulación…</div>
+
+            <div class="user-toolbar ed-toolbar ed-enter" data-stagger="1">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <label class="visually-hidden" for="category-filter">Filtrar por categoría</label>
+                    <select class="form-select form-select-sm w-auto" id="category-filter">
+                        <option value="">Todas las categorías</option>
+                    </select>
+                    <label class="visually-hidden" for="status-filter">Filtrar por estado</label>
+                    <select class="form-select form-select-sm w-auto" id="status-filter">
+                        <option value="">Todos los estados</option>
+                    </select>
+                </div>
+                <span class="ed-card-meta" id="toolbar-info">Mostrando registros recientes</span>
+            </div>
+
+            <div id="panel-prestamos" role="tabpanel" aria-labelledby="tab-prestamos">
+                <div class="table-responsive users-table-wrap ed-table-wrap ed-enter" data-stagger="2" tabindex="0" role="region" aria-labelledby="tab-prestamos">
+                    <table class="table users-table ed-table books-table table-hover align-middle mb-0">
+                        <caption class="visually-hidden">Listado de préstamos realizados</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Libro y categorías</th>
+                                <th scope="col">Usuario</th>
+                                <th scope="col">Ejemplar</th>
+                                <th scope="col">Fechas</th>
+                                <th scope="col">Estado</th>
+                                <th class="text-end" scope="col">Cambiar estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prestamos-body">
+                            <tr><td colspan="7" class="py-3"><span class="ed-skeleton ed-skeleton--row" aria-hidden="true"></span></td></tr>
+                            <tr><td colspan="7" class="py-3"><span class="ed-skeleton ed-skeleton--row-md" aria-hidden="true"></span></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="ed-table-footer">
+                        <span id="prestamos-summary" role="status" aria-live="polite">Cargando préstamos…</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-outline-secondary btn-sm" id="prestamos-prev" type="button" disabled>
+                                <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>Anterior
+                            </button>
+                            <span id="prestamos-page-label">Página 1</span>
+                            <button class="btn btn-outline-secondary btn-sm" id="prestamos-next" type="button" disabled>
+                                Siguiente<span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-reservas" role="tabpanel" aria-labelledby="tab-reservas" hidden>
+                <div class="table-responsive users-table-wrap ed-table-wrap ed-enter" data-stagger="2" tabindex="0" role="region" aria-labelledby="tab-reservas">
+                    <table class="table users-table ed-table books-table table-hover align-middle mb-0">
+                        <caption class="visually-hidden">Listado de reservas registradas</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Libro y categorías</th>
+                                <th scope="col">Usuario y contacto</th>
+                                <th scope="col">Fechas de reserva</th>
+                                <th scope="col">Estado</th>
+                                <th class="text-end" scope="col">Cambiar estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservas-body">
+                            <tr><td colspan="6" class="py-3"><span class="ed-skeleton ed-skeleton--row" aria-hidden="true"></span></td></tr>
+                            <tr><td colspan="6" class="py-3"><span class="ed-skeleton ed-skeleton--row-md" aria-hidden="true"></span></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="ed-table-footer">
+                        <span id="reservas-summary" role="status" aria-live="polite">Cargando reservas…</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-outline-secondary btn-sm" id="reservas-prev" type="button" disabled>
+                                <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>Anterior
+                            </button>
+                            <span id="reservas-page-label">Página 1</span>
+                            <button class="btn btn-outline-secondary btn-sm" id="reservas-next" type="button" disabled>
+                                Siguiente<span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<dialog class="ed-confirm-dialog" id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-body">
+    <div class="ed-confirm-header">
+        <h2 id="confirm-title">Confirmar acción</h2>
+    </div>
+    <p class="ed-confirm-body" id="confirm-body"></p>
+    <div class="ed-confirm-footer">
+        <button class="btn btn-outline-secondary btn-sm" id="confirm-cancel" type="button">Cancelar</button>
+        <button class="btn btn-brand btn-sm" id="confirm-accept" type="button">Confirmar</button>
+    </div>
+</dialog>
+
+<script th:inline="javascript">
+(() => {
+    const apiPrestamos = /*[[@{/api/bibliotecario/circulacion/prestamos}]]*/ '/api/bibliotecario/circulacion/prestamos';
+    const apiReservas = /*[[@{/api/bibliotecario/circulacion/reservas}]]*/ '/api/bibliotecario/circulacion/reservas';
+    const PAGE_SIZE = 25;
+
+    const tabPrestamos = document.getElementById('tab-prestamos');
+    const tabReservas = document.getElementById('tab-reservas');
+    const panelPrestamos = document.getElementById('panel-prestamos');
+    const panelReservas = document.getElementById('panel-reservas');
+    const prestamosBody = document.getElementById('prestamos-body');
+    const reservasBody = document.getElementById('reservas-body');
+    const message = document.getElementById('circulacion-message');
+    const searchInput = document.getElementById('circulacion-search');
+    const searchForm = document.getElementById('circulacion-search-form');
+    const categoryFilter = document.getElementById('category-filter');
+    const statusFilter = document.getElementById('status-filter');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const toolbarInfo = document.getElementById('toolbar-info');
+
+    const countPrestamos = document.getElementById('count-prestamos');
+    const countReservas = document.getElementById('count-reservas');
+    const totalCount = document.getElementById('total-count');
+
+    const prestamosSummary = document.getElementById('prestamos-summary');
+    const prestamosPrev = document.getElementById('prestamos-prev');
+    const prestamosNext = document.getElementById('prestamos-next');
+    const prestamosPageLabel = document.getElementById('prestamos-page-label');
+
+    const reservasSummary = document.getElementById('reservas-summary');
+    const reservasPrev = document.getElementById('reservas-prev');
+    const reservasNext = document.getElementById('reservas-next');
+    const reservasPageLabel = document.getElementById('reservas-page-label');
+
+    const confirmDialog = document.getElementById('confirm-dialog');
+    const confirmTitle = document.getElementById('confirm-title');
+    const confirmBody = document.getElementById('confirm-body');
+    const confirmCancel = document.getElementById('confirm-cancel');
+    const confirmAccept = document.getElementById('confirm-accept');
+
+    let activeTab = 'prestamos';
+    let prestamosPage = { items: [], page: 0, totalElements: 0, totalPages: 0 };
+    let reservasPage = { items: [], page: 0, totalElements: 0, totalPages: 0 };
+
+    const norm = v => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const fmtDate = v => v ? new Date(v).toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+
+    function pedirConfirmacion(titulo, texto, esPeligro = false) {
+        return new Promise(resolve => {
+            confirmTitle.textContent = titulo;
+            confirmBody.textContent = texto;
+            confirmAccept.className = esPeligro ? 'btn btn-outline-danger btn-sm' : 'btn btn-brand btn-sm';
+            const cleanup = (ok) => {
+                confirmAccept.removeEventListener('click', onOk);
+                confirmCancel.removeEventListener('click', onCancel);
+                confirmDialog.removeEventListener('cancel', onCancel);
+                if (confirmDialog.open) confirmDialog.close();
+                resolve(ok);
+            };
+            const onOk = () => cleanup(true);
+            const onCancel = () => cleanup(false);
+            confirmAccept.addEventListener('click', onOk);
+            confirmCancel.addEventListener('click', onCancel);
+            confirmDialog.addEventListener('cancel', onCancel);
+            confirmDialog.showModal();
+            confirmCancel.focus();
+        });
+    }
+
+    function showMessage(text, type = 'info') {
+        if (!text) { message.hidden = true; return; }
+        message.hidden = false;
+        message.className = `alert alert-${type}${type === 'info' ? ' ed-notice' : ''} py-2 small mb-3`;
+        message.textContent = text;
+    }
+
+    async function readError(res) {
+        const text = await res.text();
+        if (!text) return `Error HTTP ${res.status}.`;
+        try {
+            const j = JSON.parse(text);
+            return j.message || j.detail || j.error || text;
+        } catch {
+            return text.trim().startsWith('<') ? `Error HTTP ${res.status}.` : text;
+        }
+    }
+
+    function badgeClass(estado) {
+        const k = norm(estado);
+        if (k.includes('devuelt') || k.includes('atendid')) return 'ed-badge--success';
+        if (k.includes('vencid') || k.includes('expirad')) return 'ed-badge--danger';
+        if (k.includes('pendient') || k.includes('por entregar')) return 'ed-badge--warning';
+        if (k.includes('activ') || k.includes('confirmad')) return 'ed-badge--info';
+        return 'ed-badge--neutral';
+    }
+
+    function crearEtiquetasCategorias(categorias) {
+        const wrap = document.createElement('div');
+        wrap.className = 'ed-cat-list';
+        if (!categorias || !categorias.length) {
+            const chip = document.createElement('span');
+            chip.className = 'ed-cat-chip';
+            chip.textContent = 'Sin categoría';
+            wrap.append(chip);
+            return wrap;
+        }
+        categorias.forEach(cat => {
+            const chip = document.createElement('span');
+            chip.className = 'ed-cat-chip';
+            chip.textContent = cat;
+            wrap.append(chip);
+        });
+        return wrap;
+    }
+
+    function actualizarFiltros() {
+        const prevCat = categoryFilter.value;
+        const prevStatus = statusFilter.value;
+        const currentItems = activeTab === 'prestamos' ? prestamosPage.items : reservasPage.items;
+
+        const categorias = [...new Set(currentItems.flatMap(x => x.categorias || []))].sort((a, b) => a.localeCompare(b, 'es'));
+        categoryFilter.replaceChildren(
+            new Option('Todas las categorías', ''),
+            ...categorias.map(c => new Option(c, c))
+        );
+        if (categorias.includes(prevCat)) categoryFilter.value = prevCat;
+
+        const estados = activeTab === 'prestamos'
+            ? ['Por entregar', 'Activo', 'Vencido', 'Devuelto', 'Cancelado']
+            : ['Pendiente', 'Confirmada', 'Atendida', 'Expirada', 'Cancelada'];
+        statusFilter.replaceChildren(
+            new Option('Todos los estados', ''),
+            ...estados.map(s => new Option(s, s))
+        );
+        if (estados.includes(prevStatus)) statusFilter.value = prevStatus;
+    }
+
+    function etiquetaAccion(tipo, destino) {
+        if (tipo === 'prestamo' && destino === 'Activo') return 'Confirmar entrega';
+        if (tipo === 'reserva' && destino === 'Confirmada') return 'Confirmar reserva';
+        return destino;
+    }
+
+    function crearControlEstado(tipo, item) {
+        const td = document.createElement('td');
+        td.className = 'text-end';
+        const transiciones = item.transicionesPermitidas || [];
+        if (!transiciones.length) {
+            const span = document.createElement('span');
+            span.className = 'ed-card-meta';
+            span.textContent = 'Estado final';
+            td.append(span);
+            return td;
+        }
+        const wrap = document.createElement('div');
+        wrap.className = 'ed-row-actions';
+        const select = document.createElement('select');
+        select.className = 'form-select form-select-sm ed-state-select';
+        const id = tipo === 'prestamo' ? item.idPrestamo : item.idReserva;
+        select.setAttribute('aria-label', `Cambiar estado de ${tipo} #${id}`);
+        select.add(new Option('Cambiar estado…', ''));
+        transiciones.forEach(t => select.add(new Option(etiquetaAccion(tipo, t), t)));
+
+        select.addEventListener('change', async () => {
+            const nuevoEstado = select.value;
+            if (!nuevoEstado) return;
+            const irreversible = ['Devuelto', 'Cancelado', 'Cancelada', 'Activo'].includes(nuevoEstado);
+            if (irreversible) {
+                let titulo = `Confirmar cambio a "${etiquetaAccion(tipo, nuevoEstado)}"`;
+                let detalle = '';
+                let peligro = false;
+                if (nuevoEstado === 'Activo') {
+                    titulo = 'Confirmar entrega del libro';
+                    detalle = `Al confirmar la entrega del préstamo #${id}, el ejemplar pasará a "Prestado", empezará el plazo de devolución y la reserva vinculada pasará a "Atendida".`;
+                } else if (nuevoEstado === 'Devuelto') {
+                    titulo = 'Registrar devolución';
+                    detalle = `Se registrará la devolución del préstamo #${id} y el ejemplar físico volverá a estar disponible.`;
+                } else if (nuevoEstado === 'Cancelado') {
+                    titulo = 'Cancelar préstamo';
+                    detalle = item.estadoEfectivo === 'Por entregar'
+                        ? `Se cancelará el préstamo #${id} sin entregar, su reserva pasará a "Cancelada" y el ejemplar volverá a "Disponible".`
+                        : `Se cancelará el préstamo #${id} y el ejemplar físico volverá a estar disponible.`;
+                    peligro = true;
+                } else if (nuevoEstado === 'Cancelada') {
+                    titulo = 'Cancelar reserva';
+                    detalle = item.estadoEfectivo === 'Confirmada'
+                        ? `Se cancelará la reserva #${id}, se anulará el préstamo pendiente de entrega y se liberará el ejemplar apartado.`
+                        : `Esta acción cancelará la reserva #${id} de forma definitiva.`;
+                    peligro = true;
+                }
+                const confirmado = await pedirConfirmacion(titulo, detalle, peligro);
+                if (!confirmado) {
+                    select.value = '';
+                    return;
+                }
+            }
+            select.disabled = true;
+            select.setAttribute('aria-busy', 'true');
+            try {
+                const base = tipo === 'prestamo' ? apiPrestamos : apiReservas;
+                const res = await fetch(`${base}/${encodeURIComponent(id)}/estado`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify({ estado: nuevoEstado })
+                });
+                if (!res.ok) throw new Error(await readError(res));
+                const actualizado = await res.json();
+                await cargarDatos(prestamosPage.page, reservasPage.page);
+                const msgExtra = (tipo === 'reserva' && nuevoEstado === 'Confirmada')
+                    ? ' Se generó el préstamo en estado "Por entregar".'
+                    : (tipo === 'prestamo' && nuevoEstado === 'Activo')
+                        ? ' Entrega registrada y plazo de devolución iniciado.'
+                        : '';
+                showMessage(`Estado de ${tipo} #${id} actualizado a "${actualizado.estadoEfectivo}".${msgExtra}`, 'success');
+            } catch (err) {
+                select.value = '';
+                select.disabled = false;
+                select.removeAttribute('aria-busy');
+                showMessage(`No se pudo cambiar el estado. ${err.message}`, 'danger');
+            }
+        });
+
+        wrap.append(select);
+        td.append(wrap);
+        return td;
+    }
+
+    function filtrarLista(items) {
+        const q = norm(searchInput.value.trim());
+        const cat = categoryFilter.value;
+        const st = statusFilter.value;
+        return items.filter(item => {
+            if (cat && !(item.categorias || []).includes(cat)) return false;
+            if (st && item.estadoEfectivo !== st) return false;
+            if (!q) return true;
+            return norm(JSON.stringify(item)).includes(q);
+        });
+    }
+
+    function renderEmpty(tbody, cols, texto, icono) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = cols;
+        td.className = 'py-4 text-center';
+        const box = document.createElement('div');
+        box.className = 'ed-empty border-0 py-3';
+        const ic = document.createElement('span');
+        ic.className = 'material-symbols-outlined';
+        ic.setAttribute('aria-hidden', 'true');
+        ic.textContent = icono;
+        const p = document.createElement('p');
+        p.textContent = texto;
+        box.append(ic, p);
+        td.append(box);
+        tr.append(td);
+        tbody.append(tr);
+    }
+
+    function renderPrestamos() {
+        const filtrados = filtrarLista(prestamosPage.items);
+        prestamosBody.replaceChildren();
+        prestamosSummary.textContent = `Mostrando ${filtrados.length} de ${prestamosPage.totalElements} préstamos.`;
+        const totalP = Math.max(1, prestamosPage.totalPages || 1);
+        prestamosPageLabel.textContent = `Página ${prestamosPage.page + 1} de ${totalP}`;
+        prestamosPrev.disabled = prestamosPage.page <= 0;
+        prestamosNext.disabled = prestamosPage.page + 1 >= totalP;
+        toolbarInfo.textContent = `${filtrados.length} préstamos visibles en esta página`;
+
+        if (!filtrados.length) {
+            renderEmpty(prestamosBody, 7, 'No hay préstamos que coincidan con los filtros seleccionados.', 'menu_book');
+            return;
+        }
+
+        filtrados.forEach(p => {
+            const tr = document.createElement('tr');
+
+            const tdId = document.createElement('td');
+            tdId.className = 'employee-id';
+            tdId.textContent = `#${p.idPrestamo}`;
+
+            const tdBook = document.createElement('td');
+            const bookWrap = document.createElement('div');
+            bookWrap.className = 'book-title-cell d-flex flex-column';
+            const title = document.createElement('b');
+            title.textContent = p.tituloLibro || 'Libro sin título';
+            const isbn = document.createElement('small');
+            isbn.textContent = p.isbnLibro ? `ISBN ${p.isbnLibro}` : `Libro #${p.idLibro ?? '—'}`;
+            bookWrap.append(title, isbn, crearEtiquetasCategorias(p.categorias));
+            tdBook.append(bookWrap);
+
+            const tdUser = document.createElement('td');
+            const uWrap = document.createElement('div');
+            uWrap.className = 'book-title-cell d-flex flex-column';
+            const uName = document.createElement('b');
+            uName.textContent = p.nombreUsuario || '—';
+            const uMeta = document.createElement('small');
+            uMeta.textContent = [p.dniUsuario ? `DNI ${p.dniUsuario}` : null, p.emailUsuario].filter(Boolean).join(' · ') || 'Sin contacto';
+            uWrap.append(uName, uMeta);
+            tdUser.append(uWrap);
+
+            const tdCopy = document.createElement('td');
+            const cWrap = document.createElement('div');
+            cWrap.className = 'book-title-cell d-flex flex-column';
+            const cCode = document.createElement('b');
+            cCode.textContent = p.codigoInventario || `Ejemplar #${p.idEjemplar}`;
+            const cLoc = document.createElement('small');
+            cLoc.textContent = p.ubicacionEjemplar || 'Sin ubicación';
+            cWrap.append(cCode, cLoc);
+            tdCopy.append(cWrap);
+
+            const tdDates = document.createElement('td');
+            const dates = document.createElement('div');
+            dates.className = 'ed-dates-stack';
+            if (p.estadoEfectivo === 'Por entregar' || (!p.fechaPrestamo && !p.fechaVencimiento)) {
+                dates.innerHTML = '<span>Préstamo: <b>Pendiente de entrega</b></span><span>Vence: <b>Pendiente de entrega</b></span>';
+            } else {
+                dates.innerHTML = `<span>Préstamo: <b>${fmtDate(p.fechaPrestamo)}</b></span><span>Vence: <b>${fmtDate(p.fechaVencimiento)}</b></span>${p.fechaDevolucion ? `<span>Devuelto: <b>${fmtDate(p.fechaDevolucion)}</b></span>` : ''}`;
+            }
+            tdDates.append(dates);
+
+            const tdState = document.createElement('td');
+            const badge = document.createElement('span');
+            badge.className = `ed-badge ${badgeClass(p.estadoEfectivo)}`;
+            badge.textContent = p.estadoEfectivo;
+            tdState.append(badge);
+
+            tr.append(tdId, tdBook, tdUser, tdCopy, tdDates, tdState, crearControlEstado('prestamo', p));
+            prestamosBody.append(tr);
+        });
+    }
+
+    function renderReservas() {
+        const filtrados = filtrarLista(reservasPage.items);
+        reservasBody.replaceChildren();
+        reservasSummary.textContent = `Mostrando ${filtrados.length} de ${reservasPage.totalElements} reservas.`;
+        const totalP = Math.max(1, reservasPage.totalPages || 1);
+        reservasPageLabel.textContent = `Página ${reservasPage.page + 1} de ${totalP}`;
+        reservasPrev.disabled = reservasPage.page <= 0;
+        reservasNext.disabled = reservasPage.page + 1 >= totalP;
+        toolbarInfo.textContent = `${filtrados.length} reservas visibles en esta página`;
+
+        if (!filtrados.length) {
+            renderEmpty(reservasBody, 6, 'No hay reservas que coincidan con los filtros seleccionados.', 'bookmark');
+            return;
+        }
+
+        filtrados.forEach(r => {
+            const tr = document.createElement('tr');
+
+            const tdId = document.createElement('td');
+            tdId.className = 'employee-id';
+            tdId.textContent = `#${r.idReserva}`;
+
+            const tdBook = document.createElement('td');
+            const bookWrap = document.createElement('div');
+            bookWrap.className = 'book-title-cell d-flex flex-column';
+            const title = document.createElement('b');
+            title.textContent = r.tituloLibro || 'Libro sin título';
+            const isbn = document.createElement('small');
+            isbn.textContent = r.isbnLibro ? `ISBN ${r.isbnLibro}` : `Libro #${r.idLibro ?? '—'}`;
+            bookWrap.append(title, isbn, crearEtiquetasCategorias(r.categorias));
+            tdBook.append(bookWrap);
+
+            const tdUser = document.createElement('td');
+            const uWrap = document.createElement('div');
+            uWrap.className = 'book-title-cell d-flex flex-column';
+            const uName = document.createElement('b');
+            uName.textContent = r.nombreUsuario || '—';
+            const uLine1 = document.createElement('small');
+            uLine1.textContent = [r.dniUsuario ? `DNI ${r.dniUsuario}` : null, r.telefonoUsuario ? `Tel. ${r.telefonoUsuario}` : null].filter(Boolean).join(' · ') || 'Sin documento/teléfono';
+            const uLine2 = document.createElement('small');
+            uLine2.textContent = r.emailUsuario || 'Sin correo';
+            uWrap.append(uName, uLine1, uLine2);
+            tdUser.append(uWrap);
+
+            const tdDates = document.createElement('td');
+            const dates = document.createElement('div');
+            dates.className = 'ed-dates-stack';
+            dates.innerHTML = `<span>Reservado: <b>${fmtDate(r.fechaReserva)}</b></span><span>Expira: <b>${fmtDate(r.fechaExpiracion)}</b></span>`;
+            tdDates.append(dates);
+
+            const tdState = document.createElement('td');
+            const badge = document.createElement('span');
+            badge.className = `ed-badge ${badgeClass(r.estadoEfectivo)}`;
+            badge.textContent = r.estadoEfectivo;
+            tdState.append(badge);
+
+            tr.append(tdId, tdBook, tdUser, tdDates, tdState, crearControlEstado('reserva', r));
+            reservasBody.append(tr);
+        });
+    }
+
+    function renderActive() {
+        countPrestamos.textContent = prestamosPage.totalElements;
+        countReservas.textContent = reservasPage.totalElements;
+        totalCount.textContent = prestamosPage.totalElements + reservasPage.totalElements;
+        if (activeTab === 'prestamos') renderPrestamos();
+        else renderReservas();
+    }
+
+    function switchTab(tab) {
+        activeTab = tab;
+        const isPrestamos = tab === 'prestamos';
+        tabPrestamos.setAttribute('aria-selected', String(isPrestamos));
+        tabReservas.setAttribute('aria-selected', String(!isPrestamos));
+        panelPrestamos.hidden = !isPrestamos;
+        panelReservas.hidden = isPrestamos;
+        categoryFilter.value = '';
+        statusFilter.value = '';
+        actualizarFiltros();
+        renderActive();
+    }
+
+    async function cargarDatos(pPage = prestamosPage.page, rPage = reservasPage.page) {
+        refreshBtn.disabled = true;
+        refreshBtn.setAttribute('aria-busy', 'true');
+        showMessage('Cargando préstamos y reservas…');
+        try {
+            const [resP, resR] = await Promise.all([
+                fetch(`${apiPrestamos}?page=${pPage}&size=${PAGE_SIZE}`, { headers: { Accept: 'application/json' } }),
+                fetch(`${apiReservas}?page=${rPage}&size=${PAGE_SIZE}`, { headers: { Accept: 'application/json' } })
+            ]);
+            if (!resP.ok) throw new Error(await readError(resP));
+            if (!resR.ok) throw new Error(await readError(resR));
+            prestamosPage = await resP.json();
+            reservasPage = await resR.json();
+            actualizarFiltros();
+            renderActive();
+            showMessage('');
+        } catch (err) {
+            showMessage(`No se pudo cargar la circulación. ${err.message}`, 'danger');
+            renderEmpty(prestamosBody, 7, 'No se pudieron cargar los préstamos.', 'menu_book');
+            renderEmpty(reservasBody, 6, 'No se pudieron cargar las reservas.', 'bookmark');
+        } finally {
+            refreshBtn.disabled = false;
+            refreshBtn.removeAttribute('aria-busy');
+        }
+    }
+
+    tabPrestamos.addEventListener('click', () => switchTab('prestamos'));
+    tabReservas.addEventListener('click', () => switchTab('reservas'));
+    searchForm.addEventListener('submit', e => e.preventDefault());
+    searchInput.addEventListener('input', renderActive);
+    categoryFilter.addEventListener('change', renderActive);
+    statusFilter.addEventListener('change', renderActive);
+    refreshBtn.addEventListener('click', () => cargarDatos(prestamosPage.page, reservasPage.page));
+    prestamosPrev.addEventListener('click', () => cargarDatos(Math.max(0, prestamosPage.page - 1), reservasPage.page));
+    prestamosNext.addEventListener('click', () => cargarDatos(prestamosPage.page + 1, reservasPage.page));
+    reservasPrev.addEventListener('click', () => cargarDatos(prestamosPage.page, Math.max(0, reservasPage.page - 1)));
+    reservasNext.addEventListener('click', () => cargarDatos(prestamosPage.page, reservasPage.page + 1));
+
+    cargarDatos(0, 0);
+})();
+</script>
+</body>
+</html>

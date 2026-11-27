@@ -1,11 +1,18 @@
 package com.bibliot.gestion_biblioteca.config;
 
+import java.nio.file.Path;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Value("${bibliot.storage.location:./storage/uploads}")
+    private String storageLocation;
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -16,8 +23,6 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addViewController("/login").setViewName("login");
 
-        registry.addViewController("/registro").setViewName("registro");
-
         registry.addViewController("/explorar").setViewName("explorar");
 
         registry.addViewController("/ayuda").setViewName("ayuda");
@@ -26,7 +31,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addViewController("/mis-prestamos").setViewName("mis-prestamos");
 
-        registry.addViewController("/notificaciones").setViewName("notificaciones");
+        registry.addRedirectViewController("/notificaciones", "/index");
 
         registry.addViewController("/terminos").setViewName("terminos");
 
@@ -56,6 +61,8 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addViewController("/libros/editar").setViewName("editar-libro");
 
+        registry.addViewController("/prestamos").setViewName("prestamos");
+
         registry.addViewController("/configuracion").setViewName("configuracion");
         
         registry.addViewController("/roles").setViewName("roles");
@@ -65,6 +72,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/confirmacion-reserva").setViewName("confirmacion-reserva");
 
         registry.addRedirectViewController("/oauth2/authorization/google", "/login?oauth=unavailable");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String location = Path.of(storageLocation).toAbsolutePath().normalize().toUri().toString();
+        if (!location.endsWith("/")) location += "/";
+        registry.addResourceHandler("/uploads/**").addResourceLocations(location);
     }
 
 }

@@ -16,7 +16,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.PastOrPresent;
-import org.hibernate.validator.constraints.URL;
+import com.bibliot.gestion_biblioteca.validation.ArchivoUrlValida;
 
 import java.time.LocalDateTime;
 
@@ -39,7 +39,7 @@ public class LibroDigital {
 
     @Column(name = "archivo_url", length = 255)
     @Size(max = 255)
-    @URL
+    @ArchivoUrlValida
     private String archivoUrl;
 
     @Column(name = "formato", length = 30)

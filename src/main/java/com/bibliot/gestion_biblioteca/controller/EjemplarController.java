@@ -6,8 +6,10 @@ import com.bibliot.gestion_biblioteca.service.EjemplarService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Transactional
@@ -57,5 +59,13 @@ public class EjemplarController {
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         service.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, String>> handleStatusException(ResponseStatusException ex) {
+        String msg = ex.getReason() != null && !ex.getReason().isBlank()
+                ? ex.getReason()
+                : "No se pudo completar la operación del ejemplar.";
+        return ResponseEntity.status(ex.getStatusCode()).body(Map.of("message", msg));
     }
 }

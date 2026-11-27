@@ -8,29 +8,124 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_circle,add,admin_panel_settings,arrow_back,business,delete,edit,edit_note,groups,home,logout,menu_book,notifications,query_stats,settings,swap_horiz">
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
-<body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/dashboard}">Bibliot.</a><a class="nav-link text-dark" th:href="@{/libros}">Volver a libros</a></div></header>
-<main class="container py-5"><div class="row justify-content-center"><div class="col-12 col-lg-9">
-    <p class="text-secondary mb-1">Catálogo / <span id="book-breadcrumb">Libro</span></p>
-    <h1 class="h2 mb-4">Editar libro</h1>
-    <div class="alert alert-info" id="edit-message" role="status">Cargando libro…</div>
-    <form id="edit-book-form" class="card border-0 shadow-sm" hidden>
-        <div class="card-body p-4"><div class="row g-3">
-            <div class="col-12"><label for="title" class="form-label">Título</label><input class="form-control" id="title" name="titulo" maxlength="255" required></div>
-            <div class="col-md-6"><label for="isbn" class="form-label">ISBN</label><input class="form-control" id="isbn" name="isbn"></div>
-            <div class="col-md-6"><label for="pages" class="form-label">Páginas</label><input class="form-control" id="pages" name="paginas" type="number" min="1"></div>
-            <div class="col-md-6"><label for="publication" class="form-label">Fecha de publicación</label><input class="form-control" id="publication" name="fechaPublicacion" type="date"></div>
-            <div class="col-md-6"><label for="status" class="form-label">Estado</label><select class="form-select" id="status" name="estado"><option value="">Sin estado</option><option value="Disponible">Disponible</option><option value="No disponible">No disponible</option></select></div>
-            <div class="col-md-6"><label for="publisher" class="form-label">Editorial</label><select class="form-select" id="publisher" name="idEditorial"><option value="">Sin editorial</option></select></div>
-            <div class="col-md-6"><label for="authors" class="form-label">Autores</label><select class="form-select" id="authors" name="autorIds" multiple></select></div>
-            <div class="col-md-6"><label for="categories" class="form-label">Categorías</label><select class="form-select" id="categories" name="categoriaIds" multiple></select></div>
-            <div class="col-12"><label for="description" class="form-label">Descripción</label><textarea class="form-control" id="description" name="descripcion" rows="4" maxlength="5000"></textarea></div>
-            <div class="col-12"><label for="contentText" class="form-label">Contenido de lectura</label><textarea class="form-control" id="contentText" name="contenidoTexto" rows="6"></textarea></div>
-        </div></div>
-        <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 p-4"><a class="btn btn-outline-secondary" th:href="@{/libros}">Cancelar</a><button class="btn btn-secondary" type="submit">Guardar cambios</button></div>
+<body class="admin-body"><div class="admin-layout"><aside th:replace="~{admin-sidebar :: sidebar('libros')}" class="admin-sidebar"></aside><div class="admin-main">
+<header class="admin-topbar">
+    <a class="ed-topbar-back" th:href="@{/libros}"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>Volver a libros</a>
+    <div class="topbar-actions">
+        <button class="round-action" type="button" aria-label="Notificaciones"><span class="material-symbols-outlined" aria-hidden="true">notifications</span></button>
+        <a class="round-action user-action" th:href="@{/perfil}" aria-label="Mi cuenta"><span class="material-symbols-outlined" aria-hidden="true">account_circle</span></a>
+    </div>
+</header>
+<main class="ed-form-shell">
+    <nav class="ed-breadcrumb" aria-label="Migas de pan"><a th:href="@{/libros}">Catálogo</a><span aria-hidden="true">/</span><span id="book-breadcrumb" aria-current="page">Libro</span></nav>
+    <div class="ed-page-header ed-enter">
+        <div>
+            <h1 class="page-heading">Editar libro</h1>
+            <p class="ed-page-subtitle">Actualiza la ficha bibliográfica, relaciones y contenido digital del ejemplar.</p>
+        </div>
+    </div>
+    <div class="alert alert-info ed-notice py-2 mb-4" id="edit-message" role="status" aria-live="polite">Cargando libro…</div>
+    <form id="edit-book-form" class="ed-form-card ed-enter" data-stagger="1" hidden>
+        <div class="ed-form-body">
+            <section class="ed-form-section" aria-labelledby="edit-main-title">
+                <h2 class="ed-form-section-title" id="edit-main-title">Datos principales</h2>
+                <p class="ed-form-section-desc">Título, autoría, clasificación y sinopsis.</p>
+                <div class="row g-3">
+                    <div class="col-12"><label for="title" class="form-label">Título <span class="text-danger" aria-hidden="true">*</span></label><input class="form-control" id="title" name="titulo" maxlength="255" required></div>
+                    <div class="col-12 col-md-6"><label for="authors" class="form-label">Autores</label><select class="form-select" id="authors" name="autorIds" multiple></select><div class="form-text">Mantén Ctrl o Cmd para seleccionar varios.</div></div>
+                    <div class="col-12 col-md-6"><label for="categories" class="form-label">Categorías</label><select class="form-select" id="categories" name="categoriaIds" multiple></select><div class="form-text">Mantén Ctrl o Cmd para seleccionar varias.</div></div>
+                    <div class="col-12"><label for="description" class="form-label">Descripción</label><textarea class="form-control" id="description" name="descripcion" rows="4" maxlength="5000"></textarea></div>
+                </div>
+            </section>
+            <section class="ed-form-section" aria-labelledby="edit-pub-title">
+                <h2 class="ed-form-section-title" id="edit-pub-title">Publicación e inventario</h2>
+                <p class="ed-form-section-desc">Datos de edición, páginas y estado en el catálogo.</p>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6"><label for="isbn" class="form-label">ISBN</label><input class="form-control" id="isbn" name="isbn"></div>
+                    <div class="col-12 col-md-6"><label for="publisher" class="form-label">Editorial</label><select class="form-select" id="publisher" name="idEditorial"><option value="">Sin editorial</option></select></div>
+                    <div class="col-12 col-md-4"><label for="publication" class="form-label">Fecha de publicación</label><input class="form-control" id="publication" name="fechaPublicacion" type="date"></div>
+                    <div class="col-12 col-md-4"><label for="pages" class="form-label">Páginas</label><input class="form-control" id="pages" name="paginas" type="number" min="1"></div>
+                    <div class="col-12 col-md-4"><label for="status" class="form-label">Estado</label><select class="form-select" id="status" name="estado"><option value="">Sin estado</option><option value="Disponible">Disponible</option><option value="No disponible">No disponible</option></select></div>
+                </div>
+            </section>
+            <section class="ed-form-section" aria-labelledby="edit-content-title">
+                <h2 class="ed-form-section-title" id="edit-content-title">Contenido de lectura</h2>
+                <p class="ed-form-section-desc">Texto digital asociado al libro.</p>
+                <div class="row g-3">
+                    <div class="col-12"><label for="contentText" class="form-label">Contenido de lectura</label><textarea class="form-control" id="contentText" name="contenidoTexto" rows="6"></textarea></div>
+                </div>
+            </section>
+        </div>
+        <div class="ed-form-footer"><a class="btn btn-outline-secondary" th:href="@{/libros}">Cancelar</a><button class="btn btn-brand" id="edit-book-submit" type="submit">Guardar cambios</button></div>
     </form>
-</div></div></main>
+
+    <section class="ed-form-card mt-4 ed-enter" id="copies-card" data-stagger="2" aria-labelledby="edit-copies-title" hidden>
+        <div class="ed-form-body">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-3">
+                <div>
+                    <h2 class="ed-form-section-title" id="edit-copies-title">Ejemplares físicos</h2>
+                    <p class="ed-form-section-desc mb-0">Administra los ejemplares físicos asociados a este libro para habilitar reservas y préstamos.</p>
+                </div>
+                <span class="ed-count-pill"><b id="copies-count">0</b></span>
+            </div>
+            <div class="alert alert-info ed-notice py-2 small mb-3" id="copies-message" role="status" aria-live="polite" hidden></div>
+            <div class="table-responsive ed-table-wrap mb-4" tabindex="0" role="region" aria-labelledby="edit-copies-title">
+                <table class="table ed-table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Código de inventario</th>
+                            <th scope="col">Ubicación</th>
+                            <th scope="col">Fecha de adquisición</th>
+                            <th scope="col">Estado</th>
+                            <th class="text-end" scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="copies-tbody">
+                        <tr><td colspan="5" class="py-3 text-center text-secondary small">Cargando ejemplares…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <form id="copy-form" class="ed-copy-row">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h3 class="h6 mb-0 fw-semibold" id="copy-form-title">Agregar nuevo ejemplar</h3>
+                    <button class="btn btn-outline-secondary btn-sm" id="copy-cancel-edit" type="button" hidden>Cancelar edición</button>
+                </div>
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small" for="copy-code">Código de inventario <span class="text-danger" aria-hidden="true">*</span></label>
+                        <input class="form-control form-control-sm" id="copy-code" name="codigoInventario" type="text" maxlength="100" placeholder="Ej. LIB-001" required>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label small" for="copy-location">Ubicación</label>
+                        <input class="form-control form-control-sm" id="copy-location" name="ubicacion" type="text" maxlength="100" placeholder="Ej. Estante A-2">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label small" for="copy-status">Estado</label>
+                        <select class="form-select form-select-sm" id="copy-status" name="estado" required>
+                            <option value="Disponible">Disponible</option>
+                            <option value="No disponible">No disponible</option>
+                            <option value="En reparación">En reparación</option>
+                            <option value="Reservado">Reservado</option>
+                            <option value="Prestado">Prestado</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label small" for="copy-date">Fecha de adquisición</label>
+                        <input class="form-control form-control-sm" id="copy-date" name="fechaAdquisicion" type="date">
+                    </div>
+                    <div class="col-12 d-flex justify-content-end mt-2">
+                        <button class="btn btn-sand btn-sm" id="copy-submit-btn" type="submit">
+                            <span class="material-symbols-outlined" aria-hidden="true">add</span><span id="copy-submit-label">Agregar ejemplar</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
 <script th:inline="javascript">
     const apiLibrosUrl = /*[[@{/api/admin/libros}]]*/ '/api/admin/libros';
     const listaLibrosUrl = /*[[@{/libros}]]*/ '/libros';
@@ -42,7 +137,22 @@
     const apiEditorialesUrl = /*[[@{/api/admin/editoriales}]]*/ '/api/admin/editoriales';
     const apiLibroAutoresUrl = /*[[@{/api/admin/libros-autores/libro}]]*/ '/api/admin/libros-autores/libro';
     const apiLibroCategoriasUrl = /*[[@{/api/admin/libros-categorias/libro}]]*/ '/api/admin/libros-categorias/libro';
-    document.getElementById('publication').max = new Date().toISOString().slice(0, 10);
+    const apiEjemplaresUrl = /*[[@{/api/admin/ejemplares}]]*/ '/api/admin/ejemplares';
+    const hoyIso = new Date().toISOString().slice(0, 10);
+    document.getElementById('publication').max = hoyIso;
+    document.getElementById('copy-date').max = hoyIso;
+    document.getElementById('copy-date').value = hoyIso;
+
+    const copiesCard = document.getElementById('copies-card');
+    const copiesTbody = document.getElementById('copies-tbody');
+    const copiesCount = document.getElementById('copies-count');
+    const copiesMessage = document.getElementById('copies-message');
+    const copyForm = document.getElementById('copy-form');
+    const copyFormTitle = document.getElementById('copy-form-title');
+    const copyCancelEdit = document.getElementById('copy-cancel-edit');
+    const copySubmitBtn = document.getElementById('copy-submit-btn');
+    const copySubmitLabel = document.getElementById('copy-submit-label');
+    let editingCopyId = null;
 
     async function mensajeErrorApi(respuesta) {
         const texto = await respuesta.text();
@@ -105,12 +215,164 @@
             categoriasVinculadas.forEach(x => { const option = [...formulario.elements.namedItem('categoriaIds').options].find(o => Number(o.value) === x.idCategoria); if (option) option.selected = true; });
             document.getElementById('book-breadcrumb').textContent = libro.titulo;
             formulario.hidden = false;
+            copiesCard.hidden = false;
             mensaje.hidden = true;
+            await cargarEjemplares();
         } catch (error) {
             mensaje.className = 'alert alert-danger';
             mensaje.textContent = `No se pudo cargar el libro. ${error.message}`;
         }
     }
+
+    function showCopyMsg(text, type = 'info') {
+        if (!text) { copiesMessage.hidden = true; return; }
+        copiesMessage.hidden = false;
+        copiesMessage.className = `alert alert-${type}${type === 'info' ? ' ed-notice' : ''} py-2 small mb-3`;
+        copiesMessage.textContent = text;
+    }
+
+    function badgeEjemplar(estado) {
+        const k = String(estado || '').toLowerCase();
+        if (k === 'disponible') return 'ed-badge--success';
+        if (k === 'reservado') return 'ed-badge--warning';
+        if (k === 'prestado') return 'ed-badge--info';
+        return 'ed-badge--neutral';
+    }
+
+    function resetCopyForm() {
+        editingCopyId = null;
+        copyForm.reset();
+        document.getElementById('copy-status').value = 'Disponible';
+        document.getElementById('copy-date').value = hoyIso;
+        copyFormTitle.textContent = 'Agregar nuevo ejemplar';
+        copySubmitLabel.textContent = 'Agregar ejemplar';
+        copyCancelEdit.hidden = true;
+    }
+
+    async function cargarEjemplares() {
+        try {
+            const res = await fetch(`${apiEjemplaresUrl}/libro/${encodeURIComponent(idLibro)}`, { headers: { Accept: 'application/json' } });
+            if (!res.ok) throw new Error(await mensajeErrorApi(res));
+            const lista = await res.json();
+            copiesCount.textContent = lista.length;
+            copiesTbody.replaceChildren();
+            if (!lista.length) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 5;
+                td.className = 'py-4 text-center text-secondary small';
+                td.textContent = 'Este libro aún no tiene ejemplares físicos registrados.';
+                tr.append(td);
+                copiesTbody.append(tr);
+                return;
+            }
+            lista.forEach(ej => {
+                const tr = document.createElement('tr');
+                const tdCode = document.createElement('td');
+                tdCode.className = 'ed-cell-primary';
+                tdCode.textContent = ej.codigoInventario || '—';
+
+                const tdLoc = document.createElement('td');
+                tdLoc.textContent = ej.ubicacion || 'Sin ubicación';
+
+                const tdDate = document.createElement('td');
+                tdDate.className = 'ed-num';
+                tdDate.textContent = ej.fechaAdquisicion || '—';
+
+                const tdState = document.createElement('td');
+                const b = document.createElement('span');
+                b.className = `ed-badge ${badgeEjemplar(ej.estado)}`;
+                b.textContent = ej.estado || 'Sin estado';
+                tdState.append(b);
+
+                const tdAct = document.createElement('td');
+                tdAct.className = 'text-end';
+                const wrap = document.createElement('div');
+                wrap.className = 'ed-row-actions';
+
+                const btnEdit = document.createElement('button');
+                btnEdit.type = 'button';
+                btnEdit.className = 'btn btn-outline-secondary btn-sm';
+                btnEdit.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">edit</span>Editar';
+                btnEdit.addEventListener('click', () => {
+                    editingCopyId = ej.idEjemplar;
+                    document.getElementById('copy-code').value = ej.codigoInventario || '';
+                    document.getElementById('copy-location').value = ej.ubicacion || '';
+                    document.getElementById('copy-status').value = ej.estado || 'Disponible';
+                    document.getElementById('copy-date').value = ej.fechaAdquisicion || '';
+                    copyFormTitle.textContent = `Editando ejemplar ${ej.codigoInventario}`;
+                    copySubmitLabel.textContent = 'Guardar ejemplar';
+                    copyCancelEdit.hidden = false;
+                    document.getElementById('copy-code').focus();
+                });
+
+                const bloqueado = ['prestado', 'reservado'].includes(String(ej.estado || '').trim().toLowerCase());
+                const btnDel = document.createElement('button');
+                btnDel.type = 'button';
+                btnDel.className = 'btn btn-outline-danger btn-sm';
+                btnDel.disabled = bloqueado;
+                if (bloqueado) btnDel.title = 'No se puede eliminar un ejemplar prestado o reservado';
+                btnDel.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">delete</span>Eliminar';
+                btnDel.addEventListener('click', async () => {
+                    if (!window.confirm(`¿Eliminar el ejemplar "${ej.codigoInventario}"?`)) return;
+                    btnDel.disabled = true;
+                    try {
+                        const r = await fetch(`${apiEjemplaresUrl}/${encodeURIComponent(ej.idEjemplar)}`, { method: 'DELETE' });
+                        if (!r.ok) throw new Error(await mensajeErrorApi(r));
+                        if (editingCopyId === ej.idEjemplar) resetCopyForm();
+                        await cargarEjemplares();
+                        showCopyMsg(`Ejemplar "${ej.codigoInventario}" eliminado.`, 'success');
+                    } catch (err) {
+                        btnDel.disabled = false;
+                        showCopyMsg(`No se pudo eliminar el ejemplar. ${err.message}`, 'danger');
+                    }
+                });
+
+                wrap.append(btnEdit, btnDel);
+                tdAct.append(wrap);
+                tr.append(tdCode, tdLoc, tdDate, tdState, tdAct);
+                copiesTbody.append(tr);
+            });
+        } catch (err) {
+            showCopyMsg(`No se pudieron cargar los ejemplares. ${err.message}`, 'danger');
+        }
+    }
+
+    copyCancelEdit.addEventListener('click', resetCopyForm);
+
+    copyForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        if (!copyForm.reportValidity()) return;
+        const payload = {
+            idEjemplar: editingCopyId,
+            idLibro: Number(idLibro),
+            codigoInventario: document.getElementById('copy-code').value.trim(),
+            ubicacion: document.getElementById('copy-location').value.trim() || null,
+            estado: document.getElementById('copy-status').value,
+            fechaAdquisicion: document.getElementById('copy-date').value || null
+        };
+        copySubmitBtn.disabled = true;
+        copySubmitBtn.setAttribute('aria-busy', 'true');
+        try {
+            const url = editingCopyId ? `${apiEjemplaresUrl}/${encodeURIComponent(editingCopyId)}` : apiEjemplaresUrl;
+            const res = await fetch(url, {
+                method: editingCopyId ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error(await mensajeErrorApi(res));
+            const saved = await res.json();
+            const wasEdit = !!editingCopyId;
+            resetCopyForm();
+            await cargarEjemplares();
+            showCopyMsg(wasEdit ? `Ejemplar "${saved.codigoInventario}" actualizado.` : `Ejemplar "${saved.codigoInventario}" agregado.`, 'success');
+        } catch (err) {
+            showCopyMsg(`No se pudo guardar el ejemplar. ${err.message}`, 'danger');
+        } finally {
+            copySubmitBtn.disabled = false;
+            copySubmitBtn.removeAttribute('aria-busy');
+        }
+    });
 
     formulario.addEventListener('submit', async evento => {
         evento.preventDefault();
@@ -129,8 +391,10 @@
             autorIds: [...formulario.elements.namedItem('autorIds').selectedOptions].map(o => Number(o.value)),
             categoriaIds: [...formulario.elements.namedItem('categoriaIds').selectedOptions].map(o => Number(o.value))
         };
+        const editSubmitBtn = document.getElementById('edit-book-submit');
+        if (editSubmitBtn) { editSubmitBtn.disabled = true; editSubmitBtn.setAttribute('aria-busy', 'true'); editSubmitBtn.textContent = 'Guardando cambios…'; }
         mensaje.hidden = false;
-        mensaje.className = 'alert alert-info';
+        mensaje.className = 'alert alert-info ed-notice py-2 mb-4';
         mensaje.textContent = 'Guardando cambios…';
         try {
             const respuesta = await fetch(`${apiLibrosUrl}/${encodeURIComponent(idLibro)}`, {
@@ -141,12 +405,13 @@
             if (!respuesta.ok) throw new Error(await mensajeErrorApi(respuesta));
             window.location.assign(listaLibrosUrl);
         } catch (error) {
-            mensaje.className = 'alert alert-danger';
+            mensaje.className = 'alert alert-danger py-2 mb-4';
             mensaje.textContent = `No se pudieron guardar los cambios. ${error.message}`;
+            if (editSubmitBtn) { editSubmitBtn.disabled = false; editSubmitBtn.removeAttribute('aria-busy'); editSubmitBtn.textContent = 'Guardar cambios'; }
         }
     });
 
     cargarLibro();
 </script>
-</body>
+</div></div></body>
 </html>

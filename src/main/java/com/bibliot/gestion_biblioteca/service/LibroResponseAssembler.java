@@ -35,16 +35,23 @@ public class LibroResponseAssembler {
         List<Integer> idsAutores = relacionesAutor.stream().map(a -> a.getAutor().getIdAutor()).toList();
         List<String> nombresCategorias = relacionesCategoria.stream().map(c -> c.getCategoria().getNombre()).toList();
         List<Integer> idsCategorias = relacionesCategoria.stream().map(c -> c.getCategoria().getIdCategoria()).toList();
-        boolean tieneDigital = digitales.findByLibroIdLibro(libro.getIdLibro()).isPresent();
-        boolean tieneFisico = !ejemplares.findByLibroIdLibro(libro.getIdLibro()).isEmpty();
+        var digital = digitales.findByLibroIdLibro(libro.getIdLibro()).orElse(null);
+        boolean tieneDigital = digital != null;
+        var listaEjemplares = ejemplares.findByLibroIdLibro(libro.getIdLibro());
+        boolean tieneFisico = !listaEjemplares.isEmpty();
+        int disponibles = ejemplares.countDisponiblesByLibroId(libro.getIdLibro());
         List<String> formatos = new ArrayList<>();
         if (tieneFisico) formatos.add("Físico");
         if (tieneDigital) formatos.add("Digital");
         Response base = Response.desde(libro);
+        String estadoEfectivo = (tieneFisico && !tieneDigital && disponibles == 0)
+                ? "No disponible"
+                : base.estado();
         return new Response(base.idLibro(), base.titulo(), base.isbn(), base.paginas(), base.fechaPublicacion(),
-                base.estado(), base.descripcion(), base.contenidoTexto(), base.idEditorial(), base.editorial(),
+                estadoEfectivo, base.descripcion(), base.contenidoTexto(), base.imagenUrl(),
+                digital == null ? null : digital.getArchivoUrl(), base.idEditorial(), base.editorial(),
                 nombresAutores, idsAutores, nombresCategorias, idsCategorias,
-                formatos.isEmpty() ? "Sin ejemplares" : String.join(" / ", formatos), ejemplares.findByLibroIdLibro(libro.getIdLibro()).size());
+                formatos.isEmpty() ? "Sin ejemplares" : String.join(" / ", formatos), disponibles);
     }
 
     public List<Response> desdeTodos(List<Libro> libros) {

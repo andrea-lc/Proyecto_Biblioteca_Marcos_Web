@@ -22,6 +22,7 @@ public final class LibroDtos {
 
     public record Response(Integer idLibro, String titulo, String isbn, Integer paginas,
             LocalDate fechaPublicacion, String estado, String descripcion, String contenidoTexto,
+            String imagenUrl, String archivoUrl,
             Integer idEditorial, EditorialResponse editorial, List<String> autores,
             List<Integer> autorIds, List<String> categorias, List<Integer> categoriaIds,
             String formato, int cantidadEjemplares) {
@@ -30,8 +31,12 @@ public final class LibroDtos {
                     : new EditorialResponse(libro.getEditorial().getIdEditorial(), libro.getEditorial().getNombre());
             return new Response(libro.getIdLibro(), libro.getTitulo(), libro.getIsbn(), libro.getPaginas(),
                     libro.getFechaPublicacion(), libro.getEstado(), libro.getDescripcion(), libro.getContenidoTexto(),
+                    libro.getImagenUrl(), null,
                     editorial == null ? null : editorial.idEditorial(), editorial,
                     List.of(), List.of(), List.of(), List.of(), "", 0);
         }
     }
+
+    public record PageResponse(List<Response> content, int page, int size, long totalElements,
+            int totalPages, boolean first, boolean last) {}
 }

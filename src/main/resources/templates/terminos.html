@@ -10,7 +10,48 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
-<body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/index}">Bibliot.</a><a class="nav-link text-dark" th:href="@{/registro}">Volver al registro</a></div></header>
-<main class="container py-5"><div class="row justify-content-center"><article class="col-12 col-lg-8"><p class="text-secondary mb-1">Información legal</p><h1 class="h2 mb-4">Términos y condiciones</h1><div class="alert alert-warning" role="status">El contenido debe ser revisado y aprobado por la institución antes de publicarse.</div><section class="mb-4"><h2 class="h5">Uso de la biblioteca</h2><p class="text-secondary">Las condiciones de uso todavía no están definidas para esta maqueta.</p></section><section class="mb-4"><h2 class="h5">Préstamos y devoluciones</h2><p class="text-secondary">Los plazos, renovaciones, reservas y posibles sanciones deben confirmarse con la biblioteca.</p></section><section><h2 class="h5">Privacidad</h2><p class="text-secondary">La institución debe indicar qué datos se recopilan, cómo se usan y cómo solicitar su actualización o eliminación.</p></section></article></div></main>
+<body class="ed-portal-page">
+<header class="navbar ed-portal-navbar">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/index}">Bibliot.</a>
+        <a class="nav-link" th:href="@{/registro}">Volver al registro</a>
+    </div>
+</header>
+<main class="ed-portal-main">
+    <div class="container">
+        <div class="row justify-content-center">
+            <article class="col-12 col-lg-8">
+                <div class="ed-page-header ed-enter">
+                    <div>
+                        <h1 class="page-heading">Términos y condiciones</h1>
+                        <p class="ed-page-subtitle">Información legal de la biblioteca.</p>
+                    </div>
+                </div>
+                <nav aria-label="Índice de secciones">
+                    <ul class="ed-portal-toc ed-enter" data-stagger="1">
+                        <li><a href="#uso-biblioteca">Uso de la biblioteca</a></li>
+                        <li><a href="#prestamos-devoluciones">Préstamos y devoluciones</a></li>
+                        <li><a href="#privacidad">Privacidad</a></li>
+                    </ul>
+                </nav>
+                <div class="alert alert-warning mb-4 ed-enter" data-stagger="1" role="status">El contenido debe ser revisado y aprobado por la institución antes de publicarse.</div>
+                <div class="ed-card ed-enter" data-stagger="2">
+                    <section class="ed-legal-section" id="uso-biblioteca">
+                        <h2>Uso de la biblioteca</h2>
+                        <p>Las condiciones de uso todavía no están definidas para esta maqueta.</p>
+                    </section>
+                    <section class="ed-legal-section" id="prestamos-devoluciones">
+                        <h2>Préstamos y devoluciones</h2>
+                        <p>Los plazos, renovaciones, reservas y posibles sanciones deben confirmarse con la biblioteca.</p>
+                    </section>
+                    <section class="ed-legal-section" id="privacidad">
+                        <h2>Privacidad</h2>
+                        <p>La institución debe indicar qué datos se recopilan, cómo se usan y cómo solicitar su actualización o eliminación.</p>
+                    </section>
+                </div>
+            </article>
+        </div>
+    </div>
+</main>
 </body>
 </html>

@@ -1,16 +1,104 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <base th:href="@{/}">
     <script th:replace="~{auth :: auth}"></script>
     <title>Lector digital | Bibliot.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=arrow_back,download">
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
-<body><header class="navbar bg-body-tertiary border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/index}">Bibliot.</a><a class="nav-link text-dark" th:href="@{/explorar}">Volver a explorar</a></div></header>
-<main class="container py-4 py-lg-5"><div class="row justify-content-center"><div class="col-12 col-xl-10"><div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"><div><p class="text-secondary mb-1">Lectura digital</p><h1 class="h2 mb-0">Argonauta</h1><p class="mb-0">Apolonio de Rodas</p></div><a class="btn btn-outline-secondary" th:href="@{/detalle_virtual}">Volver al libro</a></div><div class="alert alert-warning" role="status">El archivo digital no está disponible todavía. No hay un libro cargado para leer.</div><section class="bg-light border rounded-3 p-4 p-lg-5 text-center"><p class="display-4 text-secondary mb-2" aria-hidden="true">▤</p><h2 class="h5">El lector aparecerá aquí</h2><p class="text-secondary mb-0">Cuando se conecte el archivo del libro, podrás continuar la lectura en esta página.</p></section></div></div></main>
+<body class="ed-portal-page">
+<header class="navbar ed-portal-navbar">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/index}">Bibliot.</a>
+        <a class="ed-topbar-back" id="back-to-book" th:href="@{/explorar}"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>Volver al libro</a>
+    </div>
+</header>
+<main class="ed-portal-main">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-xl-10">
+                <div class="ed-page-header ed-enter">
+                    <div>
+                        <h1 class="page-heading" id="reader-title">Cargando libro…</h1>
+                        <p class="ed-page-subtitle" id="reader-authors"></p>
+                    </div>
+                    <a class="btn btn-outline-secondary" id="download-pdf" href="#" hidden><span class="material-symbols-outlined" aria-hidden="true">download</span>Descargar PDF</a>
+                </div>
+                <div class="alert alert-info mb-4" id="reader-message" role="status" aria-live="polite">Buscando el archivo del libro…</div>
+                <iframe id="pdf-reader" class="ed-reader-frame ed-enter" data-stagger="1" title="Lector de libro en PDF" width="100%" height="820" hidden></iframe>
+            </div>
+        </div>
+    </div>
+</main>
+<script th:inline="javascript">
+    const bookApi = /*[[@{/api/catalogo/libros}]]*/ "/api/catalogo/libros";
+    const detailBase = /*[[@{/detalle-virtual}]]*/ "/detalle-virtual";
+    function resolverUrlPdf(archivoUrl, idLibro) {
+        const archivo = new URL(archivoUrl, window.location.href);
+        if (archivo.pathname.startsWith("/uploads/pdfs/")) {
+            return `${bookApi}/${encodeURIComponent(idLibro)}/pdf`;
+        }
+        if (archivo.protocol !== "http:" && archivo.protocol !== "https:") {
+            throw new Error("La URL del PDF no usa un protocolo HTTP válido.");
+        }
+        return archivo.href;
+    }
+    (async () => {
+        const id = new URLSearchParams(location.search).get("id");
+        const message = document.getElementById("reader-message");
+        const frame = document.getElementById("pdf-reader");
+        if (!id) {
+            message.className = "alert alert-warning";
+            message.textContent = "Falta el identificador del libro en la dirección.";
+            return;
+        }
+        try {
+            const response = await fetch(`${bookApi}/${encodeURIComponent(id)}`, { headers: { Accept: "application/json" } });
+            if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+            const book = await response.json();
+            document.title = `${book.titulo || "Libro digital"} | Bibliot.`;
+            document.getElementById("reader-title").textContent = book.titulo || "Libro sin título";
+            document.getElementById("reader-authors").textContent = (book.autores || []).join(", ");
+            document.getElementById("back-to-book").href = `${detailBase}?id=${encodeURIComponent(book.idLibro)}`;
+            if (!book.archivoUrl) {
+                message.className = "alert alert-warning";
+                message.textContent = "Este libro no tiene un PDF disponible para lectura online.";
+                return;
+            }
+            const pdfUrl = resolverUrlPdf(book.archivoUrl, book.idLibro);
+            message.className = "alert alert-info";
+            message.textContent = "Comprobando el archivo PDF…";
+            const pdfCheck = await fetch(pdfUrl, {
+                headers: { Accept: "application/pdf", Range: "bytes=0-4" }
+            });
+            if (!pdfCheck.ok) {
+                throw new Error(`El servidor no encontró el PDF (HTTP ${pdfCheck.status}).`);
+            }
+            const contentType = pdfCheck.headers.get("Content-Type") || "";
+            if (!contentType.toLowerCase().includes("application/pdf")) {
+                throw new Error(`El servidor devolvió un tipo de archivo inesperado: ${contentType || "desconocido"}.`);
+            }
+            await pdfCheck.body?.cancel();
+            frame.src = pdfUrl;
+            frame.title = `Lector PDF: ${book.titulo || "libro"}`;
+            frame.hidden = false;
+            const download = document.getElementById("download-pdf");
+            download.href = pdfUrl;
+            download.hidden = false;
+            message.hidden = true;
+        } catch (error) {
+            frame.hidden = true;
+            message.className = "alert alert-danger";
+            message.textContent = `No se pudo mostrar el PDF. ${error.message}`;
+        }
+    })();
+</script>
 </body>
 </html>

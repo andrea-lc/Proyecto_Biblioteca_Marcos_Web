@@ -124,49 +124,22 @@ Los espacios usan valores responsivos mediante `clamp()` y el sistema de rejilla
 
 ## Elevation & Depth
 
-Las tarjetas usan sombras suaves pero perceptibles para separarse del fondo, con bordes cálidos como apoyo. Los campos permanecen planos y usan borde y tratamiento de foco. El foco visible se expresa con un contorno contrastado separado de las sombras de elevación.
+El panel administrativo prioriza **bordes finos de `1px`** (`--border-hairline: #ded8ce`) sobre superficies crema tipo papel (`--surface-card: #fffdf9` sobre `--surface-paper: #f7f1e7`) en lugar de sombras pesadas. Las sombras quedan reducidas a un anclaje mínimo (`--shadow-subtle: 0 1px 2px rgba(36, 31, 26, 0.04)`) y a capas flotantes como modales o popovers (`--shadow-popover`). El foco visible usa `outline: 2px solid var(--accent-deep)` con `outline-offset: 2px` y `--focus-ring`.
 
-### Shadow Vocabulary
-- **Tarjeta suave** (`0 2px 8px rgb(33 27 22 / 5%)`): paneles de perfil y superficies de datos.
-- **Tarjeta elevada** (`0 8px 24px rgba(47, 39, 28, .06)`): tarjetas Bootstrap en páginas con fondo cálido.
-- **Foco de campo** (`0 0 0 .2rem rgba(120, 107, 85, .2)`): estado de foco en campos; acompáñalo del borde de acento.
+### Design Tokens (`:root` en `bibliot.css`)
+- **Superficies:** `--surface-paper` (`#f7f1e7`), `--surface-paper-deep` (`#f0e7d8`), `--surface-card` (`#fffdf9`), `--surface-subtle` (`#f4eee3`), `--surface-hover` (`#efe7d9`).
+- **Tinta y acentos:** `--ink-primary` (`#241f1a`), `--ink-secondary` (`#3f3830`), `--ink-slate` (`#58636d`), `--accent` (`#786b55`), `--accent-deep` (`#665941`), `--accent-darker` (`#524733`).
+- **Estados semánticos (contraste ≥ 4.5:1):** `--status-success-*`, `--status-info-*`, `--status-warning-*`, `--status-danger-*`, `--status-neutral-*`.
+- **Radios y movimiento:** `--radius-control` (`8px`), `--radius-card` (`10px`), `--radius-lg` (`12px`), `--radius-pill` (`999px`); `--ease-out` (`cubic-bezier(0.23, 1, 0.32, 1)`), `--dur-fast` (`150ms`), `--dur-base` (`200ms`), `--dur-slow` (`250ms`).
 
-**The Card-Only Elevation Rule.** Reserva las sombras de elevación para tarjetas y paneles; no conviertas cada campo o sección en una superficie flotante.
+## Components (Sistema `.ed-*` — Panel y Portal)
 
-## Shapes
+Todos los componentes del panel administrativo y del portal público están centralizados en `src/main/resources/static/css/bibliot.css` bajo tokens compartidos `:root`, sin estilos inline ni duplicados en HTML:
 
-La forma es compacta y funcional: controles y portadas suelen tener esquinas pequeñas, mientras que navegación y tarjetas usan radios moderados. Los indicadores de estado pueden usar forma de píldora. Los bordes son finos y cálidos; el foco visible tiene un contorno más amplio y separado para seguir siendo reconocible.
-
-## Components
-
-Los componentes son cálidos y contenidos: su forma acompaña la tarea y deja protagonismo al título, la portada o los datos.
-
-### Buttons
-- **Shape:** esquinas compactas (5px).
-- **Primary:** acento topo, texto blanco y altura mínima de 38px.
-- **Book-form action:** variante arena más oscura, texto blanco y altura mínima de 42px.
-- **Hover / Focus:** el botón primario oscurece su fondo; el foco usa contorno visible con separación.
-- **Secondary:** contorno o estilo Bootstrap para acciones de retorno y cancelación.
-
-### Cards / Containers
-- **Corner Style:** radio moderado (8px) para tarjetas de datos; las portadas usan esquinas compactas (4px).
-- **Background:** blanco sobre fondos cálidos o superficies claras.
-- **Shadow Strategy:** sombra suave pero perceptible para elevar tarjetas; véase Elevation & Depth.
-- **Border:** borde cálido y discreto cuando la superficie lo necesita.
-- **Internal Padding:** alrededor de 24px en tarjetas de datos; se reduce en móvil.
-
-### Inputs / Fields
-- **Style:** fondo claro, borde arena, esquinas compactas (3–6px según la vista) y altura aproximada de 42–44px.
-- **Focus:** borde de acento, halo suave y contorno visible separado.
-- **Error / Disabled:** conserva la estructura del control y comunica el estado con colores semánticos o menor opacidad; no uses solo color si el estado afecta una acción.
-
-### Navigation
-- **Style:** navegación lateral en escritorio para administración y catálogo, con el acento topo en el elemento activo.
-- **Mobile:** las barras laterales se convierten en filas horizontales; la navegación administrativa puede desplazarse horizontalmente y la navegación inferior del catálogo se oculta.
-- **Typography:** DM Sans, con contraste de peso y fondo en el estado activo.
-
-### Book Covers
-- Las portadas mantienen proporción vertical, borde discreto y radio compacto. En catálogo forman una cuadrícula; en el detalle se integran en un resumen de libro junto con autor y metadatos.
+- **Panel administrativo (`.admin-body`):** `.admin-sidebar` (pergamino profundo `#f0e7d8` con borde `1px`), `.admin-topbar` (translúcida fija con `backdrop-filter: blur(8px)`), `.ed-topbar-back`, `.ed-breadcrumb`, `.ed-page-header`, `.ed-card` / `.report-card`, `.ed-tabs`, `.ed-toolbar`, `.ed-table-wrap` (`tabindex="0" role="region"`, `thead` `position: sticky`, `tabular-nums`), `.ed-row-actions` (visibles en `:hover`, `:focus-within` y `@media (hover: none)`), `.ed-form-shell` / `.ed-form-card` / `.ed-form-section` / `.ed-form-footer`, `.ed-skeleton--*`, `.ed-empty` y `.ed-enter`.
+- **Portal del lector (`.catalog-body` y `.ed-portal-page`):** `.catalog-sidebar`, `.catalog-topbar`, `.catalog-hero` con titular `Playfair Display`, `.catalog-search`, `.category-strip` deslizable (`scroll-snap-type`), tarjetas de libro `.featured-book` / `.explore-book` con portada `2:3` y elevación sutil al hover (`@media (hover: hover)`), `.ed-filter-panel`, ficha de detalle `.book-summary`, `.ed-portal-navbar`, `.ed-dl`, `.ed-reader-frame`, `.ed-accordion`, `.ed-portal-toc`, `.ed-legal-section`, `.ed-portal-empty-card` y `.bibliot-notifications-dialog` armonizado para el portal.
+- **Acceso y errores (`.ed-auth-page` / `.ed-error-code`):** `.ed-auth-card` con etiquetas visibles, mensajes de error junto al campo, estados `hover` / `focus-visible` / `disabled` / `aria-busy`, y páginas `404` / `403` sobre `.ed-portal-empty-card`.
+- **Micro-interacciones y accesibilidad:** Respuesta táctil `:active { transform: scale(0.97) }`, hover condicionado a `@media (hover: hover) and (pointer: fine)`, foco visible de alto contraste, `font-variant-numeric: tabular-nums` en cifras y fechas, y respeto estricto de `@media (prefers-reduced-motion: reduce)`.
 
 ## Do's and Don'ts
 

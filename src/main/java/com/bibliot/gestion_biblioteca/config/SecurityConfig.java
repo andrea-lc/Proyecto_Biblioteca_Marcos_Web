@@ -34,6 +34,8 @@ public class SecurityConfig {
         http
                 // La autenticación se realizará mediante JWT
                 .csrf(csrf -> csrf.disable())
+                // Permite al lector digital incrustar el PDF desde este mismo sitio.
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 // No se almacenan sesiones en el servidor
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -43,6 +45,10 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable())
                 // Reglas de autorización
                 .authorizeHttpRequests(auth -> auth
+
+                        // Actuator: health visible únicamente para administradores
+                        .requestMatchers("/actuator/**")
+                        .hasRole("ADMINISTRADOR")
 
                         // Login y registro públicos
                         .requestMatchers("/auth/**").permitAll()

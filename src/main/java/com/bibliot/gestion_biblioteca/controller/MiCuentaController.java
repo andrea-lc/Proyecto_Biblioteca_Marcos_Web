@@ -52,7 +52,7 @@ public class MiCuentaController {
         Usuario u = actual(auth);
         return prestamos.findByUsuarioIdUsuario(u.getIdUsuario()).stream()
                 .sorted(Comparator.comparing(Prestamo::getFechaPrestamo,
-                        Comparator.nullsLast(Comparator.reverseOrder())))
+                        Comparator.nullsFirst(Comparator.reverseOrder())))
                 .map(p -> new PrestamoVista(
                         p.getIdPrestamo(),
                         p.getEjemplar() != null && p.getEjemplar().getLibro() != null

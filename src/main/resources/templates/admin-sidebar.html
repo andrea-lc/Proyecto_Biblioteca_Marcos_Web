@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="sidebar(active)" class="admin-sidebar">
+    <a class="admin-brand" th:href="@{/dashboard}">Bibliot.</a>
+    <nav class="admin-nav" aria-label="Navegación principal">
+        <a th:href="@{/dashboard}" th:classappend="${active == 'reportes'} ? 'active' : ''" th:attr="aria-current=${active == 'reportes' ? 'page' : null}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">query_stats</span>Reportes</a>
+        <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/libros}" th:classappend="${active == 'libros'} ? 'active' : ''" th:attr="aria-current=${active == 'libros' ? 'page' : null}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">menu_book</span>Libros</a>
+        <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/prestamos}" th:classappend="${active == 'prestamos'} ? 'active' : ''" th:attr="aria-current=${active == 'prestamos' ? 'page' : null}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">swap_horiz</span>Préstamos y reservas</a>
+        <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/autores}" th:classappend="${active == 'autores'} ? 'active' : ''" th:attr="aria-current=${active == 'autores' ? 'page' : null}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">edit_note</span>Autores</a>
+        <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/editoriales}" th:classappend="${active == 'editoriales'} ? 'active' : ''" th:attr="aria-current=${active == 'editoriales' ? 'page' : null}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">business</span>Editoriales</a>
+        <a data-roles="ADMINISTRADOR,BIBLIOTECARIO" th:href="@{/usuarios}" th:classappend="${active == 'usuarios'} ? 'active' : ''" th:attr="aria-current=${active == 'usuarios' ? 'page' : null}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">groups</span>Usuarios</a>
+        <a data-roles="ADMINISTRADOR" th:href="@{/configuracion}" th:classappend="${active == 'ajustes'} ? 'active' : ''" th:attr="aria-current=${active == 'ajustes' ? 'page' : null}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">settings</span>Ajustes</a>
+    </nav>
+    <div class="admin-sidebar-footer">
+        <a class="sidebar-home-link" th:href="@{/index}"><span class="nav-icon material-symbols-outlined" aria-hidden="true">home</span><span>Regresar a la página principal</span></a>
+        <a class="signout-link" th:href="@{/logout}" data-logout><span class="nav-icon material-symbols-outlined" aria-hidden="true">logout</span><span>Cerrar sesión</span></a>
+    </div>
+</aside>
+</body>
+</html>

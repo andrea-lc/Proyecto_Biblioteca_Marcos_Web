@@ -59,54 +59,146 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_circle,add,admin_panel_settings,arrow_back,business,delete,edit_note,groups,home,logout,menu_book,notifications,query_stats,settings,swap_horiz,upload_file">
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
-<body class="admin-body">
-<main class="new-book-page">
-    <header class="new-book-header"><a th:href="@{/libros}" class="back-link" aria-label="Volver a libros">‹</a><h1>Agregar un nuevo libro</h1><div class="new-book-actions"><a class="btn btn-brand" th:href="@{/libros}">Cancelar</a><button class="btn btn-sand" type="submit" form="book-form">Guardar libro</button></div></header>
-    <div class="alert alert-info py-2 small mt-3" id="form-message" role="status" hidden></div>
-    <form id="book-form" class="new-book-form">
-        <section class="cover-column"><label class="form-section-title">Portada</label><div class="cover-upload"><span>Portada</span><small>La API actual todavía no guarda imágenes.</small></div></section>
-        <section class="book-fields"><h2 class="form-section-title">Información del libro</h2>
-            <div class="book-form-grid">
-                <div class="book-field field-wide"><label for="title">Título <span>*</span></label><input id="title" name="titulo" class="form-control" type="text" maxlength="255" placeholder="Título del libro" required></div>
-                <div class="book-field"><label for="isbn">ISBN</label><input id="isbn" name="isbn" class="form-control" type="text" placeholder="ISBN del libro"></div>
-                <div class="book-field"><label for="pages">N.º de páginas</label><div class="input-with-action"><input id="pages" name="paginas" type="number" min="1" class="form-control" placeholder="Cantidad de páginas"><span class="field-plus">＋</span></div></div>
-                <div class="book-field"><label for="publication">Fecha de publicación</label><input id="publication" name="fechaPublicacion" class="form-control" type="date"></div>
-                <div class="book-field"><label for="status">Estado</label><select id="status" name="estado" class="form-select"><option value="">Seleccionar estado</option><option value="Disponible">Disponible</option><option value="No disponible">No disponible</option></select></div>
-                <div class="book-field">
-                    <label for="publisher">Editorial</label>
-                    <div class="d-flex flex-wrap align-items-start gap-2">
-                        <select id="publisher" name="idEditorial" class="form-select flex-grow-1"><option value="">Seleccionar editorial</option></select>
-                        <button class="btn btn-outline-secondary btn-sm text-nowrap" type="button" data-bs-toggle="modal" data-bs-target="#createEditorialModal">Crear editorial</button>
+<body class="admin-body"><div class="admin-layout"><aside th:replace="~{admin-sidebar :: sidebar('libros')}" class="admin-sidebar"></aside><div class="admin-main">
+<header class="admin-topbar">
+    <a class="ed-topbar-back" th:href="@{/libros}"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>Volver a libros</a>
+    <div class="topbar-actions">
+        <button class="round-action" type="button" aria-label="Notificaciones"><span class="material-symbols-outlined" aria-hidden="true">notifications</span></button>
+        <a class="round-action user-action" th:href="@{/perfil}" aria-label="Mi cuenta"><span class="material-symbols-outlined" aria-hidden="true">account_circle</span></a>
+    </div>
+</header>
+<main class="ed-form-shell">
+    <nav class="ed-breadcrumb" aria-label="Migas de pan"><a th:href="@{/libros}">Libros</a><span aria-hidden="true">/</span><span aria-current="page">Agregar libro</span></nav>
+    <div class="ed-page-header ed-enter">
+        <div>
+            <h1 class="page-heading">Agregar un nuevo libro</h1>
+            <p class="ed-page-subtitle">Registra los datos bibliográficos, la portada y el archivo digital opcional.</p>
+        </div>
+    </div>
+    <div class="alert alert-info ed-notice py-2 small mb-4" id="form-message" role="status" aria-live="polite" hidden></div>
+    <form id="book-form" class="ed-book-layout ed-enter" data-stagger="1" enctype="multipart/form-data" aria-labelledby="book-form-title">
+        <aside class="ed-card p-4 ed-cover-aside">
+            <h2 class="ed-form-section-title text-center" id="cover-heading">Portada</h2>
+            <p class="ed-form-section-desc text-center">Imagen opcional para el catálogo.</p>
+            <label class="cover-upload" for="cover-image">
+                <img id="cover-preview" alt="Vista previa de la portada seleccionada" hidden>
+                <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
+                <span id="cover-label">Seleccionar portada</span>
+                <small id="cover-help">JPEG, PNG o WebP · máximo 5 MB</small>
+                <input class="visually-hidden" id="cover-image" name="imagen" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="cover-help">
+            </label>
+        </aside>
+        <div class="ed-form-card">
+            <div class="ed-form-body">
+                <section class="ed-form-section" aria-labelledby="book-form-title">
+                    <h2 class="ed-form-section-title" id="book-form-title">Datos principales</h2>
+                    <p class="ed-form-section-desc">Título, autoría, clasificación y sinopsis del ejemplar.</p>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="title">Título <span class="text-danger" aria-hidden="true">*</span></label>
+                            <input id="title" name="titulo" class="form-control" type="text" maxlength="255" placeholder="Título del libro" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="authors">Autores</label>
+                            <div class="d-flex flex-column gap-2">
+                                <select id="authors" name="autorIds" class="form-select" multiple required aria-describedby="authors-help"></select>
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                    <small id="authors-help" class="form-text m-0">Selecciona al menos uno. Puedes elegir más de uno.</small>
+                                    <button class="btn btn-outline-secondary btn-sm text-nowrap" type="button" data-bs-toggle="modal" data-bs-target="#createAuthorModal"><span class="material-symbols-outlined" aria-hidden="true">add</span>Crear autor</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="categories">Categorías</label>
+                            <div class="d-flex flex-column gap-2">
+                                <select id="categories" name="categoriaIds" class="form-select" multiple required aria-describedby="categories-help"></select>
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                    <small id="categories-help" class="form-text m-0">Selecciona al menos una. Puedes elegir más de una.</small>
+                                    <button class="btn btn-outline-secondary btn-sm text-nowrap" type="button" data-bs-toggle="modal" data-bs-target="#createCategoryModal"><span class="material-symbols-outlined" aria-hidden="true">add</span>Crear categoría</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="description">Descripción</label>
+                            <textarea id="description" name="descripcion" class="form-control description-field" maxlength="5000" placeholder="Sinopsis del libro"></textarea>
+                        </div>
                     </div>
-                </div>
-                <div class="book-field">
-                    <label for="authors">Autores</label>
-                    <div class="d-flex flex-wrap align-items-start gap-2">
-                        <select id="authors" name="autorIds" class="form-select flex-grow-1" multiple required aria-describedby="authors-help"></select>
-                        <button class="btn btn-outline-secondary btn-sm text-nowrap" type="button" data-bs-toggle="modal" data-bs-target="#createAuthorModal">Crear autor</button>
+                </section>
+
+                <section class="ed-form-section" aria-labelledby="publication-section-title">
+                    <h2 class="ed-form-section-title" id="publication-section-title">Publicación e inventario</h2>
+                    <p class="ed-form-section-desc">Identificadores editoriales, extensión y disponibilidad inicial.</p>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="isbn">ISBN</label>
+                            <input id="isbn" name="isbn" class="form-control" type="text" placeholder="ISBN del libro">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="publisher">Editorial</label>
+                            <div class="d-flex flex-wrap align-items-start gap-2">
+                                <select id="publisher" name="idEditorial" class="form-select flex-grow-1"><option value="">Seleccionar editorial</option></select>
+                                <button class="btn btn-outline-secondary btn-sm text-nowrap" type="button" data-bs-toggle="modal" data-bs-target="#createEditorialModal"><span class="material-symbols-outlined" aria-hidden="true">add</span>Crear editorial</button>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="publication">Fecha de publicación</label>
+                            <input id="publication" name="fechaPublicacion" class="form-control" type="date">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="pages">N.º de páginas</label>
+                            <input id="pages" name="paginas" type="number" min="1" class="form-control" placeholder="Cantidad de páginas">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="status">Estado</label>
+                            <select id="status" name="estado" class="form-select"><option value="">Seleccionar estado</option><option value="Disponible">Disponible</option><option value="No disponible">No disponible</option></select>
+                        </div>
                     </div>
-                    <small id="authors-help" class="text-secondary">Selecciona al menos uno. Puedes elegir más de uno.</small>
-                </div>
-                <div class="book-field">
-                    <label for="categories">Categorías</label>
-                    <div class="d-flex flex-wrap align-items-start gap-2">
-                        <select id="categories" name="categoriaIds" class="form-select flex-grow-1" multiple required aria-describedby="categories-help"></select>
-                        <button class="btn btn-outline-secondary btn-sm text-nowrap" type="button" data-bs-toggle="modal" data-bs-target="#createCategoryModal">Crear categoría</button>
+                </section>
+
+                <section class="ed-form-section" aria-labelledby="copies-section-title">
+                    <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-3">
+                        <div>
+                            <h2 class="ed-form-section-title" id="copies-section-title">Ejemplares físicos</h2>
+                            <p class="ed-form-section-desc mb-0">Agrega uno o más ejemplares físicos para habilitar reservas y préstamos en biblioteca.</p>
+                        </div>
+                        <button class="btn btn-outline-secondary btn-sm text-nowrap" id="add-copy-btn" type="button">
+                            <span class="material-symbols-outlined" aria-hidden="true">add</span>Agregar ejemplar
+                        </button>
                     </div>
-                    <small id="categories-help" class="text-secondary">Selecciona al menos una. Puedes elegir más de una.</small>
-                </div>
-                <div class="book-field"><label>Archivo PDF</label><div class="file-pick text-secondary">La API actual no guarda archivos</div></div>
-                <div class="book-field field-wide"><label for="description">Descripción</label><textarea id="description" name="descripcion" class="form-control description-field" maxlength="5000" placeholder="Sinopsis del libro"></textarea></div>
-                <div class="book-field field-wide"><label for="contentText">Contenido de lectura</label><textarea id="contentText" name="contenidoTexto" class="form-control description-field" rows="6" placeholder="Texto digital del libro (opcional)"></textarea></div>
+                    <p class="form-text mb-0" id="copies-empty">No se han añadido ejemplares físicos. Puedes agregarlos ahora o después al editar el libro.</p>
+                    <div id="copies-list"></div>
+                </section>
+
+                <section class="ed-form-section" aria-labelledby="digital-section-title">
+                    <h2 class="ed-form-section-title" id="digital-section-title">Archivo digital y lectura</h2>
+                    <p class="ed-form-section-desc">Adjunta un PDF o añade texto directo para la lectura en línea.</p>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="book-pdf">Archivo digital PDF</label>
+                            <input class="form-control" id="book-pdf" name="archivoPdf" type="file" accept="application/pdf,.pdf" aria-describedby="pdf-help">
+                            <div class="form-text" id="pdf-help">Hasta 50 MB. El texto se extraerá para habilitar la búsqueda de contenido.</div>
+                            <div class="form-text" id="pdf-filename">No se ha seleccionado un archivo.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="contentText">Contenido de lectura</label>
+                            <textarea id="contentText" name="contenidoTexto" class="form-control description-field" rows="6" placeholder="Texto digital del libro (opcional)"></textarea>
+                        </div>
+                    </div>
+                </section>
             </div>
-        </section>
+            <div class="ed-form-footer">
+                <a class="btn btn-outline-secondary" th:href="@{/libros}">Cancelar</a>
+                <button class="btn btn-sand" id="save-book-button" type="submit">Guardar libro</button>
+            </div>
+        </div>
     </form>
 </main>
 <div class="modal fade" id="createEditorialModal" tabindex="-1" aria-labelledby="createEditorialTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border rounded-3 shadow-sm">
+        <div class="modal-content border rounded-3">
             <form id="createEditorialForm" novalidate>
                 <div class="modal-header border-0 pb-0">
                     <h2 class="modal-title fs-5" id="createEditorialTitle">Crear editorial</h2>
@@ -143,7 +235,7 @@
 
 <div class="modal fade" id="createAuthorModal" tabindex="-1" aria-labelledby="createAuthorTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content border rounded-3 shadow-sm">
+        <div class="modal-content border rounded-3">
             <form id="createAuthorForm" novalidate>
                 <div class="modal-header border-0 pb-0">
                     <h2 class="modal-title fs-5" id="createAuthorTitle">Crear autor</h2>
@@ -184,7 +276,7 @@
 
 <div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border rounded-3 shadow-sm">
+        <div class="modal-content border rounded-3">
             <form id="createCategoryForm" novalidate>
                 <div class="modal-header border-0 pb-0">
                     <h2 class="modal-title fs-5" id="createCategoryTitle">Crear categoría</h2>
@@ -213,15 +305,28 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
     const apiLibrosUrl = /*[[@{/api/admin/libros}]]*/ '/api/admin/libros';
     const listaLibrosUrl = /*[[@{/libros}]]*/ '/libros';
     const apiEditorialesUrl = /*[[@{/api/admin/editoriales}]]*/ '/api/admin/editoriales';
     const apiAutoresUrl = /*[[@{/api/admin/autores}]]*/ '/api/admin/autores';
     const apiCategoriasUrl = /*[[@{/api/admin/categorias}]]*/ '/api/admin/categorias';
+    const apiEjemplaresUrl = /*[[@{/api/admin/ejemplares}]]*/ '/api/admin/ejemplares';
+    const editarLibroUrl = /*[[@{/libros/editar}]]*/ '/libros/editar';
     const formularioLibro = document.getElementById('book-form');
     const mensajeFormulario = document.getElementById('form-message');
-    document.getElementById('publication').max = new Date().toISOString().slice(0, 10);
+    const portadaInput = document.getElementById('cover-image');
+    const pdfInput = document.getElementById('book-pdf');
+    const portadaPreview = document.getElementById('cover-preview');
+    const portadaLabel = document.getElementById('cover-label');
+    const pdfFilename = document.getElementById('pdf-filename');
+    const copiesList = document.getElementById('copies-list');
+    const copiesEmpty = document.getElementById('copies-empty');
+    const addCopyBtn = document.getElementById('add-copy-btn');
+    let portadaObjectUrl = null;
+    const hoyIso = new Date().toISOString().slice(0, 10);
+    document.getElementById('publication').max = hoyIso;
 
     const selectorAutores = document.getElementById('authors');
     const selectorCategorias = document.getElementById('categories');
@@ -232,6 +337,104 @@
     }
     configurarValidacion(selectorAutores, 'Selecciona al menos un autor.');
     configurarValidacion(selectorCategorias, 'Selecciona al menos una categoría.');
+
+    function actualizarEstadoListaEjemplares() {
+        copiesEmpty.hidden = copiesList.children.length > 0;
+    }
+
+    function crearFilaEjemplar() {
+        const idx = copiesList.children.length + 1;
+        const row = document.createElement('div');
+        row.className = 'ed-copy-row';
+        row.innerHTML = `
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-4">
+                    <label class="form-label small" for="copy-code-${idx}">Código de inventario <span class="text-danger" aria-hidden="true">*</span></label>
+                    <input class="form-control form-control-sm" id="copy-code-${idx}" data-copy-field="codigoInventario" type="text" maxlength="100" placeholder="Ej. LIB-00${idx}" required>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label small" for="copy-loc-${idx}">Ubicación</label>
+                    <input class="form-control form-control-sm" id="copy-loc-${idx}" data-copy-field="ubicacion" type="text" maxlength="100" placeholder="Ej. Estante A-2">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label small" for="copy-state-${idx}">Estado</label>
+                    <select class="form-select form-select-sm" id="copy-state-${idx}" data-copy-field="estado" required>
+                        <option value="Disponible" selected>Disponible</option>
+                        <option value="No disponible">No disponible</option>
+                        <option value="En reparación">En reparación</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label small" for="copy-date-${idx}">Adquisición</label>
+                    <input class="form-control form-control-sm" id="copy-date-${idx}" data-copy-field="fechaAdquisicion" type="date" max="${hoyIso}" value="${hoyIso}">
+                </div>
+                <div class="col-12 col-md-1 d-flex justify-content-end">
+                    <button class="btn btn-outline-danger btn-sm" type="button" data-remove-copy aria-label="Quitar ejemplar">
+                        <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+                    </button>
+                </div>
+            </div>`;
+        row.querySelector('[data-remove-copy]').addEventListener('click', () => {
+            row.remove();
+            actualizarEstadoListaEjemplares();
+        });
+        copiesList.append(row);
+        actualizarEstadoListaEjemplares();
+        row.querySelector('[data-copy-field="codigoInventario"]').focus();
+    }
+
+    function obtenerEjemplaresFormulario() {
+        return [...copiesList.querySelectorAll('.ed-copy-row')].map(row => ({
+            codigoInventario: row.querySelector('[data-copy-field="codigoInventario"]').value.trim(),
+            ubicacion: row.querySelector('[data-copy-field="ubicacion"]').value.trim() || null,
+            estado: row.querySelector('[data-copy-field="estado"]').value,
+            fechaAdquisicion: row.querySelector('[data-copy-field="fechaAdquisicion"]').value || null
+        }));
+    }
+
+    addCopyBtn.addEventListener('click', crearFilaEjemplar);
+
+    portadaInput.addEventListener('change', () => {
+        const archivo = portadaInput.files[0];
+        if (!archivo) {
+            if (portadaObjectUrl) URL.revokeObjectURL(portadaObjectUrl);
+            portadaObjectUrl = null;
+            portadaPreview.hidden = true;
+            portadaPreview.removeAttribute('src');
+            portadaLabel.textContent = 'Seleccionar portada';
+            return;
+        }
+        if (archivo.size > 5 * 1024 * 1024) {
+            portadaInput.setCustomValidity('La imagen no debe superar 5 MB.');
+            portadaInput.reportValidity();
+            portadaInput.value = '';
+            if (portadaObjectUrl) URL.revokeObjectURL(portadaObjectUrl);
+            portadaObjectUrl = null;
+            portadaPreview.hidden = true;
+            portadaPreview.removeAttribute('src');
+            portadaLabel.textContent = 'Seleccionar portada';
+            return;
+        }
+        portadaInput.setCustomValidity('');
+        if (portadaObjectUrl) URL.revokeObjectURL(portadaObjectUrl);
+        portadaObjectUrl = URL.createObjectURL(archivo);
+        portadaPreview.src = portadaObjectUrl;
+        portadaPreview.hidden = false;
+        portadaLabel.textContent = archivo.name;
+    });
+
+    pdfInput.addEventListener('change', () => {
+        const archivo = pdfInput.files[0];
+        if (archivo && archivo.size > 50 * 1024 * 1024) {
+            pdfInput.setCustomValidity('El PDF no debe superar 50 MB.');
+            pdfInput.reportValidity();
+            pdfInput.value = '';
+            pdfFilename.textContent = 'No se ha seleccionado un archivo.';
+            return;
+        }
+        pdfInput.setCustomValidity('');
+        pdfFilename.textContent = archivo ? archivo.name : 'No se ha seleccionado un archivo.';
+    });
 
     async function mensajeErrorApi(respuesta) {
         const texto = await respuesta.text();
@@ -403,22 +606,62 @@
             categoriaIds: [...document.getElementById('categories').selectedOptions].map(o => Number(o.value))
         };
 
+        if (!formularioLibro.reportValidity()) return;
+
+        const ejemplares = obtenerEjemplaresFormulario();
+        const codigos = ejemplares.map(e => e.codigoInventario.toLowerCase());
+        if (new Set(codigos).size !== codigos.length) {
+            mensajeFormulario.hidden = false;
+            mensajeFormulario.className = 'alert alert-danger py-2 small mb-4';
+            mensajeFormulario.textContent = 'Hay códigos de inventario repetidos en la lista de ejemplares.';
+            return;
+        }
+
+        const saveBookBtn = document.getElementById('save-book-button');
+        if (saveBookBtn) { saveBookBtn.disabled = true; saveBookBtn.setAttribute('aria-busy', 'true'); saveBookBtn.textContent = 'Guardando libro…'; }
         mensajeFormulario.hidden = false;
-        mensajeFormulario.className = 'alert alert-info py-2 small mt-3';
+        mensajeFormulario.className = 'alert alert-info ed-notice py-2 small mb-4';
         mensajeFormulario.textContent = 'Guardando libro…';
         try {
-            const respuesta = await fetch(apiLibrosUrl, {
+            const multipart = new FormData();
+            multipart.append('datos', new Blob([JSON.stringify(payload)], { type: 'application/json' }), 'datos.json');
+            if (portadaInput.files[0]) multipart.append('imagen', portadaInput.files[0]);
+            if (pdfInput.files[0]) multipart.append('archivoPdf', pdfInput.files[0]);
+            const respuesta = await fetch(`${apiLibrosUrl}/con-archivos`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify(payload)
+                headers: { Accept: 'application/json' },
+                body: multipart
             });
             if (!respuesta.ok) throw new Error(await mensajeErrorApi(respuesta));
+            const libroCreado = await respuesta.json();
+
+            if (ejemplares.length && libroCreado.idLibro) {
+                mensajeFormulario.textContent = 'Registrando ejemplares físicos…';
+                const fallidos = [];
+                for (const ej of ejemplares) {
+                    const resEj = await fetch(apiEjemplaresUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                        body: JSON.stringify({ idLibro: libroCreado.idLibro, ...ej })
+                    });
+                    if (!resEj.ok) {
+                        fallidos.push(`${ej.codigoInventario}: ${await mensajeErrorApi(resEj)}`);
+                    }
+                }
+                if (fallidos.length) {
+                    mensajeFormulario.className = 'alert alert-warning py-2 small mb-4';
+                    mensajeFormulario.textContent = `El libro se guardó, pero algunos ejemplares no pudieron registrarse (${fallidos.join(' | ')}). Redirigiendo a editar libro…`;
+                    setTimeout(() => window.location.assign(`${editarLibroUrl}?id=${encodeURIComponent(libroCreado.idLibro)}`), 2500);
+                    return;
+                }
+            }
             window.location.assign(listaLibrosUrl);
         } catch (error) {
-            mensajeFormulario.className = 'alert alert-danger py-2 small mt-3';
+            mensajeFormulario.className = 'alert alert-danger py-2 small mb-4';
             mensajeFormulario.textContent = `No se pudo guardar el libro. ${error.message}`;
+            if (saveBookBtn) { saveBookBtn.disabled = false; saveBookBtn.removeAttribute('aria-busy'); saveBookBtn.textContent = 'Guardar libro'; }
         }
     });
 </script>
-</body>
+</div></div></body>
 </html>

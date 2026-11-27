@@ -40,3 +40,8 @@ FROM rol r
 WHERE UPPER(r.nombre) = 'ADMINISTRADOR'
   AND NOT EXISTS (SELECT 1 FROM usuario WHERE email = 'admin@bibliot.com')
     LIMIT 1;
+
+-- Permitir fechas NULL en préstamos en estado 'Por entregar' hasta confirmar la entrega física
+ALTER TABLE prestamo
+    MODIFY COLUMN fecha_prestamo DATETIME(6) NULL,
+    MODIFY COLUMN fecha_vencimiento DATETIME(6) NULL;

@@ -3,16 +3,28 @@ package com.bibliot.gestion_biblioteca.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import com.bibliot.gestion_biblioteca.entities.Ejemplar;
+import com.bibliot.gestion_biblioteca.entities.Prestamo;
 import com.bibliot.gestion_biblioteca.entities.Reserva;
+import com.bibliot.gestion_biblioteca.repository.EjemplarRepository;
+import com.bibliot.gestion_biblioteca.repository.PrestamoRepository;
 import com.bibliot.gestion_biblioteca.repository.ReservaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ReservaService {
 
     @Autowired
     private ReservaRepository reservaRepository;
+
+    @Autowired
+    private PrestamoRepository prestamoRepository;
+
+    @Autowired
+    private EjemplarRepository ejemplarRepository;
 
     public List<Reserva> listarTodos() {
         return reservaRepository.findAll();
@@ -54,6 +66,27 @@ public class ReservaService {
     @Transactional
     public void eliminar(Integer id) {
         Reserva reserva = buscarPorId(id);
+        var prestamoOpt = prestamoRepository.findByReservaIdReserva(id);
+        if (prestamoOpt.isPresent()) {
+            Prestamo prestamo = prestamoOpt.get();
+            String est = prestamo.getEstado() == null ? "" : prestamo.getEstado().trim().toLowerCase();
+            if (est.contains("por entregar")) {
+                Ejemplar ejemplar = prestamo.getEjemplar();
+                if (ejemplar != null) {
+                    ejemplar.setEstado("Disponible");
+                    ejemplarRepository.save(ejemplar);
+                }
+                prestamoRepository.actualizarEstado(prestamo.getIdPrestamo(), "Cancelado");
+                reservaRepository.actualizarEstado(id, "Cancelada");
+                return;
+            }
+            if (!est.contains("cancelad")) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "No se puede cancelar una reserva cuyo préstamo ya fue entregado.");
+            }
+            reservaRepository.actualizarEstado(id, "Cancelada");
+            return;
+        }
         reservaRepository.delete(reserva);
     }
 

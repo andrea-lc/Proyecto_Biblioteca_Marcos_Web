@@ -17,6 +17,8 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.PastOrPresent;
 import org.hibernate.validator.constraints.ISBN;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -24,6 +26,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "libro")
+@Indexed
 @Getter
 @Setter
 @NoArgsConstructor
@@ -36,6 +39,7 @@ public class Libro {
     private Integer idLibro;
 
     @Column(name = "titulo", nullable = false, length = 255)
+    @FullTextField(analyzer = "spanish")
     @NotBlank(message = "El título es obligatorio")
     @Size(max = 255)
     private String titulo;
@@ -45,11 +49,20 @@ public class Libro {
     private Integer paginas;
 
     @Column(name = "descripcion", columnDefinition = "TEXT")
+    @FullTextField(analyzer = "spanish")
     @Size(max = 5000, message = "La descripción no debe superar 5000 caracteres")
     private String descripcion;
 
     @Column(name = "contenido_texto", columnDefinition = "LONGTEXT")
+    @FullTextField(analyzer = "spanish")
     private String contenidoTexto;
+
+    @Column(name = "texto_extraido", columnDefinition = "LONGTEXT")
+    @FullTextField(analyzer = "spanish")
+    private String textoExtraido;
+
+    @Column(name = "imagen_url", length = 255)
+    private String imagenUrl;
 
     @Column(name = "fecha_publicacion")
     @PastOrPresent(message = "La fecha de publicación no puede ser futura")

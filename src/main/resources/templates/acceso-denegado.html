@@ -8,7 +8,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=home,lock,login">
     <link rel="stylesheet" href="./css/bibliot.css">
 </head>
-<body><main class="container min-vh-100 d-flex align-items-center justify-content-center py-5"><div class="col-12 col-md-8 col-lg-6 text-center"><p class="display-4 fw-bold text-secondary mb-2">403</p><h1 class="h2 mb-3">No tienes acceso a esta página</h1><p class="text-secondary mb-4">Inicia sesión con una cuenta autorizada o vuelve al catálogo.</p><div class="d-flex flex-wrap justify-content-center gap-2"><a class="btn btn-secondary" th:href="@{/login}">Iniciar sesión</a><a class="btn btn-outline-secondary" th:href="@{/index}">Ir al inicio</a></div></div></main></body>
+<body class="ed-portal-page">
+<header class="navbar ed-portal-navbar"><div class="container"><a class="navbar-brand" th:href="@{/index}">Bibliot.</a><a class="nav-link" th:href="@{/explorar}">Explorar</a></div></header>
+<main class="ed-portal-main d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <section class="ed-portal-empty-card ed-enter" aria-labelledby="error-403-title">
+                    <div class="ed-portal-empty-icon" aria-hidden="true"><span class="material-symbols-outlined">lock</span></div>
+                    <p class="ed-error-code">403</p>
+                    <h1 id="error-403-title">No tienes acceso a esta página</h1>
+                    <p>Inicia sesión con una cuenta autorizada para continuar o regresa al catálogo público.</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <a class="btn btn-brand" th:href="@{/login}"><span class="material-symbols-outlined" aria-hidden="true">login</span>Iniciar sesión</a>
+                        <a class="btn btn-outline-secondary" th:href="@{/index}"><span class="material-symbols-outlined" aria-hidden="true">home</span>Ir al inicio</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
 </html>

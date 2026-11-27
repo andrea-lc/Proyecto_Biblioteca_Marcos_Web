@@ -42,9 +42,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 String username = claims.getSubject();
                 String rol = claims.get("rol", String.class);
+                Object uidClaim = claims.get("uid");
+                Integer uid = uidClaim instanceof Number number ? number.intValue() : null;
 
                 if (username == null || username.isBlank()
-                        || rol == null || rol.isBlank()) {
+                        || rol == null || rol.isBlank()
+                        || uid == null || uid <= 0) {
                     SecurityContextHolder.clearContext();
                     response.sendError(
                             HttpServletResponse.SC_UNAUTHORIZED,
@@ -88,6 +91,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                 null,
                                 List.of(authority)
                         );
+                authentication.setDetails(new JwtAuthenticationDetails(uid));
 
                 SecurityContextHolder.getContext()
                         .setAuthentication(authentication);
