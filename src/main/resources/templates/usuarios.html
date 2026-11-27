@@ -73,6 +73,7 @@
                 </div>
                 <div class="alert alert-info" role="status">Listado de muestra. Exportación, filtros y cambio de vista todavía no están conectados.</div>
                 <div class="user-tabs"><a class="selected" th:href="@{/usuarios}">Todos</a><a th:href="@{/roles}">Roles</a></div>
+                <div class="alert alert-info py-2 small mb-3" id="users-message" role="status" aria-live="polite" hidden>Cargando usuarios…</div>
                 <div class="user-toolbar">
                     <form class="user-search" th:action="@{/usuarios}" method="get"><span
                             aria-hidden="true">⌕</span><input type="search" name="usuario" placeholder="Buscar usuario"
